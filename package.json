@@ -1,0 +1,39 @@
+{
+  "name": "restful-api-express-mongoose",
+  "version": "1.0.0",
+  "description": "Example of a RESTful API built with Node.js, Express.js and Mongoose.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "8.9.4"
+  },
+  "author": "Artemij Fedosejev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fedosejev/restful-api-express-mongoose/issues"
+  },
+  "homepage": "https://github.com/fedosejev/restful-api-express-mongoose",
+  "dependencies": {
+    "bcrypt": "^2.0.1",
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "jsonwebtoken": "^8.3.0",
+    "localStorage": "^1.0.3",
+    "mongoose": "^5.1.5",
+    "morgan": "^1.9.0",
+    "multer": "^1.3.0",
+    "nodemailer": "^4.6.6",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "request": "^2.87.0",
+    "serve-favicon": "^2.5.0",
+    "validator": "^10.3.0"
+  }
+}
