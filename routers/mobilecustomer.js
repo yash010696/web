@@ -52,6 +52,10 @@ mobilecustomerRouter
                                 req.body.referral_Code = ReferralCode;
                                 req.body.id = counter;
 
+                                var date = new Date(req.body.dob);
+                                var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000))
+                                req.body.dob = newDate;
+
                                 order_type.find({ 'order_type': "on-line" }).then((type) => {
                                     req.body.order_type = type[0]._id;
                                     var customer = new Customer(req.body);
@@ -79,6 +83,7 @@ mobilecustomerRouter
     .post('/address', (req, res) => {
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
+
 
         var locationType = req.body.locationType;
         if (locationType === "Home") {
@@ -110,45 +115,57 @@ mobilecustomerRouter
                 }
             })
         }
+
     })
 
     .put('/updateaddress', (req, res) => {
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
         var locationType = req.body.locationType;
-        if (locationType === "Home") {
-            var home = {
-                pincode: req.body.pincode,
-                flat_No: req.body.flat_No,
-                society: req.body.society,
-                landmark: req.body.landmark,
-            }
-            Customer.find({ '_id': decoded._id }).then((address) => {
-                console.log('//////////////////////', address[0].address[0].other[0]);
-            })
-            Customer.findOneAndUpdate({ '_id': decoded._id }, { $set: { 'address.0.home': home } }, function (err, user) {
-                if (err) {
-                    res.status(200).json({ Success: false, Message: 'Unable to update address.' });
-                } if (user) {
-                    res.status(200).json({ Success: true, Message: 'Address Updated Successfully' });
-                }
-            })
 
-        } else if (locationType === "Other") {
-            var other = {
-                pincode: req.body.pincode,
-                flat_No: req.body.flat_No,
-                society: req.body.society,
-                landmark: req.body.landmark,
-            }
-            Customer.update({ '_id': decoded._id }, { $set: { 'address.0.other': other } }, function (err, user) {
-                if (err) {
-                    res.status(200).json({ Success: false, Message: 'Unable to update address.' });
-                } if (user) {
-                    res.status(200).json({ Success: true, Message: 'Address Updated Successfully!' });
-                }
-            })
-        }
+        // Franchise.find({ statee: true, area: req.body.area }).
+        //     populate('area').
+        //     exec(function (err, franchises) {
+        //         if (err) {
+        //             res.status(500).send({ Success: flase, err });
+        //             return;
+        //         }
+        //         if (franchises[0] == null) {
+        //             res.status(200).json({ Success: false, Message: 'Area Not Found.' });
+        //         } else {}
+        //     })
+
+                    if (locationType === "Home") {
+                        var home = {
+                            pincode: req.body.pincode,
+                            flat_No: req.body.flat_No,
+                            society: req.body.society,
+                            landmark: req.body.landmark,
+                        }
+                        Customer.findOneAndUpdate({ '_id': decoded._id }, { $set: { 'address.0.home': home } }, function (err, user) {
+                            if (err) {
+                                res.status(200).json({ Success: false, Message: 'Unable to update address.' });
+                            } if (user) {
+                                res.status(200).json({ Success: true, Message: 'Address Updated Successfully' });
+                            }
+                        })
+
+                    } else if (locationType === "Other") {
+                        var other = {
+                            pincode: req.body.pincode,
+                            flat_No: req.body.flat_No,
+                            society: req.body.society,
+                            landmark: req.body.landmark,
+                        }
+                        Customer.update({ '_id': decoded._id }, { $set: { 'address.0.other': other } }, function (err, user) {
+                            if (err) {
+                                res.status(200).json({ Success: false, Message: 'Unable to update address.' });
+                            } if (user) {
+                                res.status(200).json({ Success: true, Message: 'Address Updated Successfully!' });
+                            }
+                        })
+                    }
+                
     })
 
     .post('/logout', (req, res) => {

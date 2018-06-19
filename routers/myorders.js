@@ -6,16 +6,19 @@ var config = require('./../config/config');
 
 var { RequestOrder } = require('./../models/requestorder');
 var Order=require('./../models/order');
+var orderstatus=require('./../models/orderstatus');
 var MyOrdersRouter = express.Router();
 
 MyOrdersRouter
-    .get('/orderstatus', passport.authenticate('jwt', { session: false }), (req, res) => {
+    .get('/orderstatus1', passport.authenticate('jwt', { session: false }), (req, res) => {
         
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
-        
-        Order.find({'customer':decoded_id}).then((order)=>{
-                res.status(200).json(order.status);
+        Order.find({customer:decoded._id})
+             .populate('orderstatus')
+             .then((order)=>{
+                var order_status=order[0].order_status;
+                res.status(200).json({Success:true,order_status});
         },(err)=>{
             res.status(400).json(err);
         });
@@ -25,7 +28,6 @@ MyOrdersRouter
 
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret)
-        console.log(decoded._id);
         Order.find({ 'customer': decoded._id }).then((orders) => {
             res.status(200).json(orders);
         }, (err) => {

@@ -10,7 +10,6 @@ var Customer = require('./../models/customer');
 
 customerProfileRouter
     .get('/mprofile', passport.authenticate('jwt', { session: false }), (req, res) => {
-
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret)
 
@@ -26,8 +25,13 @@ customerProfileRouter
     })
 
     .put('/updateprofile/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
-        
         var id = req.params.id;
+
+        if(req.body.dob){
+            var date = new Date(req.body.dob);
+            var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000));
+            req.body.dob = newDate;
+            }
         Customer.findOneAndUpdate({ '_id': id }, {
             $set:req.body
         }, { new: true }).then((user) => {

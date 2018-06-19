@@ -37,7 +37,7 @@ var customerSchema = new Schema({
         type: String
     },
     dob: {
-        type: String
+        type: Date
     },
     email: {
         type: String,
@@ -55,7 +55,7 @@ var customerSchema = new Schema({
     },
     mobile: {
         type: String,
-        unique:true,
+        unique: true,
         required: true
 
     },
@@ -123,7 +123,7 @@ var customerSchema = new Schema({
                 required: true,
                 trim: true
             }
-        }],     
+        }],
     }],
     city: {
         type: String,

@@ -9,8 +9,8 @@ module.exports=function mail(email,message,subject){
             port:587,
             transportMethod: 'SMTP',
             auth: {
-              user: 'sunmit.testing@gmail.com',
-              pass: 'Sunmit123@'
+              user: 'info@24klen.com',
+              pass: 'india@123'
             }
           });
           

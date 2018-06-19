@@ -4,6 +4,7 @@ var ObjectId = mongoose.Types.ObjectId;
 var {Customer}=require('./customer');
 var Franchise=require('./../models/franchise');
 
+
 var RequestOrderSchema = new mongoose.Schema({
     requestId:{
         type:String,
@@ -12,9 +13,8 @@ var RequestOrderSchema = new mongoose.Schema({
         default:1
     },
     locationType:{
-        type:String,
-        required:true,
-        trim:true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Customer',
     },
     customer:{
         type:String,
