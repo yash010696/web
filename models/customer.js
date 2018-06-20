@@ -87,7 +87,7 @@ var customerSchema = new Schema({
                 trim: true,
                 minlength: 6,
             },
-            flat_No: {
+            flat_no: {
                 type: String,
                 required: true,
                 trim: true
@@ -109,7 +109,7 @@ var customerSchema = new Schema({
                 trim: true,
                 minlength: 6,
             },
-            flat_No: {
+            flat_no: {
                 type: String,
                 required: true,
                 trim: true

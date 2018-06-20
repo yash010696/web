@@ -51,6 +51,8 @@ mobilecustomerRouter
                                 var ReferralCode = randomstring.toUpperCase();
                                 req.body.referral_Code = ReferralCode;
                                 req.body.id = counter;
+                                req.body.statee = true;
+                                req.body.status = true;
 
                                 var date = new Date(req.body.dob);
                                 var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000))
@@ -89,7 +91,7 @@ mobilecustomerRouter
         if (locationType === "Home") {
             var home = {
                 pincode: req.body.pincode,
-                flat_No: req.body.flat_No,
+                flat_no: req.body.flat_no,
                 society: req.body.society,
                 landmark: req.body.landmark,
             }
@@ -103,7 +105,7 @@ mobilecustomerRouter
         } else if (locationType === "Other") {
             var other = {
                 pincode: req.body.pincode,
-                flat_No: req.body.flat_No,
+                flat_no: req.body.flat_no,
                 society: req.body.society,
                 landmark: req.body.landmark,
             }
@@ -138,7 +140,7 @@ mobilecustomerRouter
                     if (locationType === "Home") {
                         var home = {
                             pincode: req.body.pincode,
-                            flat_No: req.body.flat_No,
+                            flat_no: req.body.flat_no,
                             society: req.body.society,
                             landmark: req.body.landmark,
                         }
@@ -153,7 +155,7 @@ mobilecustomerRouter
                     } else if (locationType === "Other") {
                         var other = {
                             pincode: req.body.pincode,
-                            flat_No: req.body.flat_No,
+                            flat_no: req.body.flat_no,
                             society: req.body.society,
                             landmark: req.body.landmark,
                         }
