@@ -101,7 +101,6 @@ creditdebitRouter
                     })
                 }
                 else {
-
                     CreditDebit.findOne({ 'created_by': decoded._id }).then((customer) => {
 
                         NewbalanceAmount = customer.balanceAmount + balanceAmount;
@@ -145,9 +144,10 @@ creditdebitRouter
               pendingAmount=customer[0].pendingAmount;
               balanceAmount=customer[0].balanceAmount;
             
-            res.status(200).json({pendingAmount,balanceAmount});
+            res.status(200).json({Success:true,pendingAmount,balanceAmount});
         },(err)=>{
-            res.status(400).json(err);
+            res.status(400).json({Success:false,err});
         })
     })
+
 module.exports = { creditdebitRouter };
