@@ -38,9 +38,9 @@ mobilecustomerRouter
                         if (user)
                             res.status(200).json({ Success: false, Message: "Email Id is taken." });
                         else {
-                            Customer.find().then((results) => {
-                                var count = results.length;
-                                counter = count + 1;
+                            // Customer.find().then((results) => {
+                            //     var count = results.length;
+                            //     counter = count + 1;
                                 var randomstring = "";
                                 var chars = "123456789ABCDEFGHIJKLMNOPQRSTUVWXTZ";
                                 var string_length = 6;
@@ -50,7 +50,7 @@ mobilecustomerRouter
                                 }
                                 var ReferralCode = randomstring.toUpperCase();
                                 req.body.referral_Code = ReferralCode;
-                                req.body.id = counter;
+                                // req.body.id = counter;
                                 req.body.statee = true;
                                 req.body.status = true;
 
@@ -61,6 +61,7 @@ mobilecustomerRouter
                                 order_type.find({ 'order_type': "on-line" }).then((type) => {
                                     req.body.order_type = type[0]._id;
                                     var customer = new Customer(req.body);
+                                    console.log(req.body);
                                     customer.save().then((user) => {
                                         var id = user._id;
                                         generateSms(user.mobile,
@@ -75,7 +76,7 @@ mobilecustomerRouter
                                         res.status(400).json({ Success: false, Message: "Enter Valid Values!!" });
                                     })
                                 })
-                            })
+                            // })
                         }
                     })
                 }

@@ -8,11 +8,11 @@ var Admininfo = require('./admininfo');
 var Franchise = require('./franchise');
 var Ordertype = require('./ordertype');
 var customerSchema = new Schema({
-    id: {
-        type: Number,
-        unique: true,
-        default: 1
-    },
+    // id: {
+    //     type: Number,
+    //     unique: true,
+    //     default: 1
+    // },
     first_Name: {
         type: String,
         required: true
