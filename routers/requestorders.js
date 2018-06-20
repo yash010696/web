@@ -46,7 +46,7 @@ requestordersRouter
                             res.status(500).send({ Success: flase, err });
                             return;
                         }
-                        // console.log('The Franchise  is', franchises);
+                        console.log('The Franchise  is', franchises);
                         franchisename = franchises[0].franchise_Name;
                         areacode = franchises[0].area.code;
                         RequestOrder.find({ franchise: franchises[0]._id }).exec(function (err, results) {

@@ -25,7 +25,6 @@ var RequestOrderSchema = new mongoose.Schema({
     },
     serviceName:{
         type:String,
-        required:true,
         trim:true
     }, 
     serviceType:{
