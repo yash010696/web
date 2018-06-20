@@ -6,7 +6,7 @@ require('./../config/passport')(passport);
 var config = require('./../config/config');
 
 var creditdebitRouter = express.Router();
-var  Customer  = require('./../models/customer');
+var Customer = require('./../models/customer');
 var { CreditDebit } = require('./../models/creditdebit');
 
 creditdebitRouter
@@ -17,9 +17,8 @@ creditdebitRouter
         var decoded = jwt.verify(token[1], config.secret);
 
         if (req.body.billAmount == req.body.paidAmount) {
-            
             CreditDebit.find({ 'created_by': decoded._id }).then((customer) => {
-               
+
                 if (!customer[0]) {
                     var creditDebit = new CreditDebit();
                     creditDebit.created_by = decoded._id;
@@ -39,7 +38,6 @@ creditdebitRouter
         }
         else if (req.body.billAmount > req.body.paidAmount) {
             var pendingAmount = req.body.billAmount - req.body.paidAmount;
-
             CreditDebit.find({ 'created_by': decoded._id }).then((customer) => {
 
                 if (!customer[0]) {
@@ -140,14 +138,18 @@ creditdebitRouter
         var decoded = jwt.verify(token[1], config.secret);
 
         CreditDebit.find({ 'created_by': decoded._id }).then((customer) => {
-            
-              pendingAmount=customer[0].pendingAmount;
-              balanceAmount=customer[0].balanceAmount;
-            
-            res.status(200).json({Success:true,pendingAmount,balanceAmount});
-        },(err)=>{
-            res.status(400).json({Success:false,err});
+            if (!customer[0]) {
+                res.status(200).json({Success:true,pendingAmount:0,balanceAmount:0});
+            } else {
+                pendingAmount = customer[0].pendingAmount;
+                balanceAmount = customer[0].balanceAmount;
+
+                res.status(200).json({ Success: true, pendingAmount, balanceAmount });
+            }
+        }, (err) => {
+            res.status(400).json({ Success: false, err });
         })
+
     })
 
 module.exports = { creditdebitRouter };
