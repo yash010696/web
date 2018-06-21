@@ -61,7 +61,6 @@ mobilecustomerRouter
                                 order_type.find({ 'order_type': "on-line" }).then((type) => {
                                     req.body.order_type = type[0]._id;
                                     var customer = new Customer(req.body);
-                                    console.log(req.body);
                                     customer.save().then((user) => {
                                         var id = user._id;
                                         generateSms(user.mobile,
@@ -92,7 +91,7 @@ mobilecustomerRouter
         if (locationType === "Home") {
             var home = {
                 pincode: req.body.pincode,
-                flat_no: req.body.flat_no,
+                flat_No: req.body.flat_No,
                 society: req.body.society,
                 landmark: req.body.landmark,
             }
@@ -106,7 +105,7 @@ mobilecustomerRouter
         } else if (locationType === "Other") {
             var other = {
                 pincode: req.body.pincode,
-                flat_no: req.body.flat_no,
+                flat_No: req.body.flat_No,
                 society: req.body.society,
                 landmark: req.body.landmark,
             }
@@ -141,7 +140,7 @@ mobilecustomerRouter
                     if (locationType === "Home") {
                         var home = {
                             pincode: req.body.pincode,
-                            flat_no: req.body.flat_no,
+                            flat_No: req.body.flat_No,
                             society: req.body.society,
                             landmark: req.body.landmark,
                         }
@@ -156,7 +155,7 @@ mobilecustomerRouter
                     } else if (locationType === "Other") {
                         var other = {
                             pincode: req.body.pincode,
-                            flat_no: req.body.flat_no,
+                            flat_No: req.body.flat_No,
                             society: req.body.society,
                             landmark: req.body.landmark,
                         }

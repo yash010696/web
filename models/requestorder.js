@@ -3,6 +3,7 @@ var ObjectId = mongoose.Types.ObjectId;
 
 var {Customer}=require('./customer');
 var Franchise=require('./../models/franchise');
+var Servicetype=require('./../models/servicetype');
 
 
 var RequestOrderSchema = new mongoose.Schema({
@@ -28,9 +29,8 @@ var RequestOrderSchema = new mongoose.Schema({
         trim:true
     }, 
     serviceType:{
-        type:String,
-        trim:true,
-        required:true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Servicetype',
     },
     pickupDate:{
         type:Date,
