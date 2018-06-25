@@ -10,6 +10,7 @@ var Customer = require('./../models/customer');
 var Franchise = require('./../models/franchise');
 var area = require('./../models/area');
 var generateSms = require('./../middlewear/sms');
+var generateMail = require('./../middlewear/mail');
 var serviceType = require('./../models/servicetype');
 
 var requestordersRouter = express.Router();
@@ -22,16 +23,16 @@ requestordersRouter
         if (!req.body) {
             res.status(200).json({ Success: false, Message: 'Please Enter Required Data.' });
         } else {
+
             var token = req.header('Authorization').split(' ');
             var decoded = jwt.verify(token[1], config.secret);
-            var name; var mobile;
+            var name; var mobile; var email;
 
             Customer.findById({ '_id': decoded._id }).then((customer) => {
-                console.log(customer.address[0].home);
                 if (customer.address[0] == null) {
-                    res.json("okkkkkkkkkk");
+                    res.status(200).json({ Success: false, Message: "Enter The Address" });
                 }
-                else if (req.body.locationType == "Home") {
+                if (req.body.locationType == "Home") {
                     if (customer.address[0].home[0] == null) {
                         res.status(200).json({ Success: false, Message: "Home Address Not Found" });
                     } else {
@@ -45,8 +46,9 @@ requestordersRouter
                         req.body.locationType = customer.address[0].other[0]._id;
                     }
                 }
-                name = customer.first_Name,
-                    mobile = customer.mobile
+                name = customer.first_Name;
+                mobile = customer.mobile;
+                email = customer.email;
 
                 var counter;
                 var orderid;
@@ -69,21 +71,23 @@ requestordersRouter
                             var ans = pad.substring(0, pad.length - str.length) + str;
                             requestId = areacode + ans;
 
-                            req.body.franchise = franchises[0]._id;
-                            req.body.requestId = requestId;
-                            req.body.customer = name;
-                            req.body.created_by = decoded._id;
-                            req.body.updated_by = decoded._id;
-                            req.body.state = true;
-                            req.body.status = true;
-
                             var date = new Date(req.body.pickupDate);
                             var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000));
 
-                            req.body.pickupDate = newDate;
+
 
                             serviceType.find({ 'type': req.body.serviceType }).then((serviceType) => {
+
                                 req.body.serviceType = serviceType[0]._id;
+                                req.body.franchise = franchises[0]._id;
+                                req.body.requestId = requestId;
+                                req.body.pickupDate = newDate;
+                                req.body.customer = name;
+                                req.body.created_by = decoded._id;
+                                req.body.updated_by = decoded._id;
+                                req.body.state = true;
+                                req.body.status = true;
+
                                 // console.log(req.body);
                                 var requestOrder = new RequestOrder(req.body);
                                 requestOrder.save().then((order) => {
@@ -94,13 +98,25 @@ requestordersRouter
                                     var dateParts = d.split("GMT");
                                     var date1 = dateParts[0].slice(0, 15);
 
+                                    generateMail(email,
+                                        `Dear ${name}, 
+
+Your Pick up no ${requestId} with ${franchisename} is booked for ${date1} between ${order.timeSlot}.
+                                        
+Happy Cleaning!
+                                        
+Thanks,
+                                        
+Team 24Klen Laundry Science`,
+                                        `Successful Request Creation ${requestId} with 24klen Laundry Science`
+                                    );
                                     generateSms(mobile,
                                         `Dear ${name}, Your Pick up no ${requestId} with ${franchisename} is booked for ${date1} between ${order.timeSlot}.`
                                     )
                                     res.status(200).json({ requestId, Success: true, Message: 'Order Placed Successfully' });
                                 })
                             }).catch((err) => {
-                                res.status(400).json(err);
+                                res.status(400).json({ err });
                             })
                         })
                     })
@@ -125,13 +141,17 @@ requestordersRouter
                 if (!order) {
                     res.status(200).json({ Success: false, Message: "Order Not Found" });
                 } else {
+                    // Customer.find({'address.0.home.0._id':order.locationType}).then((data)=>{
+                    //     order.locationType=data[0].address[0].home ;
+                    //     console.log(order);
                     res.status(200).json({ Success: true, order });
+                    // })
                 }
             }).catch((err) => {
                 res.status(400).json(err);
             })
-
     })
+
     .put('/updaterequestorder/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
         var requestId = req.params.id;
         var token = req.header('Authorization').split(' ');

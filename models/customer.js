@@ -4,9 +4,9 @@ const validator = require('validator');
 var ObjectId = mongoose.Types.ObjectId;
 
 var Admininfo = require('./admininfo');
-// var Area = require('./area');
 var Franchise = require('./franchise');
 var Ordertype = require('./ordertype');
+
 var customerSchema = new Schema({
     // id: {
     //     type: Number,
@@ -26,8 +26,8 @@ var customerSchema = new Schema({
     //   ref: 'Area'
     // },
     franchise: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Franchise'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Franchise'
     },
     order_type: {
         type: mongoose.Schema.Types.ObjectId,
@@ -46,9 +46,7 @@ var customerSchema = new Schema({
         trim: true,
         validate: {
             validator: (value) => {
-
                 return validator.isEmail(value);
-
             },
             message: '{VALUE} is not a valid Email'
         }
@@ -80,6 +78,7 @@ var customerSchema = new Schema({
         type: String
     },
     address: [{
+
         home: [{
             pincode: {
                 type: String,
@@ -102,6 +101,7 @@ var customerSchema = new Schema({
                 trim: true
             }
         }],
+
         other: [{
             pincode: {
                 type: String,
@@ -123,8 +123,9 @@ var customerSchema = new Schema({
                 required: true,
                 trim: true
             }
-        }],
+        }]
     }],
+
     city: {
         type: String,
         trim: true
@@ -154,5 +155,6 @@ var customerSchema = new Schema({
         type: Boolean
     }
 }, { collection: 'customers' });
+
 
 module.exports = mongoose.model('Customer', customerSchema);

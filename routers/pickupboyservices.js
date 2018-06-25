@@ -4,9 +4,12 @@ var passport = require('passport');
 require('./../config/passport')(passport);
 var config = require('./../config/config');
 
-
 var { OrderStatus } = require('./../models/orderstatus');
-var { PartialOrder } = require('./../models/partialorder');
+var Order = require('./../models/order');
+var { RequestOrder } = require('./../models/requestorder');
+var area = require('./../models/area');
+var Franchise = require('./../models/franchise');
+
 
 var pickupboyserviceRouter = express.Router();
 
@@ -47,26 +50,42 @@ pickupboyserviceRouter
     // RequestOrder created into partial order
     .post('/createorder', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        RequestOrder.findOne({ 'requestId': req.body.requestId }).then((order) => {
-            var partialOrder = new PartialOrder();
-            partialOrder.partialOrderId = order.requestId;
-            partialOrder.quantity = req.body.quantity;
-            partialOrder.servicename = req.body.servicename;
-            partialOrder.created_by = order.created_by;
-            partialOrder.updated_by = order.updated_by;
-            partialOrder.status = order.status;
+        RequestOrder.findOne({ 'requestId': req.body.requestId })
+            .populate({ path: 'franchise', populate: { path: 'area' } })
+            .then((data) => {
+                // console.log(data);
+                var areacode = data.franchise.area.code;
+                Order.find({ 'franchise': data.franchise }).then((results) => {
+                    var count = results.length;
+                    counter = count + 1;
+                    var str = "" + counter;
+                    var pad = "0000";
+                    var ans = pad.substring(0, pad.length - str.length) + str;
+                    var id = areacode + ans;
+               
+                var order = new Order();
+                order.order_id = id;
+                order.requestId = data.requestId;
+                // order.order_amount = req.body.order_amount;
+                order.order_status = "In Process"; 
+                order.franchise = data.franchise._id;                
+                order.customer = data.created_by;
+                order.servicetype = data.servicetype;
+                // order.created_by = order.created_by;
+                // order.updated_by = order.updated_by;
+                order.status = data.status;
+                order.state = data.state;
 
-            partialOrder.save().then((data) => {
-                RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
-                    $set: { status: false }
-                }).then((order));
-                res.status(200).json(data)
-            }, (err) => {
-                res.status(400).json(err);
+                order.save().then((data) => {
+                    RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
+                        $set: { status: false }
+                    }).then((order));
+                    res.status(200).json(data)
+                })
             })
-        }, (err) => {
-            res.status(400).json(err);
-        })
+            }).catch((err) => {
+                res.json({ err });
+            })
     })
 
 

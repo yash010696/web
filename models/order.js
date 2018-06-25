@@ -3,10 +3,11 @@ var Schema = mongoose.Schema;
 var ObjectId = mongoose.Types.ObjectId;
 
 var Admininfo = require('./admininfo');
+var User = require('./user');
 var Customer = require('./customer');
 var Franchise = require('./franchise');
 var Servicetype = require('./servicetype');
-var order_Status=require('./orderstate');
+var order_Status = require('./orderstate');
 var orderSchema = new Schema({
   // id: {
   //   type:Number,
@@ -14,9 +15,15 @@ var orderSchema = new Schema({
   //   default:1
   // },
   order_id: {
-    type:String,
-    required:true,
-    unique:true
+    type: String,
+    required: true,
+    unique: true
+  },
+  requestId: {
+    type: String,
+    required: true,
+    unique: true,
+    default: 1
   },
   franchise: {
     type: mongoose.Schema.Types.ObjectId,
@@ -31,27 +38,28 @@ var orderSchema = new Schema({
     ref: 'Servicetype'
   },
   order_amount: {
-    type:String,
-    required:true,
+    type: String,
+    // required: true,
   },
-  order_status:{
-    type:String 
+  order_status: {
+    type: String
   },
-  created_by:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Admininfo'
-  },
-  updated_by:{
+  created_by: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
-  status:{
+  updated_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  status: {
     type: Boolean
   },
-  state:{
+  state: {
     type: Boolean
   }
-},{
-  timestamps: true
-}, { collection: 'orders' });
+}, {
+    timestamps: true
+  }, { collection: 'orders' });
+
 module.exports = mongoose.model('Order', orderSchema);
