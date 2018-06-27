@@ -4,7 +4,7 @@ var passport = require('passport');
 require('./../config/passport')(passport);
 var config = require('./../config/config');
 
-var { RequestOrder } = require('./../models/requestorder');
+var  RequestOrder  = require('./../models/requestorder');
 var { OrderStatus } = require('./../models/orderstatus');
 var Customer = require('./../models/customer');
 var Franchise = require('./../models/franchise');
