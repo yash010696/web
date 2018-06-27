@@ -8,11 +8,11 @@ var Admininfo = require('./admininfo');
 // var Customer = require('./customer');
 // var Order = require('./order');
 var tagSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   tag_Text: {
     type:String,
     required:true

@@ -6,11 +6,11 @@ var ObjectId = mongoose.Types.ObjectId;
 // var Customer = require('./customer');
 // var User = require('./user');
 var mailSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   subject: {
     type:String,
     required:true

@@ -7,11 +7,11 @@ var Service = require('./service');
 var Subservice = require('./subservice');
 
 var garmentSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   name: {
     type:String,
     required:true,

@@ -15,11 +15,11 @@ var Pattern = require ('./pattern');
 var Clothdefect = require ('./clothdefect');
 var Coupon = require ('./coupon');
 var ordertransactionSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   order_id: {
     type:String,
     required:true,

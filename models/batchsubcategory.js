@@ -5,11 +5,11 @@ var ObjectId = mongoose.Types.ObjectId;
 var Admininfo = require('./admininfo');
 var Batchcategory = require('./batchcategory');
 var batchsubcategorySchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   batchcategory: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Batchcategory'

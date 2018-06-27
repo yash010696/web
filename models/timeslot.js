@@ -2,11 +2,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var timeslotSchema = new Schema({
-    id: {
-        type: Number,
-        unique: true,
-        default: 1
-    },
+    // id: {
+    //     type: Number,
+    //     unique: true,
+    //     default: 1
+    // },
     time_Slot: {
         type: String,
         required: true,

@@ -4,6 +4,8 @@ var ObjectId = mongoose.Types.ObjectId;
 var Customer = require('./customer');
 var Franchise = require('./../models/franchise');
 var Servicetype = require('./../models/servicetype');
+var Timeslot = require('./../models/timeslot');
+var User = require('./../models/user');
 
 
 var RequestOrderSchema = new mongoose.Schema({
@@ -18,8 +20,8 @@ var RequestOrderSchema = new mongoose.Schema({
         ref:'Customer'
     },
     customer: {
-        type: String,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Customer'
     },
     quantity: {
         type: Number,
@@ -28,7 +30,7 @@ var RequestOrderSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    serviceType: {
+    servicetype: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Servicetype',
     },
@@ -37,9 +39,8 @@ var RequestOrderSchema = new mongoose.Schema({
         required: true
     },
     timeSlot: {
-        type: String,
-        required: true,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Timeslot'
     },
     franchise: {
         type: mongoose.Schema.Types.ObjectId,
@@ -47,12 +48,11 @@ var RequestOrderSchema = new mongoose.Schema({
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Customer',
-        required: true
+        ref: 'User'
     },
     updated_by: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Customer'
+        ref: 'User'
     },
     state: {
         type: Boolean
@@ -62,10 +62,8 @@ var RequestOrderSchema = new mongoose.Schema({
     }
 
 },
-    { timestamps: true }
-)
+{ timestamps: true },
+{ collection: 'requestorder' }
+);
 
-
-var RequestOrder = mongoose.model('RequestOrder', RequestOrderSchema, collection = "requestorder");
-
-module.exports = { RequestOrder };
+module.exports = mongoose.model('RequestOrder', RequestOrderSchema );

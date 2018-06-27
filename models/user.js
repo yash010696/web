@@ -9,11 +9,11 @@ var Franchise = require('./franchise');
 var Area = require('./area');
 var Role = require('./role');
 var userSchema = new Schema({
-    id: {
-        type: Number,
-        unique: true,
-        default: 1
-    },
+    // id: {
+    //     type: Number,
+    //     unique: true,
+    //     default: 1
+    // },
     first_Name: {
         type: String,
         required: true

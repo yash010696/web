@@ -6,11 +6,11 @@ var ObjectId = mongoose.Types.ObjectId;
 var Admininfo = require('./admininfo');
 var Area = require('./area');
 var franchiseSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   owner_Name: {
     type:String,
     required:true
@@ -18,6 +18,10 @@ var franchiseSchema = new Schema({
   franchise_Name: {
     type:String,
     required:true
+  },
+  store_code:{
+    type:String,
+    trim:true
   },
   company_Name: {
     type:String,
@@ -35,10 +39,10 @@ var franchiseSchema = new Schema({
     type:String,
     required:true
   },
-  area: {
+  area: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Area'
-  },
+  }],
   store_Address: {
     type: String,
     required: true

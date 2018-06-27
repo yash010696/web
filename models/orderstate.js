@@ -4,11 +4,11 @@ var ObjectId = mongoose.Types.ObjectId;
 
 var Admininfo = require('./admininfo');
 var orderstateSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   state: {
     type:String,
     required:true,

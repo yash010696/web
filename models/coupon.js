@@ -6,11 +6,11 @@ var ObjectId = mongoose.Types.ObjectId;
 var Admininfo = require('./admininfo');
 var Franchise = require('./franchise');
 var couponSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   franchise: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Franchise'

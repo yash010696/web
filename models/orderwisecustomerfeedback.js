@@ -6,11 +6,11 @@ var ObjectId = mongoose.Types.ObjectId;
 var Customer = require('./customer');
 // var Order = require('./order');
 var orderwisefeedbackSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   message: {
     type:String,
     required:true

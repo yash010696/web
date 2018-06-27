@@ -4,11 +4,11 @@ var ObjectId = mongoose.Types.ObjectId;
 
 var Admininfo = require('./admininfo');
 var servicetypeSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   type: {
     type:String,
     required:true,

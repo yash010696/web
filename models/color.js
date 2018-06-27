@@ -4,11 +4,11 @@ var ObjectId = mongoose.Types.ObjectId;
 
 var Admininfo = require('./admininfo');
 var colorSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   color_name: {
     type:String,
     required:true,

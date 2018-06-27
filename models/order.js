@@ -22,7 +22,7 @@ var orderSchema = new Schema({
   requestId: {
     type: String,
     required: true,
-    unique: true,
+    // unique: true,
     default: 1
   },
   franchise: {

@@ -10,11 +10,11 @@ var Servicetype = require('./servicetype');
 var Garment = require('./garment');
 
 var priceSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   price: {
     type:String,
   },

@@ -4,12 +4,12 @@ var ObjectId = mongoose.Types.ObjectId;
 
 var Admininfo = require('./admininfo');
 var referralSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
 
-  },
+  // },
   referral_value: {
     type:String,
     required:true,

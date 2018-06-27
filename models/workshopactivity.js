@@ -7,11 +7,11 @@ var Orderstate = require('./orderstate');
 // var Order = require('./order');
 // var Customer = require('./customer');
 var workshopactivitySchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   batch_Id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Batch'

@@ -7,11 +7,11 @@ var Batchcategory = require('./batchcategory');
 var Batchsubcategory = require('./batchsubcategory');
 var Batchprogram = require('./batchprogram');
 var batchSchema = new Schema({
-  id: {
-    type:Number,
-    unique:true,
-    default:1
-  },
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
   batchcategory: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Batchcategory'
