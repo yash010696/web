@@ -58,16 +58,19 @@ mobilecustomerRouter
                             var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000))
                             req.body.dob = newDate;
 
-                            order_type.find({ 'order_type': "on-line" }).then((type) => {
-                                req.body.order_type = type[0]._id;
-                                var customer = new Customer(req.body);
-                                customer.save().then((user) => {
-                                    var id = user._id;
-                                    generateSms(user.mobile,
-                                        `Dear ${user.first_Name}, Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}. Happy Cleaning!`
-                                    );
-                                    generateMail(user.email,
-                                        `Dear ${user.first_Name}, 
+                            Franchise.find({ statee: true, area: { $in: [req.body.area] } }).then((franchise) => {
+                                req.body.franchise = franchise[0]._id;
+
+                                order_type.find({ 'order_type': "on-line" }).then((type) => {
+                                    req.body.order_type = type[0]._id;
+                                    var customer = new Customer(req.body);
+                                    customer.save().then((user) => {
+                                        var id = user._id;
+                                        generateSms(user.mobile,
+                                            `Dear ${user.first_Name}, Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}. Happy Cleaning!`
+                                        );
+                                        generateMail(user.email,
+                                            `Dear ${user.first_Name}, 
                                             Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}. 
 
                                             Happy Cleaning!
@@ -75,11 +78,12 @@ mobilecustomerRouter
                                             Thanks,
 
                                             Team 24Klen Laundry Science`,
-                                        'Successful Registration with 24klen Laundry Science'
-                                    );
-                                    res.status(200).json({ id, Success: true, Message: "Registration Successfull" });
-                                }, (err) => {
-                                    res.status(400).json({ Success: false, Message: "Enter Valid Values!!" });
+                                            'Successful Registration with 24klen Laundry Science'
+                                        );
+                                        res.status(200).json({ id, Success: true, Message: "Registration Successfull" });
+                                    }, (err) => {
+                                        res.status(400).json({ Success: false, Message: "Enter Valid Values!!" });
+                                    })
                                 })
                             })
                             // })
