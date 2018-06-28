@@ -81,10 +81,10 @@ mobilecustomerRouter
                                             'Successful Registration with 24klen Laundry Science'
                                         );
                                         res.status(200).json({ id, Success: true, Message: "Registration Successfull" });
-                                    }, (err) => {
-                                        res.status(400).json({ Success: false, Message: "Enter Valid Values!!" });
                                     })
                                 })
+                            }).catch((err) => {
+                                res.status(200).json({ Success: false, Message: "Enter Valid Values!!" });
                             })
                             // })
                         }
