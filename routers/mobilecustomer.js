@@ -151,7 +151,7 @@ mobilecustomerRouter
                 'address.0.home.0.pincode': req.body.pincode,
                 'address.0.home.0.flat_no': req.body.flat_no,
                 'address.0.home.0.society': req.body.society,
-                'address.0.home.0.landmark': req.body.landmark,
+                'address.0.home.0.landmark': req.body.landmark
             }
             Customer.findOneAndUpdate({ '_id': decoded._id }, { $set: home }, function (err, user) {
                 if (err) {
@@ -162,12 +162,12 @@ mobilecustomerRouter
             })
         } else if (locationType === "Other") {
             var other = {
-                pincode: req.body.pincode,
-                flat_no: req.body.flat_no,
-                society: req.body.society,
-                landmark: req.body.landmark,
+                'address.0.other.0.pincode': req.body.pincode,
+                'address.0.other.0.flat_no': req.body.flat_no,
+                'address.0.other.0.society': req.body.society,
+                'address.0.other.0.landmark': req.body.landmark
             }
-            Customer.update({ '_id': decoded._id }, { $set: { 'address.0.other': other } }, function (err, user) {
+            Customer.update({ '_id': decoded._id }, { $set: other }, function (err, user) {
                 if (err) {
                     res.status(200).json({ Success: false, Message: 'Unable to update address.' });
                 } if (user) {
