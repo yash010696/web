@@ -98,7 +98,6 @@ requestordersRouter
                                         var d = date + '';
                                         var dateParts = d.split("GMT");
                                         var date1 = dateParts[0].slice(0, 15);
-
                                         generateMail(email,
                                             `Dear ${name}, 
 
@@ -150,7 +149,7 @@ Team 24Klen Laundry Science`,
                     // })
                 }
             }).catch((err) => {
-                res.status(400).json(err);
+                res.status(400).json({err});
             })
     })
 
@@ -182,7 +181,7 @@ Team 24Klen Laundry Science`,
                     }
                     res.status(200).json({ Success: true, Message: 'Order Updated Successfully' });
                 }).catch((err) => {
-                    res.status(400).json(err);
+                    res.status(400).json({err});
                 })
             })
         })
@@ -195,7 +194,7 @@ Team 24Klen Laundry Science`,
         }).then((order) => {
             res.status(200).json({ Success: true, Message: "Order Cancelled" });
         }).catch((err) => {
-            res.status(400).json(err);
+            res.status(400).json({err});
         })
     })
 

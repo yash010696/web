@@ -9,9 +9,9 @@ mfranchiseRouter
     //Create router for fetching All areas with franchises.
     .get('/getarea1', function (req, res) {
         Franchise.
-            find({ statee: true }).
-            populate('area').
-            exec(function (err, franchises) {
+            find({ statee: true })
+            .populate('area')
+            .exec(function (err, franchises) {
                 if (err) {
                     res.status(500).send({ err, Success: false });
                 }

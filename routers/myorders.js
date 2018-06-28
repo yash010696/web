@@ -17,6 +17,7 @@ MyOrdersRouter
         Order.find({customer:decoded._id})
              .populate('orderstatus')
              .then((order)=>{
+                 console.log(order);
                 var order_status=order[0].order_status;
                 res.status(200).json({Success:true,order_status});
         },(err)=>{
@@ -29,7 +30,7 @@ MyOrdersRouter
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret)
         Order.find({ 'customer': decoded._id }).then((orders) => {
-            res.status(200).json(orders);
+            res.status(200).json({Success:true,orders});
         }, (err) => {
             res.status(400).json(err);
         })

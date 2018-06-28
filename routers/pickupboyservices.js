@@ -4,17 +4,17 @@ var passport = require('passport');
 require('./../config/passport')(passport);
 var config = require('./../config/config');
 
-var { OrderStatus } = require('./../models/orderstatus');
+var OrderStatus = require('./../models/orderstatus');
 var Order = require('./../models/order');
-var { RequestOrder } = require('./../models/requestorder');
+var RequestOrder = require('./../models/requestorder');
 var area = require('./../models/area');
 var Franchise = require('./../models/franchise');
-
+var generateSms = require('./../middlewear/sms');
+var generateMail = require('./../middlewear/mail');
 
 var pickupboyserviceRouter = express.Router();
 
 pickupboyserviceRouter
-
     // Request order which is unpicked
     .post('/unpickedorder', passport.authenticate('jwt', { session: false }), (req, res) => {
 
@@ -52,39 +52,51 @@ pickupboyserviceRouter
 
         RequestOrder.findOne({ 'requestId': req.body.requestId })
             .populate({ path: 'franchise', populate: { path: 'area' } })
+            .populate('customer')
             .then((data) => {
-                // console.log(data);
-                var areacode = data.franchise.area.code;
-                Order.find({ 'franchise': data.franchise }).then((results) => {
+
+                if (!data) {
+                    res.status(200).json({ Success: false, Message: 'Order Not Found!' });
+                }
+                var name = data.customer.first_Name;
+                var email = data.customer.email;
+                var mobile = data.customer.mobile;
+
+                var store_code = data.franchise.store_code;
+                Order.find({ 'franchise': data.franchise._id }).then((results) => {
                     var count = results.length;
                     counter = count + 1;
                     var str = "" + counter;
                     var pad = "0000";
                     var ans = pad.substring(0, pad.length - str.length) + str;
-                    var id = areacode + ans;
-               
-                var order = new Order();
-                order.order_id = id;
-                order.requestId = data.requestId;
-                // order.order_amount = req.body.order_amount;
-                order.order_status = "In Process"; 
-                order.franchise = data.franchise._id;                
-                order.customer = data.created_by;
-                order.servicetype = data.servicetype;
-                // order.created_by = order.created_by;
-                // order.updated_by = order.updated_by;
-                order.status = data.status;
-                order.state = data.state;
+                    var id = store_code + ans;
 
-                order.save().then((data) => {
-                    RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
-                        $set: { status: false }
-                    }).then((order));
-                    res.status(200).json(data)
+                    var order = new Order();
+                    order.order_id = id;
+                    order.requestId = data.requestId;
+                    // order.order_amount = req.body.order_amount;
+                    order.order_status = "In Process";
+                    order.franchise = data.franchise._id;
+                    order.customer = data.customer;
+                    order.servicetype = data.servicetype;
+                    // order.created_by = order.created_by;
+                    // order.updated_by = order.updated_by;
+                    order.status = data.status;
+                    order.state = data.state;
+
+                    order.save().then((data) => {
+                        RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
+                            $set: { status: false,
+                                    request_status:null }
+                        }).then((order));
+                        generateSms(mobile,
+                            `Dear ${name},Your Pickup with Qty [Quantity] garments was successful. You will be receiving final bill soon.`
+                        )
+                        res.status(200).json({ Success: true, Message: 'Order Placed SuccessFully' })
+                    })
                 })
-            })
             }).catch((err) => {
-                res.json({ err });
+                res.status(400).json({ err });
             })
     })
 
@@ -171,7 +183,6 @@ pickupboyserviceRouter
             res.status(400).json(err);
         })
     })
-
 
 
 module.exports = { pickupboyserviceRouter }
