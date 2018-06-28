@@ -81,6 +81,8 @@ requestordersRouter
                                     req.body.franchise = franchises[0]._id;
                                     req.body.requestId = requestId;
                                     req.body.pickupDate = newDate;
+                                    req.body.request_status="Request Received";
+                                    req.body.pickupdelivery= null;
                                     req.body.customer = decoded._id;
                                     // req.body.created_by = decoded._id;
                                     // req.body.updated_by = decoded._id;

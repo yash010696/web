@@ -6,6 +6,7 @@ var Franchise = require('./../models/franchise');
 var Servicetype = require('./../models/servicetype');
 var Timeslot = require('./../models/timeslot');
 var User = require('./../models/user');
+var Pickupdeliveryboy = require('./../models/pickupdeliveryboy');
 
 
 var RequestOrderSchema = new mongoose.Schema({
@@ -25,6 +26,15 @@ var RequestOrderSchema = new mongoose.Schema({
     },
     quantity: {
         type: Number,
+    },
+    request_status:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    pickupdelivery:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Pickupdeliveryboy'
     },
     serviceName: {
         type: String,
