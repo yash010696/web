@@ -35,7 +35,7 @@ var orderSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
   },
-  quantity: {
+  total_qty: {
     type: Number
   },
   servicetype: {

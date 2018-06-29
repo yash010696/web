@@ -123,7 +123,7 @@ pickupboyserviceRouter
                     order.franchise = data.franchise._id;
                     order.customer = data.customer;
                     order.servicetype = data.servicetype;
-                    order.quantity = req.body.qty;
+                    order.total_qty = req.body.total_qty;
                     order.pickupdelivery = null;
                     // order.created_by = order.created_by;
                     // order.updated_by = order.updated_by;
@@ -139,7 +139,7 @@ pickupboyserviceRouter
                             }
                         }).then((order));
                         generateSms(mobile,
-                            `Dear ${name},Your Pickup with Qty ${data.quantity} garments was successful. You will be receiving final bill soon.`
+                            `Dear ${name},Your Pickup with Qty ${data.total_qty} garments was successful. You will be receiving final bill soon.`
                         )
                         res.status(200).json({ Success: true, Message: 'Order Placed SuccessFully' })
                     })
@@ -149,28 +149,27 @@ pickupboyserviceRouter
             })
     })
 
-
     // Get all Unpickedorders franchise wise
-    .get('/unpickedorders/:franchise', passport.authenticate('jwt', { session: false }), (req, res) => {
+    // .get('/unpickedorders/:franchise', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        RequestOrder.find({ request_status: "Order UnPicked" }).then((unpickedorders) => {
-            if (!unpickedorders[0]) {
-                res.status(200).json({ Success: true, Message: "NO Unpickedorders" });
-            } else {
-                res.status(200).json({ Success: true, unpickedorders });
-            }
-        })
-    })
+    //     RequestOrder.find({ request_status: "Order UnPicked" }).then((unpickedorders) => {
+    //         if (!unpickedorders[0]) {
+    //             res.status(200).json({ Success: true, Message: "NO Unpickedorders" });
+    //         } else {
+    //             res.status(200).json({ Success: true, unpickedorders });
+    //         }
+    //     })
+    // })
 
     // Get all Undeliverdeorders franchise wise
-    .get('/undeliveredorders/:franchise', passport.authenticate('jwt', { session: false }), (req, res) => {
+    // .get('/undeliveredorders/:franchise', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        UndeliveredOrder.find({ 'franchise': req.params.franchise }).then((unpickorders) => {
-            res.status(200).json(unpickorders);
-        }, (error) => {
-            res.status(400).json(err);
-        })
-    })
+    //     UndeliveredOrder.find({ 'franchise': req.params.franchise }).then((unpickorders) => {
+    //         res.status(200).json(unpickorders);
+    //     }, (error) => {
+    //         res.status(400).json(err);
+    //     })
+    // })
 
 
     //Delivery boy GET the orders which are assign to him for Delivery
@@ -211,8 +210,8 @@ pickupboyserviceRouter
                 var email = order.customer.email;
                 var mobile = order.customer.mobile;
                 var amount = order.order_amount;
-                var quantity = order.quantity;
-                // console.log('===', name, amount,email,quantity, mobile, req.body.order_id);    
+                var total_qty = order.total_qty;
+                // console.log('===', name, amount,email,total_qty, mobile, req.body.order_id);    
                 generateMail(email,
                     `<!DOCTYPE html>
            <html>
@@ -264,8 +263,8 @@ pickupboyserviceRouter
                 var email = order.customer.email;
                 var mobile = order.customer.mobile;
                 var amount = order.order_amount;
-                var quantity = order.quantity;
-                // console.log('===', name, amount,email,quantity, mobile, req.body.order_id);    
+                var total_qty = order.total_qty;
+                // console.log('===', name, amount,email,total_qty, mobile, req.body.order_id);    
                 generateMail(email,
                     `<!DOCTYPE html>
            <html>
@@ -280,7 +279,7 @@ pickupboyserviceRouter
            <body>
                <tr><b>Dear ${name},</b></tr><br><br>
 
-               <tr>Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${quantity} garments is delivered.</tr><br><br>
+               <tr>Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.</tr><br><br>
            
                <tr>Happy Cleaning!</tr><br><br>
                                                    
@@ -292,7 +291,7 @@ pickupboyserviceRouter
                     `Successful Order Delivery ${req.body.order_id} with 24klen Laundry Science`
                 );
                 generateSms(mobile,
-                    `Dear ${name} Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${quantity} garments is delivered.Thank you`
+                    `Dear ${name} Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.Thank you`
                 ).catch((err) => {
                     res.status(400).json(err);
                 })

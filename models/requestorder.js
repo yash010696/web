@@ -35,10 +35,6 @@ var RequestOrderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:'Pickupdeliveryboy'
     },
-    serviceName: {
-        type: String,
-        trim: true
-    },
     servicetype: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Servicetype',

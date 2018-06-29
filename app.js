@@ -60,7 +60,7 @@ var referralRouter=require('./routers/referral');
 var {mobilecustomerRouter}=require('./routers/mobilecustomer');
 var { customerProfileRouter } = require('./routers/customerprofile');
 var { otpRouter } = require('./routers/otp');
-var { requestordersRouter } = require('./routers/requestorders');
+var { mrequestordersRouter } = require('./routers/mrequestorders');
 var { MyOrdersRouter } = require('./routers/myorders');
 var { pickupboyserviceRouter } = require('./routers/pickupboyservices');
 var { creditdebitRouter } = require('./routers/creditdebit');
@@ -126,7 +126,7 @@ app.use('/api',referralRouter);
 //WEB Services
 app.use('/api', mobilecustomerRouter);
 app.use('/api', otpRouter);
-app.use('/api', requestordersRouter);
+app.use('/api', mrequestordersRouter);
 app.use('/api', MyOrdersRouter);
 app.use('/api', pickupboyserviceRouter);
 app.use('/api', customerProfileRouter);

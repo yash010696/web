@@ -15,9 +15,9 @@ var serviceType = require('./../models/servicetype');
 var Timeslot = require('./../models/timeslot');
 
 
-var requestordersRouter = express.Router();
+var mrequestordersRouter = express.Router();
 
-requestordersRouter
+mrequestordersRouter
 
     //Create Request Order //Customer will create
     .post('/requestorder', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -217,4 +217,4 @@ requestordersRouter
         })
     })
 
-module.exports = { requestordersRouter }
+module.exports = { mrequestordersRouter }
