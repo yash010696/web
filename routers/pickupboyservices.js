@@ -94,18 +94,18 @@ pickupboyserviceRouter
 
     // RequestOrder created into partial order
     .post('/createorder', passport.authenticate('jwt', { session: false }), (req, res) => {
+
         RequestOrder.findOne({ 'requestId': req.body.requestId })
             .populate({ path: 'franchise', populate: { path: 'area' } })
             .populate('customer')
             .then((data) => {
-
                 if (!data) {
                     res.status(200).json({ Success: false, Message: 'Order Not Found!' });
                 }
                 var name = data.customer.first_Name;
                 var email = data.customer.email;
                 var mobile = data.customer.mobile;
-
+                
                 var store_code = data.franchise.store_code;
                 Order.find({ 'franchise': data.franchise._id }).then((results) => {
                     var count = results.length;
@@ -129,9 +129,7 @@ pickupboyserviceRouter
                     // order.updated_by = order.updated_by;
                     order.status = data.status;
                     order.state = data.state;
-                    // console.log('=============',order);
                     order.save().then((data) => {
-                        // console.log(data);
                         RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
                             $set: {
                                 status: false,
@@ -177,7 +175,6 @@ pickupboyserviceRouter
 
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
-        console.log(decoded._id)
         Order.findOne({
             'pickupdelivery': decoded._id,
             "order_status": 'Ready For Delivery',
@@ -185,7 +182,6 @@ pickupboyserviceRouter
             'status': true
         }).populate('customer')
             .then((orders) => {
-                console.log(orders)
                 if (!orders) {
                     res.status(200).json({ Success: true, Message: "No Orders" });
                 } else {

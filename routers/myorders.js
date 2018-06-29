@@ -21,20 +21,23 @@ MyOrdersRouter
             'status': true
         }).then((requestorder) => {
             if (!requestorder[0]) {
-                Order.find({ 'customer': decoded._id })
-                    // .populate('orderstatus')
+                Order.find({
+                    'customer': decoded._id,
+                    'state': true,
+                    'status': true
+                }) // .populate('orderstatus')
                     .then((order) => {
-                        if(!order[0]){
-                            res.status(200).json({Success:true, Message:'No Ongoing Orders'});
-                        }else{
-                        // var OngoingOrderList = []; 
-                        // order.forEach(element => {
-                        //         OngoingOrderList.push({
-                        //             order_id: element.order_id,
-                        //             order_status: element.order_status    
-                        //         })            
-                        // })
-                        res.status(200).json({ Success: true, order });
+                        if (!order[0]) {
+                            res.status(200).json({ Success: true, Message: 'No Ongoing Orders' });
+                        } else {
+                            // var OngoingOrderList = []; 
+                            // order.forEach(element => {
+                            //         OngoingOrderList.push({
+                            //             order_id: element.order_id,
+                            //             order_status: element.order_status    
+                            //         })            
+                            // })
+                            res.status(200).json({ Success: true, order });
                         }
                     })
             }
@@ -59,7 +62,10 @@ MyOrdersRouter
 
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret)
-        Order.find({ 'customer': decoded._id }).then((orders) => {
+        Order.find({
+            'customer': decoded._id,
+            'order_status': 'Delivered'
+        }).then((orders) => {
             res.status(200).json({ Success: true, orders });
         }, (err) => {
             res.status(400).json({ err });
