@@ -19,12 +19,14 @@ MyOrdersRouter
             'customer': decoded._id,
             'state': true,
             'status': true
-        }).then((order) => {
-            if (!order[0]) {
+        }).then((requestorder) => {
+            if (!requestorder[0]) {
                 Order.find({ 'customer': decoded._id })
                     // .populate('orderstatus')
                     .then((order) => {
-
+                        if(!order[0]){
+                            res.status(200).json({Success:true, Message:'No Ongoing Orders'});
+                        }else{
                         // var OngoingOrderList = []; 
                         // order.forEach(element => {
                         //         OngoingOrderList.push({
@@ -33,6 +35,7 @@ MyOrdersRouter
                         //         })            
                         // })
                         res.status(200).json({ Success: true, order });
+                        }
                     })
             }
             else {
@@ -44,7 +47,7 @@ MyOrdersRouter
                 //             request_status: element.request_status    
                 //         })            
                 // })
-                res.status(200).json({ Success: true, order });
+                res.status(200).json({ Success: true, requestorder });
             }
 
         }).catch((err) => {

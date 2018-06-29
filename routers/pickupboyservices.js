@@ -15,36 +15,81 @@ var generateMail = require('./../middlewear/mail');
 var pickupboyserviceRouter = express.Router();
 
 pickupboyserviceRouter
+
+    //pickup boy GET the request which are assign to him for pickup
+    .get('/mrequestorder', passport.authenticate('jwt', { session: false }), (req, res) => {
+
+        var token = req.header('Authorization').split(' ');
+        var decoded = jwt.verify(token[1], config.secret);
+        RequestOrder.find({
+            'pickupdelivery': decoded._id,
+            "request_status": 'Ready To Pickup',
+            'state': true,
+            'status': true
+        })
+            .populate('customer')
+            .then((orders) => {
+                if (!orders[0]) {
+                    res.status(200).json({ Success: true, Message: "No Orders" });
+
+                } else {
+                    res.status(200).json({ Success: true, orders });
+                }
+
+            }).catch((err) => {
+                res.status(400).json({ err });
+            })
+    })
     // Request order which is unpicked
     .post('/unpickedorder', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        RequestOrder.findOne({ 'requestId': req.body.requestId }).then((order) => {
-            // console.log(order);
-            var unpickedOrder = new UnpickedOrder();
-            unpickedOrder.requestId = order.requestId;
-            unpickedOrder.locationType = order.locationType;
-            unpickedOrder.quantity = order.quantity;
-            unpickedOrder.franchise = order.franchise;
-            unpickedOrder.serviceName = order.serviceName;
-            unpickedOrder.serviceType = order.serviceType;
-            unpickedOrder.pickupDate = order.pickupDate;
-            unpickedOrder.timeSlot = order.timeSlot;
-            unpickedOrder.created_by = order.created_by;
-            unpickedOrder.updated_by = order.updated_by;
-            unpickedOrder.message = req.body.message;
-            unpickedOrder.status = order.status;
+        RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
+            $set: {
+                status: false,
+                request_status: "Order UnPicked",
+                message: req.body.message
+            }
+        }).populate('customer')
+            .then((requestOrder) => {
+                var name = requestOrder.customer.first_Name;
+                var email = requestOrder.customer.email;
+                var mobile = requestOrder.customer.mobile;
+                // console.log('===', name, email, mobile, req.body.requestId);
 
-            unpickedOrder.save().then((data) => {
-                RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
-                    $set: { status: false }
-                }).then((order));
-                res.status(200).json(data)
-            }, (err) => {
-                res.status(400).json(err);
+                generateMail(email,
+                    `<!DOCTYPE html>
+           <html>
+           <head>
+               <meta charset="utf-8" />
+               <meta http-equiv="X-UA-Compatible" content="IE=edge">
+               <title>Page Title</title>
+               <meta name="viewport" content="width=device-width, initial-scale=1">
+               <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+               <script src="main.js"></script>
+           </head>
+           <body>
+               <tr><b>Dear ${name},</b></tr><br><br>
+
+               <tr>We attempted to complete your request for ${requestOrder.requestId} , however it was unsuccessful due to ${req.body.message}.</tr><br><br>
+           
+               <tr>Happy Cleaning!</tr><br><br>
+                                                   
+               <tr>Thanks,</tr><br><br>
+                                                           
+                <tr>Team 24Klen Laundry Science</tr>
+           </body>
+           </html>`,
+                    `Missed the Pickup with 24klen Laundry Science`
+                );
+                generateSms(mobile,
+                    `Dear ${name}, We attempted to complete your request for ${req.body.requestId} , however it was unsuccessful.`
+                ).catch((err) => {
+                    res.status(400).json(err);
+                })
+                res.status(200).json({ Success: true, Message: "Order unpicked" });
+            }).catch((err) => {
+                res.status(400).json({ err });
             })
-        }, (err) => {
-            res.status(400).json(err);
-        })
     })
 
     // RequestOrder created into partial order
@@ -78,7 +123,8 @@ pickupboyserviceRouter
                     order.franchise = data.franchise._id;
                     order.customer = data.customer;
                     order.servicetype = data.servicetype;
-                    order.quantity=req.body.qty
+                    order.quantity = req.body.qty;
+                    order.pickupdelivery = null;
                     // order.created_by = order.created_by;
                     // order.updated_by = order.updated_by;
                     order.status = data.status;
@@ -104,17 +150,19 @@ pickupboyserviceRouter
     })
 
 
-    // Get all Unpickedorders Area wise
+    // Get all Unpickedorders franchise wise
     .get('/unpickedorders/:franchise', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        UnpickedOrder.find({ 'franchise': req.params.franchise }).then((unpickorders) => {
-            res.status(200).json(unpickorders);
-        }, (error) => {
-            res.status(400).json(err);
+        RequestOrder.find({ request_status: "Order UnPicked" }).then((unpickedorders) => {
+            if (!unpickedorders[0]) {
+                res.status(200).json({ Success: true, Message: "NO Unpickedorders" });
+            } else {
+                res.status(200).json({ Success: true, unpickedorders });
+            }
         })
     })
 
-    // Get all Undeliverdeorders Area wise
+    // Get all Undeliverdeorders franchise wise
     .get('/undeliveredorders/:franchise', passport.authenticate('jwt', { session: false }), (req, res) => {
 
         UndeliveredOrder.find({ 'franchise': req.params.franchise }).then((unpickorders) => {
@@ -124,83 +172,135 @@ pickupboyserviceRouter
         })
     })
 
-    //All Readyorders for delivery
-    //for fake entry // no need of this we can get ready orders from the web api 
-    .get('/readyorders/:franchise', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        ReadyOrder.find({ 'franchise': req.params.franchise }).then((readyorders) => {
-            res.status(200).json(readyorders);
-        }, (error) => {
-            res.status(400).json(err);
-        })
+    //Delivery boy GET the orders which are assign to him for Delivery
+    .get('/morder', passport.authenticate('jwt', { session: false }), (req, res) => {
+
+        var token = req.header('Authorization').split(' ');
+        var decoded = jwt.verify(token[1], config.secret);
+        console.log(decoded._id)
+        Order.findOne({
+            'pickupdelivery': decoded._id,
+            "order_status": 'Ready For Delivery',
+            'state': true,
+            'status': true
+        }).populate('customer')
+            .then((orders) => {
+                console.log(orders)
+                if (!orders) {
+                    res.status(200).json({ Success: true, Message: "No Orders" });
+                } else {
+                    res.status(200).json({ Success: true, orders });
+                }
+            }).catch((err) => {
+                res.status(400).json({ err });
+            })
     })
-
 
     // ready order which is Undelivered
     .post('/undeliveredorder', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        ReadyOrder.findOne({ 'orderId': req.body.orderId }).then((order) => {
+        Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
+            $set: {
+                status: false,
+                order_status: "UnDelivered"
+            }
+        }).populate('customer')
+            .then((order) => {
+                var name = order.customer.first_Name;
+                var email = order.customer.email;
+                var mobile = order.customer.mobile;
+                var amount = order.order_amount;
+                var quantity = order.quantity;
+                // console.log('===', name, amount,email,quantity, mobile, req.body.order_id);    
+                generateMail(email,
+                    `<!DOCTYPE html>
+           <html>
+           <head>
+               <meta charset="utf-8" />
+               <meta http-equiv="X-UA-Compatible" content="IE=edge">
+               <title>Page Title</title>
+               <meta name="viewport" content="width=device-width, initial-scale=1">
+               <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+               <script src="main.js"></script>
+           </head>
+           <body>
+               <tr><b>Dear ${name},</b></tr><br><br>
 
-            var undeliveredOrder = new UndeliveredOrder();
-            undeliveredOrder.orderId = order.orderId;
-            undeliveredOrder.franchise = order.franchise;
-            undeliveredOrder.message = req.body.message;
-            undeliveredOrder.created_by = order.created_by;
-            undeliveredOrder.updated_by = order.updated_by;
-            undeliveredOrder.status = order.status;
-
-            undeliveredOrder.save().then((data) => {
-                ReadyOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
-                    $set: { status: false }
-                }).then((order));
-                res.status(200).json(data)
-            }, (err) => {
-                res.status(400).json(err);
+               <tr>We attempted to complete your request for ${order.order_id} , however it was unsuccessful due to ${req.body.message}.</tr><br><br>
+           
+               <tr>Happy Cleaning!</tr><br><br>
+                                                   
+               <tr>Thanks,</tr><br><br>
+                                                           
+                <tr>Team 24Klen Laundry Science</tr>
+           </body>
+           </html>`,
+                    `Missed the Pickup/Delivery with 24klen Laundry Science`
+                );
+                generateSms(mobile,
+                    `Dear ${name}, We attempted to complete your request for ${order.order_id} , however it was unsuccessful.`
+                ).catch((err) => {
+                    res.status(400).json(err);
+                })
+                res.status(200).json({ Success: true, Message: "Order UnDelivered" });
+            }).catch((err) => {
+                res.status(400).json({ err });
             })
-        }, (err) => {
-            res.status(400).json(err);
-        })
+
     })
 
     // ready order which is Delivered
     .post('/orderdelivered', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        ReadyOrder.findOne({ 'OrderId': req.body.OrderId }).then((order) => {
-            console.log(order)
-            var orderDelivered = new OrderDelivered();
-            orderDelivered.orderId = order.orderId;
-            orderDelivered.franchise = order.franchise;
-            orderDelivered.created_by = order.created_by;
-            orderDelivered.updated_by = order.updated_by;
-            orderDelivered.status = order.status;
+        Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
+            $set: {
+                status: false,
+                order_status: "Delivered"
+            }
+        }).populate('customer')
+            .then((order) => {
+                var name = order.customer.first_Name;
+                var email = order.customer.email;
+                var mobile = order.customer.mobile;
+                var amount = order.order_amount;
+                var quantity = order.quantity;
+                // console.log('===', name, amount,email,quantity, mobile, req.body.order_id);    
+                generateMail(email,
+                    `<!DOCTYPE html>
+           <html>
+           <head>
+               <meta charset="utf-8" />
+               <meta http-equiv="X-UA-Compatible" content="IE=edge">
+               <title>Page Title</title>
+               <meta name="viewport" content="width=device-width, initial-scale=1">
+               <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+               <script src="main.js"></script>
+           </head>
+           <body>
+               <tr><b>Dear ${name},</b></tr><br><br>
 
-            orderDelivered.save().then((data) => {
-                ReadyOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
-                    $set: { status: false }
-                }).then((order));
-                res.status(200).json(data)
-            }, (err) => {
-                res.status(400).json(err);
+               <tr>Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${quantity} garments is delivered.</tr><br><br>
+           
+               <tr>Happy Cleaning!</tr><br><br>
+                                                   
+               <tr>Thanks,</tr><br><br>
+                                                           
+                <tr>Team 24Klen Laundry Science</tr>
+           </body>
+           </html>`,
+                    `Successful Order Delivery ${req.body.order_id} with 24klen Laundry Science`
+                );
+                generateSms(mobile,
+                    `Dear ${name} Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${quantity} garments is delivered.Thank you`
+                ).catch((err) => {
+                    res.status(400).json(err);
+                })
+                res.status(200).json({ Success: true, Message: "Order Delivered" });
+            }).catch((err) => {
+                res.status(400).json({ err });
             })
-        }, (err) => {
-            res.status(400).json(err);
-        })
     })
 
-    //pickup boy GET the request which are assign to him 
-    .get('/mrequestorder', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        var token = req.header('Authorization').split(' ');
-        var decoded = jwt.verify(token[1], config.secret);
-        RequestOrder.find({
-            'pickupdelivery': decoded._id,
-            "request_status": 'Ready To Pickup',
-            'state':true,
-            'status':true
-        }).then((orders) => {
-            res.status(200).json({ Success: true, orders });
-        }).catch((err) => {
-            res.status(400).json({ err });
-        })
-    })
 module.exports = { pickupboyserviceRouter }

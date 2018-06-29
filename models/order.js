@@ -8,6 +8,8 @@ var Customer = require('./customer');
 var Franchise = require('./franchise');
 var Servicetype = require('./servicetype');
 var order_Status = require('./orderstate');
+var Pickupdeliveryboy = require('./../models/pickupdeliveryboy');
+
 var orderSchema = new Schema({
   // id: {
   //   type:Number,
@@ -33,8 +35,8 @@ var orderSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
   },
-  quantity:{
-    type:Number
+  quantity: {
+    type: Number
   },
   servicetype: {
     type: mongoose.Schema.Types.ObjectId,
@@ -42,6 +44,7 @@ var orderSchema = new Schema({
   },
   order_amount: {
     type: String,
+    default:0
     // required: true,
   },
   order_status: {
@@ -60,6 +63,14 @@ var orderSchema = new Schema({
   },
   state: {
     type: Boolean
+  },
+  pickupdelivery: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Pickupdeliveryboy'
+  },
+  message:{
+    type:String,
+    default:null
   }
 }, {
     timestamps: true

@@ -99,7 +99,7 @@ requestordersRouter
                                         var dateParts = d.split("GMT");
                                         var date1 = dateParts[0].slice(0, 15);
                                         generateMail(email,
-                                           `<!DOCTYPE html>
+                                            `<!DOCTYPE html>
                                            <html>
                                            <head>
                                                <meta charset="utf-8" />
@@ -206,7 +206,10 @@ requestordersRouter
     // Cancelation of requestorder 
     .put('/cancelorder/:id', (req, res) => {
         RequestOrder.findOneAndUpdate({ 'requestId': req.params.id }, {
-            $set: { state: false }
+            $set: {
+                state: false,
+                request_status: "Order Cancelled"
+            }
         }).then((order) => {
             res.status(200).json({ Success: true, Message: "Order Cancelled" });
         }).catch((err) => {

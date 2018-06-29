@@ -8,7 +8,6 @@ var Timeslot = require('./../models/timeslot');
 var User = require('./../models/user');
 var Pickupdeliveryboy = require('./../models/pickupdeliveryboy');
 
-
 var RequestOrderSchema = new mongoose.Schema({
     requestId: {
         type: String,
@@ -69,6 +68,10 @@ var RequestOrderSchema = new mongoose.Schema({
     },
     status: {
         type: Boolean
+    },
+    message:{
+        type:String,
+        default:null
     }
 
 },
