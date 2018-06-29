@@ -70,21 +70,36 @@ mobilecustomerRouter
                                             `Dear ${user.first_Name}, Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}. Happy Cleaning!`
                                         );
                                         generateMail(user.email,
-                                            `Dear ${user.first_Name}, 
-                                            Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}. 
+                                            `<!DOCTYPE html>
+                                            <html>
+                                            <head>
+                                                <meta charset="utf-8" />
+                                                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                                <title>Page Title</title>
+                                                <meta name="viewport" content="width=device-width, initial-scale=1">
+                                                <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+                                                <script src="main.js"></script>                                                
+                                                </head>
+                                                <body>
+                                                    <tr><b>Dear ${user.first_Name},</b></tr><br><br>
+            
+                                                    <tr>Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}.</tr><br><br>
+                                                       
+                                                    <tr>Happy Cleaning!</tr><br><br>
+                                                                                               
+                                                    <tr>Thanks,</tr><br><br>
+                                                                                                       
+                                                    <tr>Team 24Klen Laundry Science</tr>
+                                                </body>
+                                                </html>`,
 
-                                            Happy Cleaning!
-
-                                            Thanks,
-
-                                            Team 24Klen Laundry Science`,
                                             'Successful Registration with 24klen Laundry Science'
                                         );
                                         res.status(200).json({ id, Success: true, Message: "Registration Successfull" });
                                     })
                                 })
                             }).catch((err) => {
-                                res.status(200).json({ Success: false, Message: "Enter Valid Values!!" });
+                                res.status(400).json({ Success: false, Message: "Enter Valid Values!!" });
                             })
                             // })
                         }

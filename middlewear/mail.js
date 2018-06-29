@@ -1,6 +1,6 @@
 var nodemailer = require('nodemailer');
 
-module.exports=function mail(email,message,subject,attachment){
+module.exports=function mail(email,message,subject){
 
     return new Promise((resolve, reject) => {
         var transporter = nodemailer.createTransport({
@@ -15,11 +15,10 @@ module.exports=function mail(email,message,subject,attachment){
           });
           
           var mailOptions = {
-            from: ' "Admin"donotreply@24klen.com',
+            from: ' "Admin" <donotreply@24klen.com>',
             to: email,
             subject: subject,
-            text: message,
-            // attachments: [{'filename': 'attachment.txt', 'content': data}]
+            html: message
           };
           
           transporter.sendMail(mailOptions, function(error, info){

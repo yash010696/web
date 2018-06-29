@@ -27,6 +27,7 @@ var token;
 mpickupdeliveryboyRouter
     .post('/plogin', (req, res) => {
         let phone = req.body.mobile;
+        console.log(phone)
         localStorage.setItem('phone', phone);
         Pickupdeliveryboy.find({ 'mobile': phone }).then((user) => {
 

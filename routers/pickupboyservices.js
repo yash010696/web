@@ -49,7 +49,6 @@ pickupboyserviceRouter
 
     // RequestOrder created into partial order
     .post('/createorder', passport.authenticate('jwt', { session: false }), (req, res) => {
-
         RequestOrder.findOne({ 'requestId': req.body.requestId })
             .populate({ path: 'franchise', populate: { path: 'area' } })
             .populate('customer')
@@ -79,18 +78,22 @@ pickupboyserviceRouter
                     order.franchise = data.franchise._id;
                     order.customer = data.customer;
                     order.servicetype = data.servicetype;
+                    order.quantity=req.body.qty
                     // order.created_by = order.created_by;
                     // order.updated_by = order.updated_by;
                     order.status = data.status;
                     order.state = data.state;
-
+                    // console.log('=============',order);
                     order.save().then((data) => {
+                        // console.log(data);
                         RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
-                            $set: { status: false,
-                                    request_status:null }
+                            $set: {
+                                status: false,
+                                request_status: "Picked"
+                            }
                         }).then((order));
                         generateSms(mobile,
-                            `Dear ${name},Your Pickup with Qty [Quantity] garments was successful. You will be receiving final bill soon.`
+                            `Dear ${name},Your Pickup with Qty ${data.quantity} garments was successful. You will be receiving final bill soon.`
                         )
                         res.status(200).json({ Success: true, Message: 'Order Placed SuccessFully' })
                     })
@@ -184,5 +187,20 @@ pickupboyserviceRouter
         })
     })
 
+    //pickup boy GET the request which are assign to him 
+    .get('/mrequestorder', passport.authenticate('jwt', { session: false }), (req, res) => {
 
+        var token = req.header('Authorization').split(' ');
+        var decoded = jwt.verify(token[1], config.secret);
+        RequestOrder.find({
+            'pickupdelivery': decoded._id,
+            "request_status": 'Ready To Pickup',
+            'state':true,
+            'status':true
+        }).then((orders) => {
+            res.status(200).json({ Success: true, orders });
+        }).catch((err) => {
+            res.status(400).json({ err });
+        })
+    })
 module.exports = { pickupboyserviceRouter }

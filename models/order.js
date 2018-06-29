@@ -33,6 +33,9 @@ var orderSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
   },
+  quantity:{
+    type:Number
+  },
   servicetype: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Servicetype'

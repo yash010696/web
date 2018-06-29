@@ -81,8 +81,8 @@ requestordersRouter
                                     req.body.franchise = franchises[0]._id;
                                     req.body.requestId = requestId;
                                     req.body.pickupDate = newDate;
-                                    req.body.request_status="Request Received";
-                                    req.body.pickupdelivery= null;
+                                    req.body.request_status = "Request Received";
+                                    req.body.pickupdelivery = null;
                                     req.body.customer = decoded._id;
                                     // req.body.created_by = decoded._id;
                                     // req.body.updated_by = decoded._id;
@@ -99,15 +99,28 @@ requestordersRouter
                                         var dateParts = d.split("GMT");
                                         var date1 = dateParts[0].slice(0, 15);
                                         generateMail(email,
-                                            `Dear ${name}, 
+                                           `<!DOCTYPE html>
+                                           <html>
+                                           <head>
+                                               <meta charset="utf-8" />
+                                               <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                               <title>Page Title</title>
+                                               <meta name="viewport" content="width=device-width, initial-scale=1">
+                                               <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+                                               <script src="main.js"></script>
+                                           </head>
+                                           <body>
+                                               <tr><b>Dear ${name},</b></tr><br><br>
 
-Your Pick up no ${requestId} with ${franchisename} is booked for ${date1} between ${data[0].time_Slot}.
-                                        
-Happy Cleaning!
-                                        
-Thanks,
-                                        
-Team 24Klen Laundry Science`,
+                                               <tr>Your Pick up no ${requestId} with ${franchisename} is booked for ${date1} between ${data[0].time_Slot}.</tr><br><br>
+                                           
+                                               <tr>Happy Cleaning!</tr><br><br>
+                                                                                   
+                                               <tr>Thanks,</tr><br><br>
+                                                                                           
+                                                <tr>Team 24Klen Laundry Science</tr>
+                                           </body>
+                                           </html>`,
                                             `Successful Request Creation ${requestId} with 24klen Laundry Science`
                                         );
                                         generateSms(mobile,
@@ -117,6 +130,7 @@ Team 24Klen Laundry Science`,
                                     })
                                 })
                             }).catch((err) => {
+                                console.log(err);
                                 res.status(400).json({ err });
                             })
                         })
@@ -149,7 +163,7 @@ Team 24Klen Laundry Science`,
                     // })
                 }
             }).catch((err) => {
-                res.status(400).json({err});
+                res.status(400).json({ err });
             })
     })
 
@@ -162,26 +176,28 @@ Team 24Klen Laundry Science`,
             var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000));
             req.body.pickupDate = newDate;
         }
+        Timeslot.find({ 'time_Slot': req.body.timeSlot }).then((data) => {
+            req.body.timeSlot = data[0]._id;
+            serviceType.find({ 'type': req.body.servicetype }).then((servicetype) => {
+                req.body.servicetype = servicetype[0]._id;
 
-        serviceType.find({ 'type': req.body.servicetype }).then((servicetype) => {
-            req.body.servicetype = servicetype[0]._id;
-
-            Customer.findById({ '_id': decoded._id }).then((customer) => {
-                if (req.body.locationType == "Home") {
-                    req.body.locationType = customer.address[0].home[0]._id;
-                }
-                else if (req.body.locationType == "Other") {
-                    req.body.locationType = customer.address[0].other[0]._id;
-                }
-                RequestOrder.findOneAndUpdate({ 'requestId': requestId }, {
-                    $set: req.body
-                }, { new: true }).then((requestorder) => {
-                    if (!requestorder) {
-                        res.status(200).json({ Success: false, Message: 'No Such Order Found' });
+                Customer.findById({ '_id': decoded._id }).then((customer) => {
+                    if (req.body.locationType == "Home") {
+                        req.body.locationType = customer.address[0].home[0]._id;
                     }
-                    res.status(200).json({ Success: true, Message: 'Order Updated Successfully' });
-                }).catch((err) => {
-                    res.status(400).json({err});
+                    else if (req.body.locationType == "Other") {
+                        req.body.locationType = customer.address[0].other[0]._id;
+                    }
+                    RequestOrder.findOneAndUpdate({ 'requestId': requestId }, {
+                        $set: req.body
+                    }, { new: true }).then((requestorder) => {
+                        if (!requestorder) {
+                            res.status(200).json({ Success: false, Message: 'No Such Order Found' });
+                        }
+                        res.status(200).json({ Success: true, Message: 'Order Updated Successfully' });
+                    }).catch((err) => {
+                        res.status(400).json({ err });
+                    })
                 })
             })
         })
@@ -194,7 +210,7 @@ Team 24Klen Laundry Science`,
         }).then((order) => {
             res.status(200).json({ Success: true, Message: "Order Cancelled" });
         }).catch((err) => {
-            res.status(400).json({err});
+            res.status(400).json({ err });
         })
     })
 
