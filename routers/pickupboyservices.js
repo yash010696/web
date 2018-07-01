@@ -119,7 +119,7 @@ pickupboyserviceRouter
                     order.order_id = id;
                     order.requestId = data.requestId;
                     // order.order_amount = req.body.order_amount;
-                    order.order_status = "In Process";
+                    order.order_status = "Picked-up";
                     order.franchise = data.franchise._id;
                     order.customer = data.customer;
                     order.servicetype = data.servicetype;
@@ -133,7 +133,7 @@ pickupboyserviceRouter
                         RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
                             $set: {
                                 status: false,
-                                request_status: "Picked"
+                                request_status: "Picked-up"
                             }
                         }).then((order));
                         generateSms(mobile,
