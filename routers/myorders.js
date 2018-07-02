@@ -15,12 +15,12 @@ MyOrdersRouter
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
 
-        RequestOrder.find({
-            'customer': decoded._id,
-            'state': true,
-            'status': true
-        }).then((requestorder) => {
-            if (!requestorder[0]) {
+        // RequestOrder.find({
+        //     'customer': decoded._id,
+        //     'state': true,
+        //     'status': true
+        // }).then((requestorder) => {
+        //     if (!requestorder[0]) {
                 Order.find({ 'customer': decoded._id })
                     // .populate('orderstatus')
                     .then((order) => {
@@ -36,9 +36,11 @@ MyOrdersRouter
                             // })
                             res.status(200).json({ Success: true, order });
                         }
+                    }).catch((err) => {
+                        res.status(400).json({ err });
                     })
-            }
-            else {
+            // }
+            // else {
 
                 // var OngoingOrderList = []; 
                 // order.forEach(element => {
@@ -47,12 +49,12 @@ MyOrdersRouter
                 //             request_status: element.request_status    
                 //         })            
                 // })
-                res.status(200).json({ Success: true, requestorder });
-            }
+                // res.status(200).json({ Success: true, requestorder });
+            // }
 
-        }).catch((err) => {
-            res.status(400).json({ err });
-        })
+        // }).catch((err) => {
+        //     res.status(400).json({ err });
+        // })
     })
 
     .get('/myorders', passport.authenticate('jwt', { session: false }), (req, res) => {
