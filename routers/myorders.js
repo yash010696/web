@@ -73,4 +73,20 @@ MyOrdersRouter
         })
     })
 
+    .get('/myrequests', passport.authenticate('jwt', { session: false }), (req, res) => {
+
+        var token = req.header('Authorization').split(' ');
+        var decoded = jwt.verify(token[1], config.secret)
+        RequestOrder.find({
+            'customer': decoded._id
+        }).then((requestorders) => {
+            if (!requestorders[0]) {
+                res.status(200).json({ Success: true, Message: 'No Request Orders' });
+            } else {
+                res.status(200).json({ Success: true, requestorders });
+            }
+        }).catch((err) => {
+            res.status(400).json({ err });
+        })
+    })
 module.exports = { MyOrdersRouter }

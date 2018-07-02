@@ -37,6 +37,15 @@ mrequestordersRouter
                     if (customer.address[0].home[0] == null) {
                         res.status(200).json({ Success: false, Message: "Home Address Not Found" });
                     } else {
+
+                        console.log(customer.address[0].home[0].flat_no);
+                        var home = {
+                            flat_no: customer.address[0].home[0].flat_no,
+                            society: customer.address[0].home[0].society,
+                            landmark: customer.address[0].home[0].landmark,
+                            pincode: customer.address[0].home[0].pincode
+                        }
+                        
                         req.body.locationType = customer.address[0].home[0]._id;
                     }
                 }
@@ -44,6 +53,12 @@ mrequestordersRouter
                     if (customer.address[0].other[0] == null) {
                         res.status(200).json({ Success: false, Message: "Other Address Not Found" });
                     } else {
+                        var other = {
+                            flat_no : customer.address[0].other[0].flat_no,
+                            society : customer.address[0].other[0].society,
+                            landmark : customer.address[0].other[0].landmark,
+                            pincode : customer.address[0].other[0].pincode,
+                        }
                         req.body.locationType = customer.address[0].other[0]._id;
                     }
                 }
@@ -89,8 +104,13 @@ mrequestordersRouter
                                     req.body.state = true;
                                     req.body.status = true;
 
-                                    // console.log('=============',req.body);
+                                    console.log('=============', req.body);
                                     var requestOrder = new RequestOrder(req.body);
+                                    if(home){
+                                        requestOrder.address.push( {home} );
+                                    }else{
+                                        requestOrder.address.push({ other });
+                                    }
                                     requestOrder.save().then((order) => {
                                         var requestId = order.requestId;
 
@@ -183,13 +203,32 @@ mrequestordersRouter
 
                 Customer.findById({ '_id': decoded._id }).then((customer) => {
                     if (req.body.locationType == "Home") {
-                        req.body.locationType = customer.address[0].home[0]._id;
+                        var home = {
+                            flat_no: customer.address[0].home[0].flat_no,
+                            society: customer.address[0].home[0].society,
+                            landmark: customer.address[0].home[0].landmark,
+                            pincode: customer.address[0].home[0].pincode
+                        }
+                        // requestOrder.address.push({home});
+                        var locationType = customer.address[0].home[0]._id;
                     }
                     else if (req.body.locationType == "Other") {
-                        req.body.locationType = customer.address[0].other[0]._id;
+                        var other = {
+                            flat_no : customer.address[0].other[0].flat_no,
+                            society : customer.address[0].other[0].society,
+                            landmark : customer.address[0].other[0].landmark,
+                            pincode : customer.address[0].other[0].pincode,
+                        }
+                        var  locationType = customer.address[0].other[0]._id;
                     }
                     RequestOrder.findOneAndUpdate({ 'requestId': requestId }, {
-                        $set: req.body
+                        $set:{
+                            locationType:locationType,
+                            servicetype:req.body.servicetype,
+                            pickupDate:req.body.pickupDate,
+                             timeSlot: req.body.timeSlot,                      
+                             'address':{other:other , home:home}
+                        }
                     }, { new: true }).then((requestorder) => {
                         if (!requestorder) {
                             res.status(200).json({ Success: false, Message: 'No Such Order Found' });

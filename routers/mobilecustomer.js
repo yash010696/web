@@ -134,7 +134,7 @@ mobilecustomerRouter
                 society: req.body.society,
                 landmark: req.body.landmark,
             }
-            Customer.update({ '_id': decoded._id }, { $set: { 'address.0.other': other } }, function (err, user) {
+            Customer.findOneAndUpdate({ '_id': decoded._id }, { $set: { 'address.0.other': other } }, function (err, user) {
                 if (err) {
                     res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
                 } if (user) {

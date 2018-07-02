@@ -15,17 +15,63 @@ var RequestOrderSchema = new mongoose.Schema({
         unique: true,
         default: 1
     },
-    locationType: {
+    locationType:{
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Customer'
+        ref: 'Customer'
     },
+    address: [{
+        home: [{
+            pincode: {
+                type: String,
+                required: true,
+                trim: true,
+                minlength: 6,
+            },
+            flat_no: {
+                type: String,
+                required: true,
+                trim: true
+            },
+            society: {
+                type: String,
+                trim: true
+            },
+            landmark: {
+                type: String,
+                required: true,
+                trim: true
+            }
+        }],
+        other: [{
+            pincode: {
+                type: String,
+                required: true,
+                trim: true,
+                minlength: 6,
+            },
+            flat_no: {
+                type: String,
+                required: true,
+                trim: true
+            },
+            society: {
+                type: String,
+                trim: true
+            },
+            landmark: {
+                type: String,
+                required: true,
+                trim: true
+            }
+        }]
+    }],
     customer: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Customer'
+        ref: 'Customer'
     },
-    pickupdelivery:{
+    pickupdelivery: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Pickupdeliveryboy'
+        ref: 'Pickupdeliveryboy'
     },
     quantity: {
         type: Number,
@@ -64,18 +110,18 @@ var RequestOrderSchema = new mongoose.Schema({
     status: {
         type: Boolean
     },
-    request_status:{
+    request_status: {
         type: String,
         required: true,
         trim: true
     },
-    pickupdelivery:{
+    pickupdelivery: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:'Pickupdeliveryboy'
+        ref: 'Pickupdeliveryboy'
     },
-    message:{
-        type:String,
-        default:null
+    message: {
+        type: String,
+        default: null
     }
 
 },
@@ -83,4 +129,4 @@ var RequestOrderSchema = new mongoose.Schema({
     { collection: 'requestorder' }
 );
 
-module.exports = mongoose.model('RequestOrder', RequestOrderSchema );
+module.exports = mongoose.model('RequestOrder', RequestOrderSchema);

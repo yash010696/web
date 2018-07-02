@@ -8,9 +8,9 @@ var Servicetype = require('./servicetype');
 var Ordertype = require('./ordertype');
 var orderSchema = new Schema({
   order_id: {
-    type:String,
-    required:true,
-    unique:true
+    type: String,
+    required: true,
+    unique: true
   },
   franchise: {
     type: mongoose.Schema.Types.ObjectId,
@@ -29,35 +29,35 @@ var orderSchema = new Schema({
     ref: 'Ordertype'
   },
   due_date: {
-    type:Date
+    type: Date
   },
-  order_status:{
-    type:String
+  order_status: {
+    type: String
   },
-  total_qty:{
-    type:String
+  total_qty: {
+    type: String
   },
   order_amount: {
-    type:String
+    type: String
   },
-  created_by:{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-  },
-  workshopto_at:{
-    type:Date
-  },
-  ready_at:{
-    type:Date
-  },
-  updated_by:{
+  created_by: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  status:{
+  workshopto_at: {
+    type: Date
+  },
+  ready_at: {
+    type: Date
+  },
+  updated_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  status: {
     type: Boolean
   },
-  state:{
+  state: {
     type: Boolean
   },
   requestId: {
@@ -69,11 +69,14 @@ var orderSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Pickupdeliveryboy'
   },
-  message:{
-    type:String,
-    default:null
+  partialorder: {
+    type: Boolean
+  },
+  message: {
+    type: String,
+    default: null
   }
-},{
-  timestamps: true
-}, { collection: 'orders' });
+}, {
+    timestamps: true
+  }, { collection: 'orders' });
 module.exports = mongoose.model('Order', orderSchema);

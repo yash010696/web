@@ -14,10 +14,11 @@ customerProfileRouter
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret)
 
-        Customer.findOne({ '_id': decoded._id }).then((user) => {
+        Customer.findById({ '_id': decoded._id }).then((user) => {
             if (!user) {
                 res.status(200).json({ Success: false, Message: "You have to Logged In!!" });
             } else {
+                console.log(user);
                 res.status(200).json(user);
             }
         }).catch((err) => {
