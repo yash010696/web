@@ -21,7 +21,11 @@ MyOrdersRouter
         //     'status': true
         // }).then((requestorder) => {
         //     if (!requestorder[0]) {
-                Order.find({ 'customer': decoded._id })
+                Order.find({ 
+                    'customer': decoded._id,
+                    'state': true,
+                    'status': true                
+                })
                     // .populate('orderstatus')
                     .then((order) => {
                         if (!order[0]) {
