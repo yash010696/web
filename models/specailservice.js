@@ -3,8 +3,13 @@ var Schema = mongoose.Schema;
 var ObjectId = mongoose.Types.ObjectId;
 
 var User = require('./user');
-var brandSchema = new Schema({
-  brand_name: {
+var specialserviceSchema = new Schema({
+  // id: {
+  //   type:Number,
+  //   unique:true,
+  //   default:1
+  // },
+  specialservice_name: {
     type:String,
     required:true,
     unique:true
@@ -14,15 +19,24 @@ var brandSchema = new Schema({
     required:true,
     unique:true
   },
+  price: {
+    type:String,
+    required:true,
+  },
   created_by:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-
+  // created_at:{
+  //   type: Date,
+  // },
   updated_by:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  // updated_at:{
+  //   type: Date
+  // },
   status:{
     type: Boolean
   },
@@ -32,6 +46,6 @@ var brandSchema = new Schema({
 },
   {
     timestamps: true
-  }, { collection: 'brands' });
+  }, { collection: 'specialservices' });
 
-module.exports = mongoose.model('Brand', brandSchema);
+module.exports = mongoose.model('Specialservice', specialserviceSchema);

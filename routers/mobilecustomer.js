@@ -182,7 +182,7 @@ mobilecustomerRouter
                 'address.0.other.0.society': req.body.society,
                 'address.0.other.0.landmark': req.body.landmark
             }
-            Customer.update({ '_id': decoded._id }, { $set: other }, function (err, user) {
+            Customer.findOneAndUpdate({ '_id': decoded._id }, { $set: other }, function (err, user) {
                 if (err) {
                     res.status(200).json({ Success: false, Message: 'Unable to update address.' });
                 } if (user) {

@@ -2,24 +2,22 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.Types.ObjectId;
 
-var Admininfo = require('./admininfo');
+var User = require('./user');
 var Customer = require('./customer');
+var Franchise = require('./franchise');
 var Service = require('./service');
 var Servicetype = require('./servicetype');
 var Subservice = require('./subservice');
 var Garment = require('./garment');
 var Price = require ('./price');
 var Color = require ('./color');
+var Specialservice = require ('./specailservice');
 var Brand = require ('./brand');
 var Pattern = require ('./pattern');
 var Clothdefect = require ('./clothdefect');
 var Coupon = require ('./coupon');
 var ordertransactionSchema = new Schema({
-  // id: {
-  //   type:Number,
-  //   unique:true,
-  //   default:1
-  // },
+
   order_id: {
     type:String,
     required:true,
@@ -29,49 +27,76 @@ var ordertransactionSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
   },
+  franchise: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Franchise'
+  },
   servicetype: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Servicetype'
   },
-  service:[{
+  ordertype: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'Ordertype'
+  },
+  ordertypename: {
+    type:String
+  },
+  service: [{
+    type: mongoose.Schema.Types.Mixed,
     ref: 'Service',
-    subservice:[
+    subservice: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-         ref: 'Subservice',
-         garment:[
-           {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Garment',
-            garmentdetails:{
-               color:[
-                 {
+        type: mongoose.Schema.Types.Mixed,
+        ref: 'Subservice',
+        garmentlist: [
+          {
+            garmentdetails: [{
+              _id:{ type: mongoose.Schema.Types.ObjectId},
+              color:
+                {
                   type: mongoose.Schema.Types.ObjectId,
                   ref: 'Color'
-                 }
-               ],
-               brand:[
+                },
+              brand:
                 {
-                 type: mongoose.Schema.Types.ObjectId,
-                 ref: 'Brand'
-                }
-              ],
-              pattern:[
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: 'Brand'
+                },
+              pattern:
                 {
-                 type: mongoose.Schema.Types.ObjectId,
-                 ref: 'Pattern'
-                }
-              ],
-              clothdefect:[
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: 'Pattern'
+                },
+              clothdefect:
                 {
-                 type: mongoose.Schema.Types.ObjectId,
-                 ref: 'Clothdefect'
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: 'Clothdefect'
+                },
+                specialservice:
+                {
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: 'Specialservice'
                 }
-              ]
-              }
-           }
-         ]
+            }]
+          },
+          {
+            type: mongoose.Schema.Types.Mixed,
+            ref: 'Price',
+          },
+          {
+            type: mongoose.Schema.Types.Mixed,
+            ref: 'Service',
+          },
+          {
+            type: mongoose.Schema.Types.Mixed,
+            ref: 'Subservice',
+          },
+          {
+            type: mongoose.Schema.Types.Mixed,
+            ref: 'Garment',
+          }
+        ]
       }
     ]
   }],
@@ -99,6 +124,15 @@ var ordertransactionSchema = new Schema({
     type:String,
     default:0
   },
+  due_date:{
+    type: Date
+  },
+  selectedsgstpercent:{
+    type:String
+  },
+  selectedcgstpercent:{
+    type:String
+  },
   cgst:{
     type:String
   },
@@ -108,17 +142,17 @@ var ordertransactionSchema = new Schema({
   gst:{
     type:String
   },
-  coupon:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Coupon'
-  },
+  // coupon:{
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: 'Coupon'
+  // },
   created_by:{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Admininfo'
+      ref: 'User'
   },
   updated_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
   status:{
     type: Boolean

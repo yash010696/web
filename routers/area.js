@@ -11,12 +11,12 @@ const checkAuth = require('../middlewear/check-auth');
 //Create router for  register the new area.
 areaRouter
     .route('/area')
-    .post(checkAuth, function(req, res) {
+    .post(checkAuth, function (req, res) {
         if (!req.body) {
             res.json({ success: false, msg: 'Please Enter Required Data.' });
         } else {
             var counter;
-            Area.find().exec(function(err, results) {
+            Area.find().exec(function (err, results) {
                 var count = results.length;
                 counter = count + 1;
                 savedata(counter);
@@ -28,7 +28,7 @@ areaRouter
             console.log(req.userData);
             var code = req.body.code.toUpperCase();
             var area = new Area({
-                id: cc,
+                // id: cc,
                 name: req.body.name,
                 code: code,
                 created_by: req.userData._id,
@@ -36,7 +36,7 @@ areaRouter
                 status: true,
                 state: true
             });
-            area.save(function(err) {
+            area.save(function (err) {
                 if (err) {
                     res.status(400).send(err);
                     return;
@@ -46,8 +46,21 @@ areaRouter
         }
     })
     //Create router for fetching All areas.
-    .get(checkAuth, function(req, res) {
-        Area.find({ state: true },function(err, areas) {
+    .get(checkAuth, function (req, res) {
+        Area.find({ state: true }, function (err, areas) {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            console.log(areas);
+            res.json(areas);
+        });
+    });
+
+areaRouter
+    .route('/aarea')
+    .get(checkAuth, function (req, res) {
+        Area.find({ status: true }, function (err, areas) {
             if (err) {
                 res.status(500).send(err);
                 return;
@@ -58,10 +71,10 @@ areaRouter
     });
 areaRouter
     .route('/areas/:areaId')
-    .get(checkAuth, function(req, res) {
+    .get(checkAuth, function (req, res) {
         console.log('GET /areas/:areaId');
         var areaId = req.params.areaId;
-        Area.findOne({ id: areaId }, function(err, area) {
+        Area.findOne({ id: areaId }, function (err, area) {
             if (err) {
                 res.status(500).send(err);
                 return;
@@ -70,10 +83,10 @@ areaRouter
             res.json(area);
         });
     })
-    .put(checkAuth, function(req, res) {
+    .put(checkAuth, function (req, res) {
         console.log('PUT /areas/:areaId');
         var areaId = req.params.areaId;
-        Area.findOne({ _id: areaId }, function(err, area) {
+        Area.findOne({ _id: areaId }, function (err, area) {
             if (err) {
                 res.status(500).send(err);
                 return;
@@ -94,27 +107,46 @@ areaRouter
             });
         });
     })
-   areaRouter
-   .route('/areass/:areaId')
-   .put(checkAuth, function (req, res) {
-    console.log('PUT /colorss/:areaId');
-    var areaId = req.params.areaId;
-    Area.findOne({ _id: areaId }, function (err, area) {
-      if (err) {
-        res.status(500).send(err);
-        return;
-      }
-      if (area) {
-        area.state = false;
-       
-        area.save();
-        res.json(area);
-        return;
-      }
+areaRouter
+    .route('/areass/:areaId')
+    .put(checkAuth, function (req, res) {
+        console.log('PUT /colorss/:areaId');
+        var areaId = req.params.areaId;
+        Area.findOne({ _id: areaId }, function (err, area) {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            if (area) {
+                area.state = false;
 
-      res.status(404).json({
-        message: 'Unable to found.'
-      });
-    });
-  })
+                area.save();
+                res.json(area);
+                return;
+            }
+
+            res.status(404).json({
+                message: 'Unable to found.'
+            });
+        });
+    })
+
+areaRouter
+    .route('/areaa')
+    .post(checkAuth, function (req, res) {
+        if (!req.body) {
+            res.json({ success: false, msg: 'Please Enter Required Data.' });
+        } else {
+            console.log("area data", req.body);
+            arealist = [];
+            arealist = req.body;
+            for (let i = 0; i < this.arealist.length; ++i) {
+                areaid = arealist[i];
+                Area.findOneAndUpdate({ '_id': areaid }, { $set: { status: false } }, function (err, user) {
+                    // res.json({ data: area, success: true, msg: 'Successful created new area.' });
+                })
+            }
+        }
+
+    })
 module.exports = areaRouter;

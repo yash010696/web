@@ -15,62 +15,41 @@ MyOrdersRouter
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
 
-        // RequestOrder.find({
-        //     'customer': decoded._id,
-        //     'state': true,
-        //     'status': true
-        // }).then((requestorder) => {
-        //     if (!requestorder[0]) {
-        Order.find({
+        RequestOrder.find({
             'customer': decoded._id,
             'state': true,
             'status': true
-        }) // .populate('orderstatus')
-            .then((order) => {
-
-                if (!order[0]) {
-                    res.status(200).json({ Success: true, Message: 'No Ongoing Orders' });
-                } else {
-                    // var OngoingOrderList = []; 
-                    // order.forEach(element => {
-                    //         OngoingOrderList.push({
-                    //             order_id: element.order_id,
-                    //             order_status: element.order_status    
-                    //         })            
-                    // })
-                    res.status(200).json({ Success: true, order });
-                }
-            }).catch((err) => {
-                res.status(400).json({ err });
-            })
-        // }
-        // else {
-        //     // var OngoingOrderList = []; 
-        //     // order.forEach(element => {
-        //     //         OngoingOrderList.push({
-        //     //             requestId: element.requestId,
-        //     //             request_status: element.request_status    
-        //     //         })            
-        //     // })
-        //     res.status(200).json({ Success: true, requestorder });
-        // }
-
-        // })
-
-    })
-
-    .get('/myrequests', passport.authenticate('jwt', { session: false }), (req, res) => {
-
-        var token = req.header('Authorization').split(' ');
-        var decoded = jwt.verify(token[1], config.secret)
-          RequestOrder.find({
-            'customer': decoded._id
-        }).then((requestorders) => {
-            if (!requestorders[0]) {
-                res.status(200).json({ Success: true, Message: 'No Request Orders' });
-            } else {
-                res.status(200).json({ Success: true, requestorders });
+        }).then((requestorder) => {
+            if (!requestorder[0]) {
+                Order.find({ 'customer': decoded._id })
+                    // .populate('orderstatus')
+                    .then((order) => {
+                        if (!order[0]) {
+                            res.status(200).json({ Success: true, Message: 'No Ongoing Orders' });
+                        } else {
+                            // var OngoingOrderList = []; 
+                            // order.forEach(element => {
+                            //         OngoingOrderList.push({
+                            //             order_id: element.order_id,
+                            //             order_status: element.order_status    
+                            //         })            
+                            // })
+                            res.status(200).json({ Success: true, order });
+                        }
+                    })
             }
+            else {
+
+                // var OngoingOrderList = []; 
+                // order.forEach(element => {
+                //         OngoingOrderList.push({
+                //             requestId: element.requestId,
+                //             request_status: element.request_status    
+                //         })            
+                // })
+                res.status(200).json({ Success: true, requestorder });
+            }
+
         }).catch((err) => {
             res.status(400).json({ err });
         })
@@ -93,4 +72,5 @@ MyOrdersRouter
             res.status(400).json({ err });
         })
     })
+
 module.exports = { MyOrdersRouter }

@@ -32,7 +32,7 @@ couponRouter
             // var area = new Area(req.body);
             var couponCode = req.body.couponCode.toUpperCase();
             var coupon = new Coupon({
-                id: cc,
+                // id: cc,
                 franchise: req.body.franchise,
                 couponCode: couponCode,
                 offerIn: req.body.offerIn,

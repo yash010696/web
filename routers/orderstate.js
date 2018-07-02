@@ -34,7 +34,7 @@ orderstateRouter
            console.log('cc',cc);
           // var area = new Area(req.body);
           var orderstate = new Orderstate({
-              id:cc,
+              // id:cc,
               state: req.body.state,
               created_by:req.body.created_by,
               created_at:myDateString,

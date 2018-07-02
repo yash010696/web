@@ -51,7 +51,7 @@ patternRouter
         console.log(req.body);
 
         function savedata(counter) {
-            var cc = counter;
+            // var cc = counter;
             var code = req.body.code.toUpperCase();
             let filePath = "";
             if (req.file === undefined) {
@@ -60,7 +60,7 @@ patternRouter
                 filePath = req.file.path;
             }
             const pattern = new Pattern({
-                id: cc,
+                // id: cc,
                 pattern_name: req.body.pattern_name,
                 code: code,
                 created_by: req.userData._id,
@@ -81,7 +81,7 @@ patternRouter
 
 
 //Create router for fetching All subservice.
-.get(passport.authenticate('jwt', { session: false }), function(req, res) {
+.get(checkAuth, function(req, res) {
 
 
     Pattern.find({ state: true }, function(err, patterns) {
@@ -99,7 +99,7 @@ patternRouter
 //Create router for fetching Single subservice.
 patternRouter
     .route('/patterns/:patternID')
-    .get(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .get(checkAuth, function(req, res) {
         const patternID = req.params.patternID;
         Pattern.findOne({ _id: patternID }, function(err, pattern) {
             if (err) {
@@ -144,7 +144,7 @@ patternRouter
 })
 patternRouter
     .route('/patternss/:patternId')
-    .put(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .put(checkAuth, function(req, res) {
         var patternId = req.params.patternId;
         Pattern.findOne({ _id: patternId }, function(err, pattern) {
             if (err) {

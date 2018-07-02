@@ -2,11 +2,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var notificationtypeSchema = new Schema({
-  // id: {
-  //   type:Number,
-  //   unique:true,
-  //   default:1
-  // },
+  id: {
+    type:Number,
+    unique:true,
+    default:1
+  },
   notification_Type: {
     type:String,
     required:true,

@@ -2,11 +2,11 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 
 var Customer = require('./customer');
+var Pickupdeliveryboy = require('./pickupdeliveryboy');;
 var Franchise = require('./../models/franchise');
 var Servicetype = require('./../models/servicetype');
 var Timeslot = require('./../models/timeslot');
 var User = require('./../models/user');
-var Pickupdeliveryboy = require('./../models/pickupdeliveryboy');
 
 var RequestOrderSchema = new mongoose.Schema({
     requestId: {
@@ -23,21 +23,16 @@ var RequestOrderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:'Customer'
     },
-    quantity: {
-        type: Number,
-    },
-    request_status:{
-        type: String,
-        required: true,
-        trim: true
-    },
     pickupdelivery:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'Pickupdeliveryboy'
     },
+    quantity: {
+        type: Number,
+    },
     servicetype: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Servicetype',
+        ref: 'Servicetype'
     },
     pickupDate: {
         type: Date,
@@ -49,7 +44,7 @@ var RequestOrderSchema = new mongoose.Schema({
     },
     franchise: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Franchise',
+        ref: 'Franchise'
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
@@ -59,11 +54,24 @@ var RequestOrderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    request_status: {
+        type: String
+    },
     state: {
         type: Boolean
     },
+
     status: {
         type: Boolean
+    },
+    request_status:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    pickupdelivery:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Pickupdeliveryboy'
     },
     message:{
         type:String,
@@ -71,8 +79,8 @@ var RequestOrderSchema = new mongoose.Schema({
     }
 
 },
-{ timestamps: true },
-{ collection: 'requestorder' }
+    { timestamps: true },
+    { collection: 'requestorder' }
 );
 
 module.exports = mongoose.model('RequestOrder', RequestOrderSchema );

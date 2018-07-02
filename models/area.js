@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.Types.ObjectId;
 
-var Admininfo = require('./admininfo');
+var User = require('./user');
 var areaSchema = new Schema({
   // id: {
   //   type:Number,
@@ -23,14 +23,14 @@ var areaSchema = new Schema({
   },
   created_by:{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Admininfo'
+      ref: 'User'
   },
   // created_at:{
   //   type: Date,
   // },
   updated_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
   // updated_at:{
   //   type: Date

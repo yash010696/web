@@ -11,7 +11,6 @@ var area = require('./../models/area');
 var Franchise = require('./../models/franchise');
 var generateSms = require('./../middlewear/sms');
 var generateMail = require('./../middlewear/mail');
-var Customer = require('./../models/customer');
 
 var pickupboyserviceRouter = express.Router();
 
@@ -28,30 +27,15 @@ pickupboyserviceRouter
             'state': true,
             'status': true
         })
-            .populate('customer servicetype')
+            .populate('customer')
             .then((orders) => {
                 if (!orders[0]) {
                     res.status(200).json({ Success: true, Message: "No Orders" });
-                } else {
 
-                    Customer.find({ '_id': orders[0].customer._id }).then((data) => {
-                        data[0].address.forEach(element => {                            
-                            if (JSON.stringify(element.other[0]._id) == JSON.stringify(orders[0].locationType)) {
-                                const order1 = element.other.filter(element =>element );     
-                                console.log(order1);
-                        res.status(200).json({ Success: true, orders  });
-                                
-                            } else {}
-                        // console.log(orders[0].locationType);
-                        // const order1 = data[0].address.filter(element => console.log(JSON.stringify(element.other[0]._id) == JSON.stringify(orders[0].locationType)) ||  JSON.stringify(element.home[0]._id) == JSON.stringify(orders[0].locationType));
-                        // console.log(order1)
-                        // if (order1) {
-                        //     // console.log(JSON.stringify(data, undefined, 2));
-                        // }
-                    })
-                })
-                    // res.status(200).json({ Success: true, orders  });
+                } else {
+                    res.status(200).json({ Success: true, orders });
                 }
+
             }).catch((err) => {
                 res.status(400).json({ err });
             })
@@ -110,11 +94,11 @@ pickupboyserviceRouter
 
     // RequestOrder created into partial order
     .post('/createorder', passport.authenticate('jwt', { session: false }), (req, res) => {
-
         RequestOrder.findOne({ 'requestId': req.body.requestId })
             .populate({ path: 'franchise', populate: { path: 'area' } })
             .populate('customer')
             .then((data) => {
+
                 if (!data) {
                     res.status(200).json({ Success: false, Message: 'Order Not Found!' });
                 }
@@ -134,8 +118,8 @@ pickupboyserviceRouter
                     var order = new Order();
                     order.order_id = id;
                     order.requestId = data.requestId;
-                    order.order_amount = 00;
-                    order.order_status = "Picked-up";
+                    // order.order_amount = req.body.order_amount;
+                    order.order_status = "In Process";
                     order.franchise = data.franchise._id;
                     order.customer = data.customer;
                     order.servicetype = data.servicetype;
@@ -145,11 +129,13 @@ pickupboyserviceRouter
                     // order.updated_by = order.updated_by;
                     order.status = data.status;
                     order.state = data.state;
+                    // console.log('=============',order);
                     order.save().then((data) => {
+                        // console.log(data);
                         RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
                             $set: {
                                 status: false,
-                                request_status: "Picked-up"
+                                request_status: "Picked"
                             }
                         }).then((order));
                         generateSms(mobile,
@@ -191,6 +177,7 @@ pickupboyserviceRouter
 
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
+        console.log(decoded._id)
         Order.findOne({
             'pickupdelivery': decoded._id,
             "order_status": 'Ready For Delivery',
@@ -198,6 +185,7 @@ pickupboyserviceRouter
             'status': true
         }).populate('customer')
             .then((orders) => {
+                console.log(orders)
                 if (!orders) {
                     res.status(200).json({ Success: true, Message: "No Orders" });
                 } else {
@@ -258,7 +246,6 @@ pickupboyserviceRouter
             }).catch((err) => {
                 res.status(400).json({ err });
             })
-
     })
 
     // ready order which is Delivered

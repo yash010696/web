@@ -2,13 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.Types.ObjectId;
 
-var Admininfo = require('./admininfo');
+var User = require('./user');
 var colorSchema = new Schema({
-  // id: {
-  //   type:Number,
-  //   unique:true,
-  //   default:1
-  // },
   color_name: {
     type:String,
     required:true,
@@ -21,18 +16,12 @@ var colorSchema = new Schema({
   },
   created_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
-  // created_at:{
-  //   type: Date,
-  // },
   updated_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
-  // updated_at:{
-  //   type: Date
-  // },
   status:{
     type: Boolean
   },

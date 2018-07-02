@@ -29,7 +29,7 @@ garmentRouter
       // var area = new Area(req.body);
       var code = req.body.code.toUpperCase();
       var garment = new Garment({
-        id: cc,
+        // id: cc,
         name: req.body.name,
         code: code,
         // service_Id:req.body.service_Id,

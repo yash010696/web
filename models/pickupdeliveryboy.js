@@ -6,7 +6,6 @@ var ObjectId = mongoose.Types.ObjectId;
 
 var Franchise = require('./franchise');
 var Role = require('./role');
-
 var pickupdeliveyboySchema = new Schema({
     name: {
         type: String,

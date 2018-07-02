@@ -51,7 +51,7 @@ serviceRouter
 
         function savedata(counter) {
             var myDateString = Date();
-            var cc = counter;
+            // var cc = counter;
             var code = req.body.code.toUpperCase();
             let filePath = "";
             if (req.file === undefined) {
@@ -60,7 +60,7 @@ serviceRouter
                 filePath = req.file.path;
             }
             var service = new Service({
-                id: cc,
+                // id: cc,
                 name: req.body.name,
                 code: code,
                 description: req.body.description,

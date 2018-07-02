@@ -11,7 +11,7 @@ const checkAuth = require('../middlewear/check-auth');
 //Create router for  register the new role.
 orderstatusRouter
     .route('/orderstatus')
-    .post(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .post(checkAuth, function(req, res) {
         if (!req.body) {
             res.json({ success: false, msg: 'Please Enter Required Data.' });
         } else {
@@ -29,7 +29,7 @@ orderstatusRouter
             console.log('cc', cc);
             // var area = new Area(req.body);
             var orderstatus = new Orderstatus({
-                id: cc,
+                // id: cc,
                 status_Name: req.body.status_Name,
                 created_by: req.body.created_by,
                 created_at: myDateString,
@@ -50,7 +50,7 @@ orderstatusRouter
 
 
 //Create router for fetching All roles.
-.get(passport.authenticate('jwt', { session: false }), function(req, res) {
+.get(checkAuth, function(req, res) {
 
 
     Orderstatus.find({ state: true }, function(err, roles) {
@@ -67,7 +67,7 @@ orderstatusRouter
 //Create router for fetching Single role.
 orderstatusRouter
     .route('/orderstatuses/:orderstatusId')
-    .get(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .get(checkAuth, function(req, res) {
 
         var orderstatusId = req.params.orderstatusId;
 
@@ -86,7 +86,7 @@ orderstatusRouter
     })
 
 //Create router for Updating role.
-.put(passport.authenticate('jwt', { session: false }), function(req, res) {
+.put(checkAuth, function(req, res) {
 
     var orderstatusId = req.params.orderstatusId;
 

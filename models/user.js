@@ -84,13 +84,14 @@ var userSchema = new Schema({
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admininfo'
+        ref: 'User'
     },
     created_at: {
         type: Date,
     },
     updated_by: {
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
     updated_at: {
         type: Date

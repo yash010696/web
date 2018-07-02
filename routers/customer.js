@@ -9,6 +9,8 @@ var Ordertype = require('./ordertype');
 var Verifytoken = require('./loginadmin');
 var customerRouter = express.Router();
 const checkAuth = require('../middlewear/check-auth');
+var sendmail = require('./../middlewear/mail');
+var generateSms = require('./../middlewear/sms');
 
 ///Create router for  register the new user.
 customerRouter
@@ -44,7 +46,7 @@ customerRouter
             var referral_Code = randomstring.toUpperCase();
             // var area = new Area(req.body);
             var customer = new Customer({
-                id: cc,
+                // id: cc,
                 first_Name: req.body.first_Name,
                 franchise :req.userData.franchise,
                 order_type: req.body.order_type,
@@ -83,12 +85,22 @@ customerRouter
                 society: req.body.society2,
                 landmark: req.body.landmark2,
             }
+            mobile= req.body.mobile;
+            name = req.body.first_Name;
+            email = req.body.email
             customer.address.push({home,other});
             customer.save(function(err) {
                 if (err) {
                     res.status(400).send(err);
                     return;
                 }
+                generateSms(mobile,
+                    `Dear ${name}, Thank you for being part of 24Klen Laundry Science. Happy Cleaning!`
+                );
+                sendmail(email,
+                    `Dear ${name}, Thank you for being part of 24Klen Laundry Science. Happy Cleaning!`,
+                    'New User Registered'
+                );
                 res.json({ data: customer, success: true, msg: 'Successful created new customer.' });
             });
 
@@ -102,7 +114,7 @@ customerRouter
     if(req.userData.role=="admin"){
     Customer.
     find({ statee: true }).
-    populate('order_type').
+    populate('order_type franchise').
     exec(function(err, customers) {
         if (err) {
             res.status(500).send(err);
@@ -115,7 +127,7 @@ customerRouter
     else{
         Customer.
         find({ statee: true ,franchise:req.userData.franchise}).
-        populate('order_type').
+        populate('order_type franchise').
         exec(function(err, customers) {
             if (err) {
                 res.status(500).send(err);

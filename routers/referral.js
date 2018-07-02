@@ -26,7 +26,7 @@ referralRouter
         function savedata(counter) {
             var cc = counter;
             var referral = new Referral({
-                id: cc,
+                // id: cc,
                 referral_value: req.body.referral_value,
                 min_ordervalue: req.body.min_ordervalue,
                 created_by: req.body.admin_id,

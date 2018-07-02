@@ -6,12 +6,12 @@ var jwt = require('jsonwebtoken');
 var Tag = require('../models/tag');
 var Verifytoken = require('./loginadmin');
 var tagRouter = express.Router();
-
+const checkAuth = require('../middlewear/check-auth');
 
 ///Create router for  register the new user.
 tagRouter
 .route('/tag')
-.post(passport.authenticate('jwt', { session: false}),function (req, res) {
+.post(checkAuth,function (req, res) {
   
 
     if (!req.body) {
@@ -35,11 +35,11 @@ tagRouter
        console.log('cc',cc);
       // var area = new Area(req.body);
       var tag = new Tag({
-          id:cc,
+          // id:cc,
           tag_Text: req.body.tag_Text,
           barcode_Number: req.body.barcode_Number,
-          // customer_Id:req.body.customer_Id,
-          // order_Id:req.body.order_Id,
+          customer_Id:req.body.customer_Id,
+          order_Id:req.body.order_Id,
           created_by:req.body.created_by,
           created_at:myDateString,
           updated_by:null,
@@ -60,8 +60,7 @@ tagRouter
 
 
 //Create router for fetching All subservice.
-.get(passport.authenticate('jwt', { session: false}),function (req, res) {
-
+.get(checkAuth,function (req, res) {
 
   Tag.find(function (err, tags) {
 
@@ -77,14 +76,14 @@ tagRouter
 
 //Create router for fetching Single user.
 tagRouter
-.route('/tags/:tagId')
-.get(passport.authenticate('jwt', { session: false}),function (req, res) {
+.route('/order/tags/:orderid')
+.get(checkAuth,function (req, res) {
 
 console.log('GET /tags/:tagId');
 
-var tagId = req.params.tagId;
+var orderid = req.params.orderid;
 
-Tag.findOne({ id: tagId }, function (err, tag) {
+Tag.findOne({ order: orderid }, function (err, tag) {
 
   if (err) {
     res.status(500).send(err);
@@ -99,7 +98,7 @@ Tag.findOne({ id: tagId }, function (err, tag) {
 })
 
 //Create router for Updating .
-.put(passport.authenticate('jwt', { session: false}),function (req, res) {
+.put(checkAuth,function (req, res) {
 
 console.log('PUT /tags/:tagId');
 

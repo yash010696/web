@@ -11,7 +11,7 @@ const checkAuth = require('../middlewear/check-auth');
 //Create router for  register the new subservice.
 clothdefectRouter
     .route('/clothdefect')
-    .post(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .post(checkAuth, function(req, res) {
         if (!req.body) {
             res.json({ success: false, msg: 'Please Enter Required Data.' });
         } else {
@@ -29,7 +29,7 @@ clothdefectRouter
             // var area = new Area(req.body);
             var code = req.body.code.toUpperCase();
             var clothdefect = new Clothdefect({
-                id: cc,
+                // id: cc,
                 defect_name: req.body.defect_name,
                 code: code,
                 created_by: req.body.admin_id,
@@ -49,7 +49,7 @@ clothdefectRouter
         }
     })
 //Create router for fetching All subservice.
-.get(passport.authenticate('jwt', { session: false }), function(req, res) {
+.get(checkAuth, function(req, res) {
 
 
     Clothdefect.find({ state: true }, function(err, clothdefects) {
@@ -67,35 +67,24 @@ clothdefectRouter
 //Create router for fetching Single subservice.
 clothdefectRouter
     .route('/clothdefects/:clothdefectId')
-    .get(passport.authenticate('jwt', { session: false }), function(req, res) {
-
+    .get(checkAuth, function(req, res) {
         console.log('GET /clothdefect/:clothdefectId');
-
         var clothdefectId = req.params.clothdefectId;
-
         Clothdefect.findOne({ id: clothdefectId }, function(err, clothdefect) {
-
             if (err) {
                 res.status(500).send(err);
                 return;
             }
-
             console.log(clothdefect);
-
             res.json(clothdefect);
-
         });
     })
 
 //Create router for Updating subservice.
-.put(passport.authenticate('jwt', { session: false }), function(req, res) {
-
+.put(checkAuth, function(req, res) {
     console.log('PUT /clothdefect/:clothdefectId');
-
     var clothdefectId = req.params.clothdefectId;
-
     Clothdefect.findOne({ _id: clothdefectId }, function(err, clothdefect) {
-
         if (err) {
             res.status(500).send(err);
             return;
@@ -108,19 +97,15 @@ clothdefectRouter
                 clothdefect.status = req.body.status;
             clothdefect.updated_by = req.body.updated_by;
             clothdefect.updated_at = myDateString
-
             clothdefect.save();
-
             res.json(clothdefect);
             return;
         }
-
         res.status(404).json({
             message: 'Unable to found.'
         });
     });
 })
-
 clothdefectRouter
     .route('/clothdefectss/:clothdefectId')
     .put(checkAuth, function(req, res) {
@@ -132,12 +117,10 @@ clothdefectRouter
             }
             if (clothdefect) {
                 clothdefect.state = false;
-
                 clothdefect.save();
                 res.json(clothdefect);
                 return;
             }
-
             res.status(404).json({
                 message: 'Unable to found.'
             });

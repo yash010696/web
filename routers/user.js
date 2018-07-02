@@ -16,7 +16,7 @@ const checkAuth = require('../middlewear/check-auth');
 ///Create router for  register the new user.
 userRouter
     .route('/user')
-    .post(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .post( checkAuth,function(req, res) {
 
         if (!req.body) {
             res.json({ success: false, msg: 'Please Enter Required Data.' });
@@ -41,11 +41,9 @@ userRouter
                     });
                 } else {
                     var user = new User({
-                        id: cc,
+                        // id: cc,
                         first_Name: req.body.first_Name,
-                        // last_Name: req.body.last_Name,
                         franchise: req.body.franchise,
-                        area: req.body.area,
                         role: req.body.role,
                         email: req.body.email,
                         mobile: req.body.mobile,
@@ -76,24 +74,29 @@ userRouter
     })
 
 //Create router for fetching All subservice.
-.get(passport.authenticate('jwt', { session: false }), function(req, res) {
-    User.find({ statee: true }).populate('franchise area role').
+.get(checkAuth, function(req, res) {
+    // const filterUser = User.find(element => element.role.name !== "admin");
+    // console.log("managerdata",filterUser);
+    //   res.json(filterUser);
+    User.find({ statee: true }).populate('franchise role').
     exec(function(err, users) {
         if (err) {
             res.status(500).send(err);
             return;
         }
-        console.log('The User  is %s', users);
-        res.json(users);
+        // filterUserArray.push(users.find(element => element.role.name !== "admin"));
+        // const dataRes = users.filter(element => element.area !== null || element.franchise !== null);
+         const dataRes = users.filter(element =>  element.franchise !== null);
+        res.json(dataRes);
     });
 });
 
 //Create router for fetching Single user.
 userRouter.route('/users/:userId')
-    .get(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .get(checkAuth, function(req, res) {
         var userId = req.params.userId;
-        User.findOne({ _id: userId }).
-        populate('franchise area role').
+        User.findOne({ _id: userId}).
+        populate('franchise  role').
         exec(function(err, users) {
             if (err) {
                 res.status(500).send(err);
@@ -104,7 +107,7 @@ userRouter.route('/users/:userId')
         });
 
     })
-    .put(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .put(checkAuth, function(req, res) {
 
         var userId = req.params.userId;
         User.findOne({ _id: userId }, function(err, user) {
@@ -122,7 +125,7 @@ userRouter.route('/users/:userId')
                     user.state = req.body.state,
                     user.status = req.body.status,
                     user.username = req.body.username,
-                    user.password = req.body.password,
+                    // user.password = req.body.password,
                     user.updated_by = req.body.updated_by;
                 user.updated_at = myDateString
                 user.save();
@@ -150,7 +153,7 @@ userRouter
             .exec()
             .then(user => {
                 console.log(user);
-                
+
                 if (user.length < 1) {
                     return res.status(401).json({
                         error: "User not found"
@@ -167,8 +170,7 @@ userRouter
                             _id: user[0]._id,
                             email: user[0].email,
                             username: user[0].username,
-                            franchise: user[0].franchise,
-                            area : user[0].area,
+                            franchise: user[0].franchise ? user[0].franchise : "",
                             role: user[0].role.name,
                             created_by: user[0].created_by,
                         };
@@ -192,7 +194,7 @@ userRouter
 
 userRouter
     .route('/userss/:userId')
-    .put(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .put(checkAuth, function(req, res) {
         console.log('PUT /userss/:userId');
         var userId = req.params.userId;
         User.findOne({ _id: userId }, function(err, user) {

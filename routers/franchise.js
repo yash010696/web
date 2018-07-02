@@ -7,11 +7,12 @@ var Franchise = require('../models/franchise');
 var Area = require('../models/area');
 var Verifytoken = require('./loginadmin');
 var franchiseRouter = express.Router();
+const checkAuth = require('../middlewear/check-auth');
 
 ///Create router for  register the new user.
 franchiseRouter
     .route('/franchise')
-    .post(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .post(checkAuth, function(req, res) {
         if (!req.body) {
             res.json({ success: false, msg: 'Please Enter Required Data.' });
         } else {
@@ -27,10 +28,12 @@ franchiseRouter
             var myDateString = Date();
             var cc = counter;
             console.log('cc', cc);
+            var code = req.body.store_code.toUpperCase();
             var franchise = new Franchise({
-                id: cc,
+                // id: cc,
                 owner_Name: req.body.owner_Name,
                 franchise_Name: req.body.franchise_Name,
+                store_code: code,
                 company_Name: req.body.company_Name,
                 billing_Name: req.body.billing_Name,
                 billing_Address: req.body.billing_Address,
@@ -57,7 +60,7 @@ franchiseRouter
         }
     })
     //Create router for fetching All subservice.
-    .get(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .get(checkAuth, function(req, res) {
         Franchise.
         find({ statee: true }).
         populate('area').
@@ -74,7 +77,7 @@ franchiseRouter
 //Create router for fetching Single user.
 franchiseRouter
     .route('/franchises/:franchiseId')
-    .get(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .get(checkAuth, function(req, res) {
         console.log('GET /franchise/:franchiseId');
         var franchiseId = req.params.franchiseId;
         Franchise.
@@ -90,14 +93,16 @@ franchiseRouter
         });
     })
     //Create router for Updating .
-    .put(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .put(checkAuth, function(req, res) {
         console.log('PUT /franchise/:franchiseId');
         var franchiseId = req.params.franchiseId;
         Franchise.findOne({ _id: franchiseId }, function(err, franchise) {
             var myDateString = Date();
+            var code = req.body.store_code.toUpperCase();
             if (franchise) {
                 franchise.owner_Name = req.body.owner_Name,
                     franchise.franchise_Name = req.body.franchise_Name,
+                    franchise.store_code = code,
                     franchise.company_Name = req.body.company_Name,
                     franchise.billing_Name = req.body.billing_Name,
                     franchise.billing_Address = req.body.billing_Address,
@@ -126,7 +131,7 @@ franchiseRouter
     })
 franchiseRouter
     .route('/franchisess/:franchiseId')
-    .put(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .put(checkAuth, function(req, res) {
         console.log('PUT /colorss/:colorID');
         var franchiseId = req.params.franchiseId;
         Franchise.findOne({ _id: franchiseId }, function(err, franchise) {

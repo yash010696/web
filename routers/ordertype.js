@@ -11,7 +11,7 @@ const checkAuth = require('../middlewear/check-auth');
 //Create router for  register the new role.
 ordertypeRouter
     .route('/ordertype')
-    .post(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .post(checkAuth, function(req, res) {
         if (!req.body) {
             res.json({ success: false, msg: 'Please Enter Required Data.' });
         } else {
@@ -32,7 +32,7 @@ ordertypeRouter
             var myDateString = Date();
             var cc = counter;
             var ordertype = new Ordertype({
-                id: cc,
+                // id: cc,
                 order_type: req.body.order_type,
                 created_by: req.body.admin_id,
                 created_at: myDateString,
@@ -55,7 +55,7 @@ ordertypeRouter
 
 
 //Create router for fetching All roles.
-.get(passport.authenticate('jwt', { session: false }), function(req, res) {
+.get(checkAuth, function(req, res) {
 
 
     Ordertype.find({ state: true }, function(err, ordertypes) {
@@ -72,7 +72,7 @@ ordertypeRouter
 //Create router for fetching Single role.
 ordertypeRouter
     .route('/ordertypes/:ordertypeId')
-    .get(passport.authenticate('jwt', { session: false }), function(req, res) {
+    .get(checkAuth, function(req, res) {
 
         var ordertypeId = req.params.ordertypeId;
 
@@ -88,7 +88,7 @@ ordertypeRouter
     })
 
 //Create router for Updating role.
-.put(passport.authenticate('jwt', { session: false }), function(req, res) {
+.put(checkAuth, function(req, res) {
 
     console.log('PUT /ordertypes/:ordertypeId');
 

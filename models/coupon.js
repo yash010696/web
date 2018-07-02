@@ -3,14 +3,9 @@ var Schema = mongoose.Schema;
 const validator =require('validator');
 var ObjectId = mongoose.Types.ObjectId;
 
-var Admininfo = require('./admininfo');
+var User = require('./user');
 var Franchise = require('./franchise');
 var couponSchema = new Schema({
-  // id: {
-  //   type:Number,
-  //   unique:true,
-  //   default:1
-  // },
   franchise: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Franchise'
@@ -45,7 +40,7 @@ var couponSchema = new Schema({
   },
   created_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
   couponCreatedAt:{ 
     type:Date,
@@ -53,7 +48,7 @@ var couponSchema = new Schema({
   },
   updated_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
   updated_at:{
     type: Date

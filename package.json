@@ -4,8 +4,8 @@
   "description": "Example of a RESTful API built with Node.js, Express.js and Mongoose.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app"
   },
   "engines": {
     "node": "8.9.4"
@@ -34,7 +34,8 @@
     "passport-jwt": "^4.0.0",
     "request": "^2.87.0",
     "serve-favicon": "^2.5.0",
-    "validator": "^10.3.0"
+    "validator": "^10.3.0",
+    "nodemon": "^1.17.1"
+    
   }
 }
-

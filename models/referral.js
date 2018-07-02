@@ -2,14 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.Types.ObjectId;
 
-var Admininfo = require('./admininfo');
+var User = require('./user');
 var referralSchema = new Schema({
-  // id: {
-  //   type:Number,
-  //   unique:true,
-  //   default:1
-
-  // },
   referral_value: {
     type:String,
     required:true,
@@ -23,11 +17,11 @@ var referralSchema = new Schema({
   },
   created_by:{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Admininfo'
+      ref: 'User'
   },
   updated_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
   status:{
     type: Boolean

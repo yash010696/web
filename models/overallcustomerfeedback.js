@@ -5,11 +5,11 @@ var ObjectId = mongoose.Types.ObjectId;
 
 var Customer = require('./customer');
 var feedbackSchema = new Schema({
-  // id: {
-  //   type:Number,
-  //   unique:true,
-  //   default:1
-  // },
+  id: {
+    type:Number,
+    unique:true,
+    default:1
+  },
   message: {
     type:String,
     required:true

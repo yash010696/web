@@ -24,7 +24,7 @@ gstRouter
     function savedata(counter) {
       var cc = counter;
       var gst = new Gst({
-        id: cc,
+        // id: cc,
         CGST: req.body.CGST,
         SGST: req.body.SGST,
         // IGST: req.body.IGST,

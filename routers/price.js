@@ -30,7 +30,7 @@ priceRouter
             var myDateString = Date();
             var cc = counter;
             var price = new Price({
-                id: cc,
+                // id: cc,
                 price: req.body.price,
                 servicetype: req.body.servicetype,
                 service: req.body.service,
@@ -231,8 +231,8 @@ priceRouter
                 })
                 priceList.push({ Normal, Express });
                 // console.log('/..........................', price);
-                res.status(200).json({success:true,priceList });
+                res.status(200).json({ success: true, priceList });
             });
     })
-
+    
 module.exports = priceRouter;

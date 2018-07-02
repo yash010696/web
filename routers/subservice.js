@@ -30,7 +30,7 @@ subserviceRouter
           // var area = new Area(req.body);
           var code = req.body.code.toUpperCase();
           var subservice = new Subservice({
-              id:cc,
+              // id:cc,
               name: req.body.name,
               code: code,
               created_by: req.userData._id,

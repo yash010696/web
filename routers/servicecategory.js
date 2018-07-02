@@ -36,7 +36,7 @@ servicecategoryRouter
             // var area = new Area(req.body);
             var code = req.body.code.toUpperCase();
             var servicecategory = new Servicecategory({
-                id: cc,
+                // id: cc,
                 category: req.body.category,
                 code: code,
                 created_by: req.body.admin_id,

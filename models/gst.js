@@ -2,14 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.Types.ObjectId;
 
-var Admininfo = require('./admininfo');
+var User = require('./user');
 var gstSchema = new Schema({
-  // id: {
-  //   type:Number,
-  //   unique:true,
-  //   default:1
-
-  // },
   CGST: {
     type:String,
     required:true
@@ -19,29 +13,19 @@ var gstSchema = new Schema({
     type: String,
     required: true
   },
-  // IGST: {
-  //   type:String,
-  //   required:true
-
-  // },
   GST: {
     type: String,
     required: true
   },
   created_by:{
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Admininfo'
+      ref: 'User'
   },
-  // created_at:{
-  //   type: Date,
-  // },
+
   updated_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
-  // updated_at:{
-  //   type: Date
-  // },
   status:{
     type: Boolean
   },
@@ -52,9 +36,4 @@ var gstSchema = new Schema({
   timestamps: true
 }, { collection: 'gsts' });
 
-
-
-{
-  timestamps: true
-}
 module.exports = mongoose.model('Gst', gstSchema);

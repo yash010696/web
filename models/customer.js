@@ -3,31 +3,17 @@ var Schema = mongoose.Schema;
 const validator = require('validator');
 var ObjectId = mongoose.Types.ObjectId;
 
-var Admininfo = require('./admininfo');
+var User = require('./user');
 var Franchise = require('./franchise');
 var Ordertype = require('./ordertype');
-
 var customerSchema = new Schema({
-    // id: {
-    //     type: Number,
-    //     unique: true,
-    //     default: 1
-    // },
     first_Name: {
         type: String,
         required: true
     },
-    // last_Name: {
-    //     type: String,
-    //     required: true
-    // },
-    // area: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: 'Area'
-    // },
     franchise: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Franchise'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Franchise'
     },
     order_type: {
         type: mongoose.Schema.Types.ObjectId,
@@ -37,7 +23,7 @@ var customerSchema = new Schema({
         type: String
     },
     dob: {
-        type: Date
+        type: String
     },
     email: {
         type: String,
@@ -46,20 +32,20 @@ var customerSchema = new Schema({
         trim: true,
         validate: {
             validator: (value) => {
+
                 return validator.isEmail(value);
+
             },
             message: '{VALUE} is not a valid Email'
         }
     },
     mobile: {
         type: String,
-        unique: true,
         required: true
 
     },
     whatsup: {
         type: String,
-
     },
     otp: {
         type: String,
@@ -78,7 +64,6 @@ var customerSchema = new Schema({
         type: String
     },
     address: [{
-
         home: [{
             pincode: {
                 type: String,
@@ -101,7 +86,6 @@ var customerSchema = new Schema({
                 trim: true
             }
         }],
-
         other: [{
             pincode: {
                 type: String,
@@ -123,27 +107,24 @@ var customerSchema = new Schema({
                 required: true,
                 trim: true
             }
-        }]
+        }],     
     }],
-
     city: {
         type: String,
-        trim: true
     },
     state: {
         type: String,
-        trim: true
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admininfo'
+        ref: 'User'
     },
     created_at: {
         type: Date,
     },
     updated_by: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admininfo'
+        ref: 'User'
     },
     updated_at: {
         type: Date
@@ -155,6 +136,5 @@ var customerSchema = new Schema({
         type: Boolean
     }
 }, { collection: 'customers' });
-
 
 module.exports = mongoose.model('Customer', customerSchema);

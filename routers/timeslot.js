@@ -36,7 +36,7 @@ timeslotRouter
             console.log('cc', cc);
             // var area = new Area(req.body);
             var timeslot = new Timeslot({
-                id: cc,
+                // id: cc,
                 time_Slot: req.body.time_Slot,
                 created_by: req.body.created_by,
                 created_at: myDateString,

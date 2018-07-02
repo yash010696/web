@@ -2,16 +2,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.Types.ObjectId;
 
-var Admininfo = require('./admininfo');
+var User = require('./user');
 var Service = require('./service');
 var Subservice = require('./subservice');
 
 var garmentSchema = new Schema({
-  // id: {
-  //   type:Number,
-  //   unique:true,
-  //   default:1
-  // },
   name: {
     type:String,
     required:true,
@@ -22,24 +17,16 @@ var garmentSchema = new Schema({
     required:true,
     unique:true
   },
-  // service_Id: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Service'
-  // },
-  // subservice_Id: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Subservice'
-  // },
   created_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
   created_at:{
     type: Date,
   },
   updated_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
   updated_at:{
     type: Date

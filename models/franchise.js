@@ -3,14 +3,9 @@ var Schema = mongoose.Schema;
 const validator =require('validator');
 var ObjectId = mongoose.Types.ObjectId;
 
-var Admininfo = require('./admininfo');
+var User = require('./user');
 var Area = require('./area');
 var franchiseSchema = new Schema({
-  // id: {
-  //   type:Number,
-  //   unique:true,
-  //   default:1
-  // },
   owner_Name: {
     type:String,
     required:true
@@ -19,9 +14,10 @@ var franchiseSchema = new Schema({
     type:String,
     required:true
   },
-  store_code:{
+  store_code: {
     type:String,
-    trim:true
+    unique:true,
+    required:true
   },
   company_Name: {
     type:String,
@@ -61,14 +57,14 @@ var franchiseSchema = new Schema({
   },
   created_by:{
     type: mongoose.Schema.Types.ObjectId,
-      ref: 'Admininfo'
+      ref: 'User'
   },
   created_at:{
     type: Date,
   },
   updated_by:{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Admininfo'
+    ref: 'User'
   },
   updated_at:{
     type: Date

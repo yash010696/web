@@ -3,14 +3,16 @@ const config = require('../config/config');
 var passport = require('passport');
 require('../config/passport')(passport);
 var jwt = require('jsonwebtoken');
-var Color = require('../models/color');
+var Specialservice = require('../models/specailservice');
+var User = require('../models/user');
 var Verifytoken = require('./loginadmin');
-var colorRouter = express.Router();
 const checkAuth = require('../middlewear/check-auth');
 
+var specialserviceRouter = express.Router();
+
 //Create router for  register the new subservice.
-colorRouter
-    .route('/color')
+specialserviceRouter
+    .route('/specialservice')
     .post(checkAuth, function(req, res) {
 
 
@@ -20,7 +22,7 @@ colorRouter
 
             var counter;
 
-            Color.find().exec(function(err, results) {
+            Specialservice.find().exec(function(err, results) {
                 var count = results.length;
                 counter = count + 1;
                 savedata(counter);
@@ -36,23 +38,24 @@ colorRouter
             console.log('cc', cc);
             // var area = new Area(req.body);
             var code = req.body.code.toUpperCase();
-            var color = new Color({
+            var specialservice = new Specialservice({
                 // id: cc,
-                color_name: req.body.color_name,
+                specialservice_name: req.body.specialservice_name,
                 code: code,
-                created_by: req.body.admin_id,
+                price: req.body.price,
+                created_by: req.userData._id,
                 // created_at:myDateString,
                 updated_by: null,
                 // updated_at:myDateString,
                 status: true,
                 state: true
             });
-            color.save(function(err) {
+            specialservice.save(function(err) {
                 if (err) {
                     res.status(400).send(err);
                     return;
                 }
-                res.json({ data: color, success: true, msg: 'Successful created new color.' });
+                res.json({ data: specialservice, success: true, msg: 'Successful created new special service.' });
             });
 
         }
@@ -64,37 +67,37 @@ colorRouter
 .get(checkAuth, function(req, res) {
 
 
-    Color.find({ state: true }, function(err, colors) {
+    Specialservice.find({ state: true }, function(err, specialservices) {
 
         if (err) {
             res.status(500).send(err);
             return;
         }
-        console.log(colors);
-        res.json(colors);
+        console.log(specialservices);
+        res.json(specialservices);
     });
 
 });
 
 //Create router for fetching Single subservice.
-colorRouter
-    .route('/colors/:colorID')
+specialserviceRouter
+    .route('/specialservices/:specialserviceID')
     .get(checkAuth, function(req, res) {
 
-        console.log('GET /colors/:colorID');
+        console.log('GET /colors/:specialserviceID');
 
-        var colorID = req.params.colorID;
+        var specialserviceID = req.params.specialserviceID;
 
-        Color.findOne({ _id: colorID }, function(err, color) {
+        Specialservice.findOne({ _id: specialserviceID }, function(err, specialservice) {
 
             if (err) {
                 res.status(500).send(err);
                 return;
             }
 
-            console.log(color);
+            console.log(specialservice);
 
-            res.json(clothdefect);
+            res.json(specialservice);
 
         });
     })
@@ -102,11 +105,11 @@ colorRouter
 //Create router for Updating subservice.
 .put(checkAuth, function(req, res) {
 
-    console.log('PUT /colors/:colorID');
+    console.log('PUT /specialservices/:specialserviceID');
 
-    var colorID = req.params.colorID;
+    var specialserviceID = req.params.specialserviceID;
 
-    Color.findOne({ _id: colorID }, function(err, color) {
+    Specialservice.findOne({ _id: specialserviceID }, function(err, specialservice) {
 
         if (err) {
             res.status(500).send(err);
@@ -114,15 +117,16 @@ colorRouter
         }
         // var myDateString = Date();
         var code = req.body.code.toUpperCase();
-        if (color) {
-            color.color_name = req.body.color_name,
-                color.code = code,
-                color.status = req.body.status;
-            color.updated_by = req.body.updated_by;
+        if (specialservice) {
+            specialservice.specialservice_name = req.body.specialservice_name,
+            specialservice.code = code,
+            specialservice.price = req.body.price,
+                specialservice.status = req.body.status;
+                specialservice.updated_by = req.userData._id;
 
-            color.save();
+                specialservice.save();
 
-            res.json(color);
+            res.json(specialservice);
             return;
         }
 
@@ -131,20 +135,20 @@ colorRouter
         });
     });
 })
-colorRouter
-    .route('/colorss/:colorID')
+specialserviceRouter
+    .route('/specialservicesss/:specialserviceID')
     .put(checkAuth, function(req, res) {
-        console.log('PUT /colorss/:colorID');
-        var colorID = req.params.colorID;
-        Color.findOne({ _id: colorID }, function(err, color) {
+        console.log('PUT /specialservicesss/:specialserviceID');
+        var specialserviceID = req.params.specialserviceID;
+        Specialservice.findOne({ _id: specialserviceID }, function(err, specialservice) {
             if (err) {
                 res.status(500).send(err);
                 return;
             }
-            if (color) {
-                color.state = false;
+            if (specialservice) {
+                specialservice.state = false;
 
-                color.save();
+                specialservice.save();
                 res.json(color);
                 return;
             }
@@ -154,4 +158,4 @@ colorRouter
             });
         });
     })
-module.exports = colorRouter;
+module.exports = specialserviceRouter;

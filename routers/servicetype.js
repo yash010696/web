@@ -30,7 +30,7 @@ servicetypeRouter
       // var area = new Area(req.body);
       var code = req.body.code.toUpperCase();
       var servicetype = new Servicetype({
-        id: cc,
+        // id: cc,
         type: req.body.type,
         code: code,
         no_Of_Days: req.body.no_Of_Days,
