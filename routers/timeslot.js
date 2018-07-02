@@ -69,7 +69,7 @@ timeslotRouter
             return;
         }
         console.log(timeslots);
-        res.json(timeslots);
+        res.json({timeslotlist:timeslots});
     });
 
 });

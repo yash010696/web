@@ -44,8 +44,8 @@ var orderSchema = new Schema({
   },
   order_amount: {
     type: String,
-    default:0
-    // required: true,
+    default:00,
+    required: true
   },
   order_status: {
     type: String

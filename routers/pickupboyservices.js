@@ -11,6 +11,7 @@ var area = require('./../models/area');
 var Franchise = require('./../models/franchise');
 var generateSms = require('./../middlewear/sms');
 var generateMail = require('./../middlewear/mail');
+var Customer = require('./../models/customer');
 
 var pickupboyserviceRouter = express.Router();
 
@@ -27,15 +28,30 @@ pickupboyserviceRouter
             'state': true,
             'status': true
         })
-            .populate('customer')
+            .populate('customer servicetype')
             .then((orders) => {
                 if (!orders[0]) {
                     res.status(200).json({ Success: true, Message: "No Orders" });
-
                 } else {
-                    res.status(200).json({ Success: true, orders });
-                }
 
+                    Customer.find({ '_id': orders[0].customer._id }).then((data) => {
+                        data[0].address.forEach(element => {                            
+                            if (JSON.stringify(element.other[0]._id) == JSON.stringify(orders[0].locationType)) {
+                                const order1 = element.other.filter(element =>element );     
+                                console.log(order1);
+                        res.status(200).json({ Success: true, orders  });
+                                
+                            } else {}
+                        // console.log(orders[0].locationType);
+                        // const order1 = data[0].address.filter(element => console.log(JSON.stringify(element.other[0]._id) == JSON.stringify(orders[0].locationType)) ||  JSON.stringify(element.home[0]._id) == JSON.stringify(orders[0].locationType));
+                        // console.log(order1)
+                        // if (order1) {
+                        //     // console.log(JSON.stringify(data, undefined, 2));
+                        // }
+                    })
+                })
+                    // res.status(200).json({ Success: true, orders  });
+                }
             }).catch((err) => {
                 res.status(400).json({ err });
             })
@@ -105,7 +121,7 @@ pickupboyserviceRouter
                 var name = data.customer.first_Name;
                 var email = data.customer.email;
                 var mobile = data.customer.mobile;
-                
+
                 var store_code = data.franchise.store_code;
                 Order.find({ 'franchise': data.franchise._id }).then((results) => {
                     var count = results.length;
@@ -118,7 +134,7 @@ pickupboyserviceRouter
                     var order = new Order();
                     order.order_id = id;
                     order.requestId = data.requestId;
-                    // order.order_amount = req.body.order_amount;
+                    order.order_amount = 00;
                     order.order_status = "Picked-up";
                     order.franchise = data.franchise._id;
                     order.customer = data.customer;
