@@ -38,7 +38,8 @@ var orderSchema = new Schema({
     type: String
   },
   order_amount: {
-    type: String
+    type: String,
+    default:00
   },
   created_by: {
     type: mongoose.Schema.Types.ObjectId,

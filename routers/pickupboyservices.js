@@ -29,30 +29,30 @@ pickupboyserviceRouter
             'state': true,
             'status': true
         })
-            .populate('customer')
+            .populate('customer timeSlot')
             .then((orders) => {
                 if (!orders[0]) {
                     res.status(200).json({ Success: true, Message: "No Orders" });
 
                 } else {
-                    var neworders=[];
-                    orders.forEach(element =>{            
-                        Customer.find({'_id':element.customer._id}).then((data)=>{
-                            // console.log('===================',data[0].address[0].other[0]._id,'//',element.locationType);
+                    // var neworders=[];
+                    // orders.forEach(element =>{            
+                    //     Customer.find({'_id':element.customer._id}).then((data)=>{
+                    //         // console.log('===================',data[0].address[0].other[0]._id,'//',element.locationType);
                             
-                            // orders:{pickupaddress:""};
-                            if(JSON.stringify(data[0].address[0].other[0]._id) == JSON.stringify(element.locationType)){
-                                const order1 = data[0].address[0].other.filter(element1 => element1);
-                                // var order11=element + ',other:'+ order1 ; 
+                    //         // orders:{pickupaddress:""};
+                    //         if(JSON.stringify(data[0].address[0].other[0]._id) == JSON.stringify(element.locationType)){
+                    //             const order1 = data[0].address[0].other.filter(element1 => element1);
+                    //             // var order11=element + ',other:'+ order1 ; 
                                 
-                                element.pickupaddress=order1[0].pincode;
-                                console.log('=======================================',element);
-                                // neworders.push({order11});
-                            }
+                    //             element.pickupaddress=order1[0].pincode;
+                    //             console.log('=======================================',element);
+                    //             // neworders.push({order11});
+                    //         }
 
-                        })
-                    })
-                    console.log('=======================================',neworders);
+                    //     })
+                    // })
+                    // console.log('=======================================',neworders);
                     res.status(200).json({ Success: true, orders });
                 }
 
@@ -138,7 +138,7 @@ pickupboyserviceRouter
                     var order = new Order();
                     order.order_id = id;
                     order.requestId = data.requestId;
-                    // order.order_amount = req.body.order_amount;
+                    order.order_amount = 00;
                     order.order_status = "Picked-Up";
                     order.partialorder= true;
                     order.franchise = data.franchise._id;
