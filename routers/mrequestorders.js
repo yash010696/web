@@ -4,8 +4,9 @@ var passport = require('passport');
 require('./../config/passport')(passport);
 var config = require('./../config/config');
 
+var Invoice = require('../models/invoice');
+var Order = require('./../models/order');
 var RequestOrder = require('./../models/requestorder');
-var { OrderStatus } = require('./../models/orderstatus');
 var Customer = require('./../models/customer');
 var Franchise = require('./../models/franchise');
 var area = require('./../models/area');
@@ -43,7 +44,7 @@ mrequestordersRouter
                             landmark: customer.address[0].home[0].landmark,
                             pincode: customer.address[0].home[0].pincode
                         }
-                        
+
                         req.body.locationType = customer.address[0].home[0]._id;
                     }
                 }
@@ -52,10 +53,10 @@ mrequestordersRouter
                         res.status(200).json({ Success: false, Message: "Other Address Not Found" });
                     } else {
                         var other = {
-                            flat_no : customer.address[0].other[0].flat_no,
-                            society : customer.address[0].other[0].society,
-                            landmark : customer.address[0].other[0].landmark,
-                            pincode : customer.address[0].other[0].pincode,
+                            flat_no: customer.address[0].other[0].flat_no,
+                            society: customer.address[0].other[0].society,
+                            landmark: customer.address[0].other[0].landmark,
+                            pincode: customer.address[0].other[0].pincode,
                         }
                         req.body.locationType = customer.address[0].other[0]._id;
                     }
@@ -104,9 +105,9 @@ mrequestordersRouter
 
                                     // console.log('=============', req.body);
                                     var requestOrder = new RequestOrder(req.body);
-                                    if(home){
-                                        requestOrder.address.push( {home} );
-                                    }else{
+                                    if (home) {
+                                        requestOrder.address.push({ home });
+                                    } else {
                                         requestOrder.address.push({ other });
                                     }
                                     requestOrder.save().then((order) => {
@@ -212,20 +213,20 @@ mrequestordersRouter
                     }
                     else if (req.body.locationType == "Other") {
                         var other = {
-                            flat_no : customer.address[0].other[0].flat_no,
-                            society : customer.address[0].other[0].society,
-                            landmark : customer.address[0].other[0].landmark,
-                            pincode : customer.address[0].other[0].pincode,
+                            flat_no: customer.address[0].other[0].flat_no,
+                            society: customer.address[0].other[0].society,
+                            landmark: customer.address[0].other[0].landmark,
+                            pincode: customer.address[0].other[0].pincode,
                         }
-                        var  locationType = customer.address[0].other[0]._id;
+                        var locationType = customer.address[0].other[0]._id;
                     }
                     RequestOrder.findOneAndUpdate({ 'requestId': requestId }, {
-                        $set:{
-                            locationType:locationType,
-                            servicetype:req.body.servicetype,
-                            pickupDate:req.body.pickupDate,
-                             timeSlot: req.body.timeSlot,                      
-                             'address':{other:other , home:home}
+                        $set: {
+                            locationType: locationType,
+                            servicetype: req.body.servicetype,
+                            pickupDate: req.body.pickupDate,
+                            timeSlot: req.body.timeSlot,
+                            'address': { other: other, home: home }
                         }
                     }, { new: true }).then((requestorder) => {
                         if (!requestorder) {
@@ -252,6 +253,77 @@ mrequestordersRouter
         }).catch((err) => {
             res.status(400).json({ err });
         })
+    })
+
+    .get('/morderdetail/:id', (req, res) => {
+        // console.log(req.params.id);
+        Order.find({ 'order_id': req.params.id })
+            .then((data) => {
+                var _id = data[0]._id;
+                Invoice.find({ 'order': _id })
+                    .populate('order customer  ordertransaction tag  ')
+                    .populate({ path: 'order', populate: { path: 'requestId' } })
+                    .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
+                    .then((invoices) => {
+
+                        var order_id;
+                        var order_status;
+                        var pickupDate;
+                        var timeSlot;
+                        var selectedsgstpercent;
+                        var selectedcgstpercent;
+                        var selectedgstpercent;
+                        var sgst;
+                        var cgst;
+                        var gst;
+                        var net_amount;
+                        var first_Name;
+                        var email;
+                        var mobile;
+                        var orderList = [];
+
+                        var data = {
+                            order_id: invoices[0].order.order_id,
+                            order_status: invoices[0].order.order_status,
+                            pickupDate: invoices[0].order.requestId.pickupDate,
+                            timeSlot: invoices[0].order.requestId.timeSlot.time_Slot,
+                            selectedsgstpercent: invoices[0].ordertransaction.selectedsgstpercent,
+                            selectedcgstpercent: invoices[0].ordertransaction.selectedcgstpercent,
+                            // selectedgstpercent: (console.log(parseInt(selectedsgstpercent))+ parseInt(selectedcgstpercent)),
+                            sgst: invoices[0].ordertransaction.sgst,
+                            cgst: invoices[0].ordertransaction.cgst,
+                            gst: invoices[0].ordertransaction.gst,
+                            net_amount: invoices[0].ordertransaction.net_amount,
+                            first_Name: invoices[0].customer.first_Name,
+                            email: invoices[0].customer.email,
+                            mobile: invoices[0].customer.mobile,
+                            orderList
+                        }
+                        invoices[0].tag.tagDetailsService.forEach(services => {
+                            services.subservice.forEach(subsevice => {
+                                subsevice.garmentlist.forEach((garment, idx) => {
+                                    garment.garmentTagDetails.forEach((tag, index) => {
+                                        let tagsArray = JSON.parse(JSON.stringify((tag.tag_Format).split('|')));
+                                        service = tagsArray[1];
+                                        subservice = tag.subservice;
+                                        dress = tagsArray[3];
+                                        price = tag.price;
+                                    });
+
+                                    orderList.push({
+                                        'service': service,
+                                        'subservice': subservice,
+                                        'dress': dress,
+                                        'price': price,
+                                    });
+                                });
+                            });
+                        });
+                        res.status(200).json({ data });
+                    }).catch((err) => {
+                        res.status(400).json({ err });
+                    })
+            })
     })
 
 module.exports = { mrequestordersRouter }

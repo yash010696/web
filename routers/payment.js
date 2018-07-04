@@ -29,6 +29,7 @@ function formatDate(d) {
 payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
 
 paymentRouter
+
     .post('/getHash', function (req, res) {
         var newdate = new Date();
         var date = formatDate(newdate);

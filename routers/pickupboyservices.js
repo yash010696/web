@@ -125,6 +125,7 @@ pickupboyserviceRouter
                 console.log('data=', data.address[0].home[0]);
                 var home = data.address[0].home[0];
                 var other=data.address[0].other[0];
+                var requestId=data._id;
                 var name = data.customer.first_Name;
                 var email = data.customer.email;
                 var mobile = data.customer.mobile;
@@ -140,15 +141,16 @@ pickupboyserviceRouter
 
                     var order = new Order();
                     order.order_id = id;
-                    order.requestId = data.requestId;
+                    order.requestId = requestId;
                     order.order_amount = 00;
-                    order.order_status = "Picked-Up";
+                    order.order_status = 'Picked-Up';
                     order.partialorder = true;
                     order.franchise = data.franchise._id;
                     order.customer = data.customer;
                     order.servicetype = data.servicetype;
                     order.total_qty = req.body.total_qty;
                     order.pickupdelivery = null;
+                    order.paymentstatus='UnPaid';
                     order.address.push({ home , other });
                     // order.created_by = order.created_by;
                     // order.updated_by = order.updated_by;

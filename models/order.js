@@ -6,6 +6,7 @@ var Customer = require('./customer');
 var Franchise = require('./franchise');
 var Servicetype = require('./servicetype');
 var Ordertype = require('./ordertype');
+var RequestOrder=require('./requestorder');
 var orderSchema = new Schema({
   order_id: {
     type: String,
@@ -62,13 +63,15 @@ var orderSchema = new Schema({
     type: Boolean
   },
   requestId: {
-    type: String,
-    required: true,
-    // unique: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'RequestOrder'
   },
   pickupdelivery: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Pickupdeliveryboy'
+  },
+  paymentstatus:{
+    type:String,
   },
   partialorder: {
     type: Boolean

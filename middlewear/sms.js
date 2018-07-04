@@ -15,7 +15,7 @@ module.exports=function generateSms(phone,message){
                     if (error) {
                         return reject(err);
                     } else {
-                       
+                    //    console.log(response,'/',data);
                         return resolve(data);
                     }
                 });
