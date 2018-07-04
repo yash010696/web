@@ -5,6 +5,10 @@ var payumoney = require('payumoney-node');
 var crypto = require('crypto');
 var generateMail = require('./../middlewear/mail');
 var generateSms = require('./../middlewear/sms');
+var { BitlyClient } = require('bitly');
+
+
+
 var paymentRouter = express.Router();
 
 function formatDate(d) {
@@ -22,31 +26,35 @@ function formatDate(d) {
     return date + month + year;
 }
 
-
 payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
-// KEY = "F1z7coeW",
-// SALT = "JjckyBbOBD"
 
-// KEY = "gtKFFx",
-// SALT = "eCwWELxi"
-
-//generate SHA512 key
 paymentRouter
+    .post('/getHash', function (req, res) {
+        var newdate = new Date();
+        var date = formatDate(newdate);
+        var txnid = 'Tx' + date + '' + req.body.order_id;
+        payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
+        KEY = "F1z7coeW",
+            SALT = "JjckyBbOBD"
+        var shasum = crypto.createHash('sha512'),
+            dataSequence = KEY + '|' + txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
+            resultKey = shasum.update(dataSequence).digest('hex');
+            var data={
+                Hash:resultKey,
+                txnid:txnid
+            }
+            res.status(200).json({success:true,data });
+    })
     .post('/getShaKey', function (req, res) {
         var newdate = new Date();
         var date = formatDate(newdate);
         var txnid = 'Tx' + date + '' + req.body.order_id;
-
-        console.log(txnid);
         payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
         KEY = "F1z7coeW",
             SALT = "JjckyBbOBD"
-        // console.log("Hash Generated", req.body);
         var shasum = crypto.createHash('sha512'),
             dataSequence = KEY + '|' + txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
             resultKey = shasum.update(dataSequence).digest('hex');
-        console.log(resultKey);
-        // res.end(resultKey);
         var paymentData = {
             productinfo: req.body.productinfo,
             txnid: txnid,
@@ -54,23 +62,22 @@ paymentRouter
             email: req.body.email,
             phone: req.body.phone,
             firstname: req.body.firstname,
-            surl: "http://localhost:3000/api/success", //"http://localhost:3000/payu/success"
-            furl: "http://localhost:3000/api/cancel", //"http://localhost:3000/payu/fail"
+            surl: "http://localhost:3000/api/success",
+            furl: "http://localhost:3000/api/cancel"
         };
-        console.log('==============', paymentData);
-
         payumoney.makePayment(paymentData, function (error, response) {
             if (error) {
                 res.json({ error });
             } else {
-                // Payment redirection link
-                console.log(response);
-            
-                
-                generateSms('9673067099',
-                    `Dear yash, Your Payment Link is ${response}.`
-                );
-                generateMail('yash.shah@encureit.com',
+                const bitly = new BitlyClient('e882848e14f6f402b175cb53c404afe9ead68ec3', {});
+                bitly.shorten(response).then((result) => {
+                    generateSms(req.body.phone,
+                        `Dear yash, Your Payment Link is ${result.url}.`
+                    )
+                }).catch(function (error) {
+                    res.status(400).json({ error });
+                });
+                generateMail(req.body.email,
                     `<!DOCTYPE html>
                 <html>
                 <head>
@@ -84,7 +91,7 @@ paymentRouter
                     <body>
                         <tr><b>Dear Yash,</b></tr><br><br>
 
-                        <tr>${response}</tr><br><br>
+                        <tr><a href="${response}">${response}</a></tr><br><br>
                            
                         <tr>Happy Cleaning!</tr><br><br>
                                                                    
@@ -98,18 +105,14 @@ paymentRouter
                 );
                 res.json({ "Link": response });
             }
-        });
-
+        })
     })
 
     .post('/success', function (req, res) {
-        console.log("==========", req.body.hash);
         var shasum = crypto.createHash('sha512'),
             dataSequence = SALT + '|' + req.body.status + '|||||||||||' + req.body.email + '|' + req.body.firstname + '|' + req.body.productinfo + '|' + req.body.amount + '|' + req.body.txnid + '|' + KEY,
             resultKey = shasum.update(dataSequence).digest('hex');
-        console.log(resultKey);
         if (req.body.hash == resultKey) {
-            console.log("==========", req.body);
             var success = {
                 mihpayid: req.body.mihpayid,
                 addedon: req.body.addedon,
@@ -123,11 +126,10 @@ paymentRouter
         } else {
             res.send("Something went wrong");
         }
-
     })
 
     .post('/cancel', (req, res) => {
         res.send(" okkkkkkkkkkk cancel");
-    });
+    })
 
 module.exports = { paymentRouter };

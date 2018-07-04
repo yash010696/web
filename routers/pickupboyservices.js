@@ -39,12 +39,12 @@ pickupboyserviceRouter
                     // orders.forEach(element =>{            
                     //     Customer.find({'_id':element.customer._id}).then((data)=>{
                     //         // console.log('===================',data[0].address[0].other[0]._id,'//',element.locationType);
-                            
+
                     //         // orders:{pickupaddress:""};
                     //         if(JSON.stringify(data[0].address[0].other[0]._id) == JSON.stringify(element.locationType)){
                     //             const order1 = data[0].address[0].other.filter(element1 => element1);
                     //             // var order11=element + ',other:'+ order1 ; 
-                                
+
                     //             element.pickupaddress=order1[0].pincode;
                     //             console.log('=======================================',element);
                     //             // neworders.push({order11});
@@ -122,6 +122,9 @@ pickupboyserviceRouter
                 if (!data) {
                     res.status(200).json({ Success: false, Message: 'Order Not Found!' });
                 }
+                console.log('data=', data.address[0].home[0]);
+                var home = data.address[0].home[0];
+                var other=data.address[0].other[0];
                 var name = data.customer.first_Name;
                 var email = data.customer.email;
                 var mobile = data.customer.mobile;
@@ -140,15 +143,16 @@ pickupboyserviceRouter
                     order.requestId = data.requestId;
                     order.order_amount = 00;
                     order.order_status = "Picked-Up";
-                    order.partialorder= true;
+                    order.partialorder = true;
                     order.franchise = data.franchise._id;
                     order.customer = data.customer;
                     order.servicetype = data.servicetype;
                     order.total_qty = req.body.total_qty;
                     order.pickupdelivery = null;
+                    order.address.push({ home , other });
                     // order.created_by = order.created_by;
                     // order.updated_by = order.updated_by;
-                    order.status =true;
+                    order.status = true;
                     order.state = true;
                     // console.log('=============',order);
                     order.save().then((data) => {
@@ -201,7 +205,7 @@ pickupboyserviceRouter
         console.log(decoded._id)
         Order.findOne({
             'pickupdelivery': decoded._id,
-            "order_status": 'Ready For Delivery',
+            "order_status": 'Ready To Deliver',
             'state': true,
             'status': true
         }).populate('customer')

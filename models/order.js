@@ -39,7 +39,7 @@ var orderSchema = new Schema({
   },
   order_amount: {
     type: String,
-    default:00
+    default: 00
   },
   created_by: {
     type: mongoose.Schema.Types.ObjectId,
@@ -73,6 +73,52 @@ var orderSchema = new Schema({
   partialorder: {
     type: Boolean
   },
+  address: [{
+    home: [{
+      pincode: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 6,
+      },
+      flat_no: {
+        type: String,
+        required: true,
+        trim: true
+      },
+      society: {
+        type: String,
+        trim: true
+      },
+      landmark: {
+        type: String,
+        required: true,
+        trim: true
+      }
+    }],
+    other: [{
+      pincode: {
+        type: String,
+        required: true,
+        trim: true,
+        minlength: 6,
+      },
+      flat_no: {
+        type: String,
+        required: true,
+        trim: true
+      },
+      society: {
+        type: String,
+        trim: true
+      },
+      landmark: {
+        type: String,
+        required: true,
+        trim: true
+      }
+    }]
+  }],
   message: {
     type: String,
     default: null

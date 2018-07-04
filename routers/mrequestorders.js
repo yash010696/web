@@ -37,8 +37,6 @@ mrequestordersRouter
                     if (customer.address[0].home[0] == null) {
                         res.status(200).json({ Success: false, Message: "Home Address Not Found" });
                     } else {
-
-                        console.log(customer.address[0].home[0].flat_no);
                         var home = {
                             flat_no: customer.address[0].home[0].flat_no,
                             society: customer.address[0].home[0].society,
@@ -104,7 +102,7 @@ mrequestordersRouter
                                     req.body.state = true;
                                     req.body.status = true;
 
-                                    console.log('=============', req.body);
+                                    // console.log('=============', req.body);
                                     var requestOrder = new RequestOrder(req.body);
                                     if(home){
                                         requestOrder.address.push( {home} );
@@ -150,7 +148,7 @@ mrequestordersRouter
                                     })
                                 })
                             }).catch((err) => {
-                                console.log(err);
+                                // console.log(err);
                                 res.status(400).json({ err });
                             })
                         })
