@@ -9,13 +9,12 @@ module.exports=function generateSms(phone,message){
             } else if (phone.length === 10) {
                 // console.log(phone,'/',message);
                 request({
-                    url: `http://bhashsms.com/api/sendmsg.php?user=ClotheSpa&pass=ClotheSpa&sender=CltSpa&phone=${phone}&text=${message}&priority=ndnd&stype=normal`,
+                    url: `http://bhashsms.com/api/sendmsg.php?user=laundryscience&pass=24klen123&sender=KLENLS&phone=${phone}&text=${message}&priority=ndnd&stype=normal`,
                     method: 'post',
                 }, function (error, response, data) {
                     if (error) {
                         return reject(err);
                     } else {
-                    //    console.log(response,'/',data);
                         return resolve(data);
                     }
                 });
