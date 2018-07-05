@@ -134,9 +134,9 @@ mrequestordersRouter
 
                                            <tr>Your Pick up no ${requestId} with ${franchisename} is booked for ${date1} between ${data[0].time_Slot}.</tr>
                                                                                
-                                           <tr>Thanks,</tr>
+                                           <tr><b>Thanks,</b></tr>
                                                                                        
-                                            <tr>Team 24Klen Laundry Science</tr>
+                                            <tr><b>Team 24Klen Laundry Science</b></tr>
                                            </table>
                                               
                                            </body>

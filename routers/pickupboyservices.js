@@ -94,9 +94,9 @@ pickupboyserviceRouter
 
                <tr>We attempted to complete your request for ${requestOrder.requestId} , however it was unsuccessful due to ${req.body.message}.</tr>
                                                    
-               <tr>Thanks,</tr>
-                                                           
-                <tr>Team 24Klen Laundry Science</tr>
+               <tr><b>Thanks,</b></tr>
+                                                                                       
+                <tr><b>Team 24Klen Laundry Science</b></tr>
                 </table>
            </body>
            </html>`,
@@ -257,9 +257,9 @@ pickupboyserviceRouter
 
                <tr>We attempted to complete your request for ${order.order_id} , however it was unsuccessful due to ${req.body.message}.</tr>
                                                    
-               <tr>Thanks,</tr>
-                                                           
-                <tr>Team 24Klen Laundry Science</tr>
+               <tr><b>Thanks,</b></tr>
+                                                                                       
+               <tr><b>Team 24Klen Laundry Science</b></tr>
             </table>
            </body>
            </html>`,
@@ -308,13 +308,13 @@ pickupboyserviceRouter
            </head>
            <body>
            <table>
-               <tr><b>Dear ${name},</b></tr><br><br>
+               <tr><b>Dear ${name},</b></tr>
 
-               <tr>Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.</tr><br><br>
+               <tr>Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.</tr>
            
-               <tr>Thanks,</tr><br><br>
-                                                           
-                <tr>Team 24Klen Laundry Science</tr>
+               <tr><b>Thanks,</b></tr>
+                                                                                       
+               <tr><b>Team 24Klen Laundry Science</b></tr>
             </table>
             </body>
            </html>`,
