@@ -59,11 +59,14 @@ otpRouter
            if(!customer){
             res.status(200).json({ Success: false, Message: 'Invalid Otp' });
            }else{
+            Customer.findOneAndUpdate({ '_id': customer._id }, {
+                $set: { otp: null }
+            }).then((data)=>{});   
             res.status(200).header('x-auth', `JWT ${token}`).json({ token: 'JWT ' + token, Success: true, Message: 'Logged In Successfully' });
            }
        })
     })
-    
+
     .post('/otpGenerate', (req, res) => {
         // console.log(req.body);
         var phone = localStorage.getItem('phone');
