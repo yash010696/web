@@ -23,7 +23,7 @@ var customerSchema = new Schema({
         type: String
     },
     dob: {
-        type: String
+        type: Date
     },
     email: {
         type: String,

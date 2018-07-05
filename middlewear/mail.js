@@ -3,7 +3,7 @@ var nodemailer = require('nodemailer');
 module.exports=function mail(email,message,subject){
 
     return new Promise((resolve, reject) => {
-        var transporter = nodemailer.createTransport({
+        let transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
             secureConnection: true,
             port:587,
@@ -14,8 +14,8 @@ module.exports=function mail(email,message,subject){
             }
           });
           
-          var mailOptions = {
-            from: ' "Admin" <donotreply@24klen.com>',
+          let mailOptions = {
+            from: '"Admin" <donotreply@24klen.com>',
             to: email,
             subject: subject,
             html: message

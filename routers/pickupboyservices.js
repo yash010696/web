@@ -88,15 +88,16 @@ pickupboyserviceRouter
                <script src="main.js"></script>
            </head>
            <body>
-               <tr><b>Dear ${name},</b></tr><br><br>
-
-               <tr>We attempted to complete your request for ${requestOrder.requestId} , however it was unsuccessful due to ${req.body.message}.</tr><br><br>
+           <table>
            
-               <tr>Happy Cleaning!</tr><br><br>
+               <tr><b>Dear ${name},</b></tr>
+
+               <tr>We attempted to complete your request for ${requestOrder.requestId} , however it was unsuccessful due to ${req.body.message}.</tr>
                                                    
-               <tr>Thanks,</tr><br><br>
+               <tr>Thanks,</tr>
                                                            
                 <tr>Team 24Klen Laundry Science</tr>
+                </table>
            </body>
            </html>`,
                     `Missed the Pickup with 24klen Laundry Science`
@@ -124,8 +125,8 @@ pickupboyserviceRouter
                 }
                 console.log('data=', data.address[0].home[0]);
                 var home = data.address[0].home[0];
-                var other=data.address[0].other[0];
-                var requestId=data._id;
+                var other = data.address[0].other[0];
+                var requestId = data._id;
                 var name = data.customer.first_Name;
                 var email = data.customer.email;
                 var mobile = data.customer.mobile;
@@ -150,8 +151,8 @@ pickupboyserviceRouter
                     order.servicetype = data.servicetype;
                     order.total_qty = req.body.total_qty;
                     order.pickupdelivery = null;
-                    order.paymentstatus='UnPaid';
-                    order.address.push({ home , other });
+                    order.paymentstatus = 'UnPaid';
+                    order.address.push({ home, other });
                     // order.created_by = order.created_by;
                     // order.updated_by = order.updated_by;
                     order.status = true;
@@ -251,15 +252,15 @@ pickupboyserviceRouter
                <script src="main.js"></script>
            </head>
            <body>
-               <tr><b>Dear ${name},</b></tr><br><br>
+           <table>
+              <tr><b>Dear ${name},</b></tr>
 
-               <tr>We attempted to complete your request for ${order.order_id} , however it was unsuccessful due to ${req.body.message}.</tr><br><br>
-           
-               <tr>Happy Cleaning!</tr><br><br>
+               <tr>We attempted to complete your request for ${order.order_id} , however it was unsuccessful due to ${req.body.message}.</tr>
                                                    
-               <tr>Thanks,</tr><br><br>
+               <tr>Thanks,</tr>
                                                            
                 <tr>Team 24Klen Laundry Science</tr>
+            </table>
            </body>
            </html>`,
                     `Missed the Pickup/Delivery with 24klen Laundry Science`
@@ -285,14 +286,17 @@ pickupboyserviceRouter
             }
         }).populate('customer')
             .then((order) => {
-                var name = order.customer.first_Name;
-                var email = order.customer.email;
-                var mobile = order.customer.mobile;
-                var amount = order.order_amount;
-                var total_qty = order.total_qty;
-                // console.log('===', name, amount,email,total_qty, mobile, req.body.order_id);    
-                generateMail(email,
-                    `<!DOCTYPE html>
+                if (!order) {
+                    res.status(200).json({ Success: false, Message: "No Such Order Found" });
+                } else {
+                    var name = order.customer.first_Name;
+                    var email = order.customer.email;
+                    var mobile = order.customer.mobile;
+                    var amount = order.order_amount;
+                    var total_qty = order.total_qty;
+                    // console.log('===', name, amount,email,total_qty, mobile, req.body.order_id);    
+                    generateMail(email,
+                        `<!DOCTYPE html>
            <html>
            <head>
                <meta charset="utf-8" />
@@ -303,25 +307,26 @@ pickupboyserviceRouter
                <script src="main.js"></script>
            </head>
            <body>
+           <table>
                <tr><b>Dear ${name},</b></tr><br><br>
 
                <tr>Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.</tr><br><br>
            
-               <tr>Happy Cleaning!</tr><br><br>
-                                                   
                <tr>Thanks,</tr><br><br>
                                                            
                 <tr>Team 24Klen Laundry Science</tr>
-           </body>
+            </table>
+            </body>
            </html>`,
-                    `Successful Order Delivery ${req.body.order_id} with 24klen Laundry Science`
-                );
-                generateSms(mobile,
-                    `Dear ${name} Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.Thank you`
-                ).catch((err) => {
-                    res.status(400).json(err);
-                })
-                res.status(200).json({ Success: true, Message: "Order Delivered" });
+                        `Successful Order Delivery ${req.body.order_id} with 24klen Laundry Science`
+                    );
+                    generateSms(mobile,
+                        `Dear ${name} Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.Thank you`
+                    ).catch((err) => {
+                        res.status(400).json(err);
+                    })
+                    res.status(200).json({ Success: true, Message: "Order Delivered" });
+                }
             }).catch((err) => {
                 res.status(400).json({ err });
             })

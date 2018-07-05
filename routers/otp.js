@@ -40,7 +40,7 @@ otpRouter
                 token = jwt.sign(user[0].toJSON(), config.secret, { expiresIn: 604800 });
                 otp = otpGenerate();
                 generateSms(phone, 
-                    `Your 24Klen Laundry App One Time Password is ${otp}. Happy cleaning!`                
+                    `Your 24Klen Laundry App One Time Password is ${otp}.`                
                 ).then((data) => {
                     res.status(200).json({ Success: true, Message: 'Otp send to mobile number.' });
                 }, (err) => {

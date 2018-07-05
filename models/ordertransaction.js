@@ -124,6 +124,22 @@ var ordertransactionSchema = new Schema({
     type:String,
     default:0
   },
+  previous_due: {
+    type:String,
+    default:0
+  },
+  current_due: {
+    type:String,
+    default:0
+  },
+  advance: {
+    type:String,
+    default:0
+  },
+  balance_due: {
+    type:String,
+    default:0
+  },
   due_date:{
     type: Date
   },

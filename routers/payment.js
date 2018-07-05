@@ -123,7 +123,7 @@ paymentRouter
                 mode: req.body.mode,
                 net_amount_debit: req.body.net_amount_debit
             }
-            res.status(200).json({ Success: true });
+            res.status(200).json({ Success: true,Message :"Payment Successfull" });
         } else {
             res.status(200).json({ Success: false, Message: "Something went wrong" });
         }

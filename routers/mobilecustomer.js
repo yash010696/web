@@ -67,7 +67,7 @@ mobilecustomerRouter
                                     customer.save().then((user) => {
                                         var id = user._id;
                                         generateSms(user.mobile,
-                                            `Dear ${user.first_Name}, Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}. Happy Cleaning!`
+                                            `Dear ${user.first_Name}, Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}.`
                                         );
                                         generateMail(user.email,
                                             `<!DOCTYPE html>
@@ -81,15 +81,15 @@ mobilecustomerRouter
                                                 <script src="main.js"></script>                                                
                                                 </head>
                                                 <body>
+                                                <table>
                                                     <tr><b>Dear ${user.first_Name},</b></tr><br><br>
             
                                                     <tr>Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}.</tr><br><br>
-                                                       
-                                                    <tr>Happy Cleaning!</tr><br><br>
-                                                                                               
+                                                    
                                                     <tr>Thanks,</tr><br><br>
                                                                                                        
                                                     <tr>Team 24Klen Laundry Science</tr>
+                                                </table>
                                                 </body>
                                                 </html>`,
 

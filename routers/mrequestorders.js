@@ -129,15 +129,16 @@ mrequestordersRouter
                                                <script src="main.js"></script>
                                            </head>
                                            <body>
-                                               <tr><b>Dear ${name},</b></tr><br><br>
+                                           <table>
+                                           <tr><b>Dear ${name},</b></tr>
 
-                                               <tr>Your Pick up no ${requestId} with ${franchisename} is booked for ${date1} between ${data[0].time_Slot}.</tr><br><br>
-                                           
-                                               <tr>Happy Cleaning!</tr><br><br>
-                                                                                   
-                                               <tr>Thanks,</tr><br><br>
-                                                                                           
-                                                <tr>Team 24Klen Laundry Science</tr>
+                                           <tr>Your Pick up no ${requestId} with ${franchisename} is booked for ${date1} between ${data[0].time_Slot}.</tr>
+                                                                               
+                                           <tr>Thanks,</tr>
+                                                                                       
+                                            <tr>Team 24Klen Laundry Science</tr>
+                                           </table>
+                                              
                                            </body>
                                            </html>`,
                                             `Successful Request Creation ${requestId} with 24klen Laundry Science`
@@ -281,6 +282,10 @@ mrequestordersRouter
                         var mobile;
                         var pickupAddress;
                         var deliveryDate;
+                        var balance_due;
+                        var advance;
+                        var current_due;
+                        var previous_due;
                         var orderList = [];
 
                         var data = {
@@ -298,10 +303,15 @@ mrequestordersRouter
                             first_Name: invoices[0].customer.first_Name,
                             email: invoices[0].customer.email,
                             mobile: invoices[0].customer.mobile,
-                            pickupAddress:invoices[0].order.requestId.address[0],
-                            deliveryDate:invoices[0].order.due_date,
+                            pickupAddress: invoices[0].order.requestId.address[0],
+                            deliveryDate: invoices[0].order.due_date,
+                            balance_due: invoices[0].ordertransaction.balance_due,
+                            advance: invoices[0].ordertransaction.advance,
+                            current_due: invoices[0].ordertransaction.current_due,
+                            previous_due: invoices[0].ordertransaction.previous_due,
                             orderList
                         }
+
                         invoices[0].tag.tagDetailsService.forEach(services => {
                             services.subservice.forEach(subsevice => {
                                 subsevice.garmentlist.forEach((garment, idx) => {
@@ -322,7 +332,7 @@ mrequestordersRouter
                                 });
                             });
                         });
-                        res.status(200).json({Success:true,data });
+                        res.status(200).json({ Success: true, data });
                     }).catch((err) => {
                         res.status(400).json({ err });
                     })
