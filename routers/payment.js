@@ -40,11 +40,11 @@ paymentRouter
         var shasum = crypto.createHash('sha512'),
             dataSequence = KEY + '|' + txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
             resultKey = shasum.update(dataSequence).digest('hex');
-            var data={
-                Hash:resultKey,
-                txnid:txnid
-            }
-            res.status(200).json({success:true,data });
+        var data = {
+            Hash: resultKey,
+            txnid: txnid
+        }
+        res.status(200).json({ success: true, data });
     })
     .post('/getShaKey', function (req, res) {
         var newdate = new Date();
@@ -64,7 +64,7 @@ paymentRouter
             phone: req.body.phone,
             firstname: req.body.firstname,
             surl: "http://localhost:3000/api/success",
-            furl: "http://localhost:3000/api/cancel"
+            furl: "http://localhost:3000/api/fail"
         };
         payumoney.makePayment(paymentData, function (error, response) {
             if (error) {
@@ -123,14 +123,14 @@ paymentRouter
                 mode: req.body.mode,
                 net_amount_debit: req.body.net_amount_debit
             }
-            res.send({ success });
+            res.status(200).json({ Success: true });
         } else {
-            res.send("Something went wrong");
+            res.status(200).json({ Success: false, Message: "Something went wrong" });
         }
     })
 
-    .post('/cancel', (req, res) => {
-        res.send(" okkkkkkkkkkk cancel");
+    .post('/fail', (req, res) => {
+        res.status(200).json({ Success: false });
     })
 
 module.exports = { paymentRouter };

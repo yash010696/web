@@ -265,7 +265,7 @@ mrequestordersRouter
                     .populate({ path: 'order', populate: { path: 'requestId' } })
                     .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
                     .then((invoices) => {
-
+                        console.log();
                         var order_id;
                         var order_status;
                         var pickupDate;
@@ -280,6 +280,8 @@ mrequestordersRouter
                         var first_Name;
                         var email;
                         var mobile;
+                        var pickupAddress;
+                        var deliveryDate;
                         var orderList = [];
 
                         var data = {
@@ -297,6 +299,8 @@ mrequestordersRouter
                             first_Name: invoices[0].customer.first_Name,
                             email: invoices[0].customer.email,
                             mobile: invoices[0].customer.mobile,
+                            pickupAddress:invoices[0].order.requestId.address[0],
+                            deliveryDate:invoices[0].order.due_date,
                             orderList
                         }
                         invoices[0].tag.tagDetailsService.forEach(services => {
@@ -319,7 +323,7 @@ mrequestordersRouter
                                 });
                             });
                         });
-                        res.status(200).json({ data });
+                        res.status(200).json({Success:true,data });
                     }).catch((err) => {
                         res.status(400).json({ err });
                     })
