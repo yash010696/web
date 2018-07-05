@@ -25,6 +25,10 @@ var customerSchema = new Schema({
     dob: {
         type: Date
     },
+    otp:{
+        type:String,
+        default:null
+    },
     email: {
         type: String,
         required: true,

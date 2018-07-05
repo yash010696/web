@@ -16,7 +16,6 @@ function otpGenerate() {
         var rnum = Math.floor(Math.random() * chars.length);
         otp += chars.substring(rnum, rnum + 1);
     }
-    localStorage.setItem('otp', otp);
     setTimeout(() => {
         localStorage.removeItem('otp')
     }, 300000); //1000ms=1 sec // 300000ms=300sec=5min
@@ -31,7 +30,6 @@ otpRouter
         let phone = req.body.mobile;
         localStorage.setItem('phone', phone);
         Customer.find({ 'mobile': phone }).then((user) => {
-
             if (!user[0]) {
                 res.status(200).json({ Success: false, Message: 'Authentication Failed.No User Found' });
             }
@@ -39,8 +37,11 @@ otpRouter
 
                 token = jwt.sign(user[0].toJSON(), config.secret, { expiresIn: 604800 });
                 otp = otpGenerate();
-                generateSms(phone, 
-                    `Your 24Klen Laundry App One Time Password is ${otp}.`                
+                Customer.findOneAndUpdate({ '_id': user[0]._id }, {
+                    $set: { otp: otp }
+                }).then((data)=>{});
+                generateSms(phone,
+                    `Your 24Klen Laundry App One Time Password is ${otp}.`
                 ).then((data) => {
                     res.status(200).json({ Success: true, Message: 'Otp send to mobile number.' });
                 }, (err) => {
@@ -51,21 +52,18 @@ otpRouter
             res.status(400).json({ Success: false, Message: 'Invalid Phone Number' });
         })
     })
-    
+
     .post('/verification', (req, res) => {
         var otp1 = req.body.otp;
-        var otp = localStorage.getItem('otp');
-        // console.log('otp',otp1,'//',otp);
-        if (otp == otp1) {
-            localStorage.removeItem('otp');
-            localStorage.removeItem('phone');
-            res.status(200).header('x-auth', `JWT ${token}`).json({ token: 'JWT ' + token, Success: true, Message: 'Logged In Successfully' });
-        } else {
-            localStorage.removeItem('otp');
+       Customer.findOne({'otp' :req.body.otp}).then((customer)=>{
+           if(!customer){
             res.status(200).json({ Success: false, Message: 'Invalid Otp' });
-        }
-
+           }else{
+            res.status(200).header('x-auth', `JWT ${token}`).json({ token: 'JWT ' + token, Success: true, Message: 'Logged In Successfully' });
+           }
+       })
     })
+    
     .post('/otpGenerate', (req, res) => {
         // console.log(req.body);
         var phone = localStorage.getItem('phone');

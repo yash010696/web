@@ -51,6 +51,7 @@ mobilecustomerRouter
                             var ReferralCode = randomstring.toUpperCase();
                             req.body.referral_Code = ReferralCode;
                             // req.body.id = counter;
+                            req.body.otp=null;
                             req.body.statee = true;
                             req.body.status = true;
 
