@@ -18,7 +18,7 @@ customerProfileRouter
             if (!user) {
                 res.status(200).json({ Success: false, Message: "You have to Logged In!!" });
             } else {
-                console.log(user);
+                // console.log(user);
                 res.status(200).json(user);
             }
         }).catch((err) => {

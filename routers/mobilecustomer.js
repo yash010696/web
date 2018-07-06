@@ -51,7 +51,7 @@ mobilecustomerRouter
                             var ReferralCode = randomstring.toUpperCase();
                             req.body.referral_Code = ReferralCode;
                             // req.body.id = counter;
-                            req.body.otp=null;
+                            req.body.otp = null;
                             req.body.statee = true;
                             req.body.status = true;
 
@@ -121,11 +121,25 @@ mobilecustomerRouter
                 society: req.body.society,
                 landmark: req.body.landmark,
             }
-            Customer.findOneAndUpdate({ '_id': decoded._id }, { $set: { 'address.0.home': home } }, function (err, user) {
-                if (err) {
-                    res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
-                } if (user) {
-                    res.status(200).json({ Success: true, Message: 'Address Added Successfully' });
+            Customer.findOne({ '_id': decoded._id }).then((customer) => {
+                if (customer.address[0]) {
+                    // console.log('innnnnn');
+                    Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address.0.home': home } }, function (err, user) {
+                        if (err) {
+                            res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+                        } if (user) {
+                            res.status(200).json({ Success: true, Message: 'Address Added Successfully' });
+                        }
+                    })
+                } else {
+                    // console.log('innnnnn here');
+                    Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address': { 'home': home } } }, function (err, user) {
+                        if (err) {
+                            res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+                        } if (user) {
+                            res.status(200).json({ Success: true, Message: 'Address Added Successfully' });
+                        }
+                    })
                 }
             })
         } else if (locationType === "Other") {
@@ -135,11 +149,25 @@ mobilecustomerRouter
                 society: req.body.society,
                 landmark: req.body.landmark,
             }
-            Customer.findOneAndUpdate({ '_id': decoded._id }, { $set: { 'address.0.other': other } }, function (err, user) {
-                if (err) {
-                    res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
-                } if (user) {
-                    res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
+            Customer.findOne({ '_id': decoded._id }).then((customer) => {
+                if (customer.address[0]) {
+                    // console.log('ssssss');
+                    Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address.0.other': other } }, function (err, user) {
+                        if (err) {
+                            res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+                        } if (user) {
+                            res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
+                        }
+                    })
+                } else {
+                    // console.log('sssssss here');
+                    Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address': { 'other': other } } }, function (err, user) {
+                        if (err) {
+                            res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+                        } if (user) {
+                            res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
+                        }
+                    })
                 }
             })
         }
