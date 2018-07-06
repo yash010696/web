@@ -190,6 +190,7 @@ mobilecustomerRouter
         //         } else {}
         //     })
 
+        
         if (locationType === "Home") {
             var home = {
                 'address.0.home.0.pincode': req.body.pincode,
