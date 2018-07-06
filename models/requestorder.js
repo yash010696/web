@@ -15,7 +15,7 @@ var RequestOrderSchema = new mongoose.Schema({
         unique: true,
         default: 1
     },
-    locationType:{
+    locationType: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Customer'
     },
@@ -121,6 +121,14 @@ var RequestOrderSchema = new mongoose.Schema({
     },
     message: {
         type: String,
+        default: null
+    },
+    picked_at: {
+        type: Date,
+        default: null
+    },
+    unpicked_at: {
+        type: Date,
         default: null
     }
 

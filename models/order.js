@@ -6,7 +6,7 @@ var Customer = require('./customer');
 var Franchise = require('./franchise');
 var Servicetype = require('./servicetype');
 var Ordertype = require('./ordertype');
-var RequestOrder=require('./requestorder');
+var RequestOrder = require('./requestorder');
 var orderSchema = new Schema({
   order_id: {
     type: String,
@@ -70,8 +70,8 @@ var orderSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Pickupdeliveryboy'
   },
-  paymentstatus:{
-    type:String,
+  paymentstatus: {
+    type: String,
   },
   partialorder: {
     type: Boolean
@@ -125,7 +125,45 @@ var orderSchema = new Schema({
   message: {
     type: String,
     default: null
-  }
+  },
+  undelivered_at: {
+    type: Date,
+    default: null
+  },
+  delivered_at: {
+    type: Date,
+    default: null
+  },
+  payment_details: [{
+    mihpayid: {
+      type: String,
+      trim: true
+    },
+    addedon: {
+      type: String,
+      trim: true
+    },
+    status: {
+      type: String,
+      trim: true
+    },
+    txnid: {
+      type: String,
+      trim: true
+    },
+    bank_ref_num: {
+      type: String,
+      trim: true
+    },
+    mode: {
+      type: String,
+      trim: true
+    },
+    net_amount_debit: {
+      type: String,
+      trim: true
+    },
+  }]
 }, {
     timestamps: true
   }, { collection: 'orders' });

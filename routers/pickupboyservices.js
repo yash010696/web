@@ -67,7 +67,8 @@ pickupboyserviceRouter
             $set: {
                 status: false,
                 request_status: "Order UnPicked",
-                message: req.body.message
+                message: req.body.message,
+                unpicked_at: new Date()
             }
         }).populate('customer')
             .then((requestOrder) => {
@@ -123,7 +124,7 @@ pickupboyserviceRouter
                 if (!data) {
                     res.status(200).json({ Success: false, Message: 'Order Not Found!' });
                 }
-                console.log('data=', data.address[0].home[0]);
+                // console.log('data=', data.address[0].home[0]);
                 var home = data.address[0].home[0];
                 var other = data.address[0].other[0];
                 var requestId = data._id;
@@ -131,6 +132,9 @@ pickupboyserviceRouter
                 var email = data.customer.email;
                 var mobile = data.customer.mobile;
 
+                
+                
+                
                 var store_code = data.franchise.store_code;
                 Order.find({ 'franchise': data.franchise._id }).then((results) => {
                     var count = results.length;
@@ -163,7 +167,8 @@ pickupboyserviceRouter
                         RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
                             $set: {
                                 status: false,
-                                request_status: "Picked up"
+                                request_status: "Picked up",
+                                picked_at : new Date()
                             }
                         }).then((order));
                         generateSms(mobile,
@@ -230,7 +235,9 @@ pickupboyserviceRouter
         Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
             $set: {
                 status: false,
-                order_status: "UnDelivered"
+                order_status: "UnDelivered",
+                message:req.body.message,
+                undelivered_at:new Date()
             }
         }).populate('customer')
             .then((order) => {
@@ -282,7 +289,8 @@ pickupboyserviceRouter
         Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
             $set: {
                 status: false,
-                order_status: "Delivered"
+                order_status: "Delivered",
+                delivered_at:new Date()
             }
         }).populate('customer')
             .then((order) => {

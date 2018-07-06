@@ -6,7 +6,7 @@ var crypto = require('crypto');
 var generateMail = require('./../middlewear/mail');
 var generateSms = require('./../middlewear/sms');
 var { BitlyClient } = require('bitly');
-
+var Order = require('./../models/order');
 
 
 var paymentRouter = express.Router();
@@ -31,24 +31,21 @@ payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb
 paymentRouter
 
     .post('/getHash', function (req, res) {
-        var newdate = new Date();
-        var date = formatDate(newdate);
-        var txnid = 'Tx' + date + '' + req.body.order_id;
+        // var newdate = new Date();
+        // var date = formatDate(newdate);
+        // var txnid = 'Tx' + date + '' + req.body.order_id;
         payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
         KEY = "F1z7coeW",
-            SALT = "JjckyBbOBD"
+        SALT = "JjckyBbOBD"
         var shasum = crypto.createHash('sha512'),
-            dataSequence = KEY + '|' + txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
-            resultKey = shasum.update(dataSequence).digest('hex');
-        var data = {
-            Hash: resultKey,
-            txnid: txnid
-        }
-        res.status(200).json({ success: true, data });
+            dataSequence = KEY + '|' + req.body.txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
+            Hash = shasum.update(dataSequence).digest('hex');
+        res.status(200).json({ success: true, Hash });
     })
     .post('/getShaKey', function (req, res) {
         var newdate = new Date();
         var date = formatDate(newdate);
+        var order_id=req.body.order_id;
         var txnid = 'Tx' + date + '' + req.body.order_id;
         payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
         KEY = "F1z7coeW",
@@ -90,21 +87,26 @@ paymentRouter
                     <script src="main.js"></script>                                                
                     </head>
                     <body>
-                        <tr><b>Dear Yash,</b></tr><br><br>
+                    <table>
+                        <tr><td style="width:100%;text-align:left;"><b>Dear Yash,</b></td></tr>
 
-                        <tr><a href="${response}">${response}</a></tr><br><br>
-                           
-                        <tr>Happy Cleaning!</tr><br><br>
-                                                                   
-                        <tr>Thanks,</tr><br><br>
+                        <tr>    
+                        <td style="width:100%;text-align:left;">
+                        <br>
+                        <a style="background-color: #22b9ff;max-width: 100px;padding: 7px 17px;text-decoration: none;color: #fff;opacity: 1;text-transform: uppercase;font-weight: 600;margin-top: 15px;margin-bottom: 20px;border-radius: 30px;" href="${response}">Pay Now</a>
+                        <br><br>
+                        </td>
+                        </tr>
+                                                                 
+                        <tr><td style="width:100%;text-align:left;">Thanks,</td></tr><br>
                                                                            
-                        <tr>Team 24Klen Laundry Science</tr>
+                        <tr><td style="width:100%;text-align:left;">Team 24Klen Laundry Science</td></tr>
+                    </table>    
                     </body>
                     </html>`,
-
                     'Payment Link'
                 );
-                res.json({ "Link": response });
+                res.status(200).json({ "Link": response });
             }
         })
     })
@@ -123,7 +125,13 @@ paymentRouter
                 mode: req.body.mode,
                 net_amount_debit: req.body.net_amount_debit
             }
-            res.status(200).json({ Success: true,Message :"Payment Successfull" });
+            // var order_id= 'AU0001';
+            //need to use orderid here
+            // Order.findOneAndUpdate({'order_id':order_id },{$push :{payment_details : success} }).then((data)=>{
+                res.status(200).json({ Success: true,Message :"Payment Successfull" });
+            // }).catch((error)=>{
+                // res.status(400).json({error});
+            // })
         } else {
             res.status(200).json({ Success: false, Message: "Something went wrong" });
         }
