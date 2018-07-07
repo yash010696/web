@@ -60,8 +60,8 @@ paymentRouter
             email: req.body.email,
             phone: req.body.phone,
             firstname: req.body.firstname,
-            surl: "http://localhost:3000/api/success",
-            furl: "http://localhost:3000/api/fail"
+            surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
+            furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"
         };
         payumoney.makePayment(paymentData, function (error, response) {
             if (error) {
