@@ -48,8 +48,10 @@ paymentRouter
         var order_id=req.body.order_id;
         var txnid = 'Tx' + date + '' + req.body.order_id;
         payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
+        
         KEY = "F1z7coeW",
-            SALT = "JjckyBbOBD"
+        SALT = "JjckyBbOBD"
+        
         var shasum = crypto.createHash('sha512'),
             dataSequence = KEY + '|' + txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
             resultKey = shasum.update(dataSequence).digest('hex');
@@ -60,8 +62,10 @@ paymentRouter
             email: req.body.email,
             phone: req.body.phone,
             firstname: req.body.firstname,
+            // surl: "http://localhost:3000/api/success",
+            // furl: "http://localhost:3000/api/fail",
             surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
-            furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"
+            furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"            
         };
         payumoney.makePayment(paymentData, function (error, response) {
             if (error) {
@@ -70,7 +74,7 @@ paymentRouter
                 const bitly = new BitlyClient('e882848e14f6f402b175cb53c404afe9ead68ec3', {});
                 bitly.shorten(response).then((result) => {
                     generateSms(req.body.phone,
-                        `Dear yash, Your Payment Link is ${result.url}.`
+                        `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due [Amount]. ${result.url} Thanks 24:Klen Laundry Science.`
                     )
                 }).catch(function (error) {
                     res.status(400).json({ error });
@@ -87,9 +91,15 @@ paymentRouter
                     <script src="main.js"></script>                                                
                     </head>
                     <body>
-                    <table>
+                    <table>s
                         <tr><td style="width:100%;text-align:left;"><b>Dear Yash,</b></td></tr>
+                        
+                        <tr><td>Your order is successfully created and in-progress. You can now pay for your order with the link below.</td></tr>
 
+                        <tr><td>Your order details are:</td></tr>
+                        <br>
+                        <tr><td>Order ID: [OrderID]</td></tr>
+                        <tr><td>Amount to pay: [Amount]</td></tr>
                         <tr>    
                         <td style="width:100%;text-align:left;">
                         <br>
@@ -104,7 +114,7 @@ paymentRouter
                     </table>    
                     </body>
                     </html>`,
-                    'Payment Link'
+                    'Payment Link for [Order ID]'
                 );
                 res.status(200).json({ "Link": response });
             }
@@ -117,6 +127,7 @@ paymentRouter
             resultKey = shasum.update(dataSequence).digest('hex');
         if (req.body.hash == resultKey) {
             var success = {
+                payment_type:'Online',
                 mihpayid: req.body.mihpayid,
                 addedon: req.body.addedon,
                 status: req.body.status,
@@ -125,20 +136,27 @@ paymentRouter
                 mode: req.body.mode,
                 net_amount_debit: req.body.net_amount_debit
             }
-            // var order_id= 'AU0001';
+            var order_id= 'AU0001';
             //need to use orderid here
-            // Order.findOneAndUpdate({'order_id':order_id },{$push :{payment_details : success} }).then((data)=>{
+            Order.findOneAndUpdate({'order_id':order_id },{$push :{payment_details : success},$set:{paymentstatus:'Paid'} }).then((data)=>{
+                console.log('////////////',data);
                 res.status(200).json({ Success: true,Message :"Payment Successfull" });
-            // }).catch((error)=>{
-                // res.status(400).json({error});
-            // })
+            }).catch((error)=>{
+                res.status(400).json({error});
+            })
         } else {
             res.status(200).json({ Success: false, Message: "Something went wrong" });
         }
     })
 
     .post('/fail', (req, res) => {
-        res.status(200).json({ Success: false });
+        Order.findOne({'payment_details.0.txnid':req.body.txnid }).then((data)=>{
+            if(data.paymentstatus == 'Paid'){
+                res.status(200).json({ Success: true ,Message:"The Payment Has Been Done Already!"});    
+            }else{
+                res.status(200).json({ Success: false});
+            }
+        })
     })
 
 module.exports = { paymentRouter };

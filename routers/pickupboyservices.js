@@ -75,7 +75,6 @@ pickupboyserviceRouter
                 var name = requestOrder.customer.first_Name;
                 var email = requestOrder.customer.email;
                 var mobile = requestOrder.customer.mobile;
-                // console.log('===', name, email, mobile, req.body.requestId);
 
                 generateMail(email,
                     `<!DOCTYPE html>
@@ -124,7 +123,6 @@ pickupboyserviceRouter
                 if (!data) {
                     res.status(200).json({ Success: false, Message: 'Order Not Found!' });
                 }
-                // console.log('data=', data.address[0].home[0]);
                 var home = data.address[0].home[0];
                 var other = data.address[0].other[0];
                 var requestId = data._id;
@@ -161,9 +159,9 @@ pickupboyserviceRouter
                     // order.updated_by = order.updated_by;
                     order.status = true;
                     order.state = true;
-                    // console.log('=============',order);
+                  
                     order.save().then((data) => {
-                        // console.log(data);
+                       
                         RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
                             $set: {
                                 status: false,
@@ -210,15 +208,15 @@ pickupboyserviceRouter
 
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
-        console.log(decoded._id)
+        
         Order.find({
             'pickupdelivery': decoded._id,
-            "order_status": 'Ready To Deliver',
+            "order_status": 'Ready for Delivery',
             'state': true,
             'status': true
         }).populate('customer')
             .then((orders) => {
-                console.log(orders)
+                
                 if (!orders) {
                     res.status(200).json({ Success: true, Message: "No Orders" });
                 } else {
@@ -246,7 +244,7 @@ pickupboyserviceRouter
                 var mobile = order.customer.mobile;
                 var amount = order.order_amount;
                 var total_qty = order.total_qty;
-                // console.log('===', name, amount,email,total_qty, mobile, req.body.order_id);    
+                    
                 generateMail(email,
                     `<!DOCTYPE html>
            <html>
@@ -302,7 +300,7 @@ pickupboyserviceRouter
                     var mobile = order.customer.mobile;
                     var amount = order.order_amount;
                     var total_qty = order.total_qty;
-                    // console.log('===', name, amount,email,total_qty, mobile, req.body.order_id);    
+                       
                     generateMail(email,
                         `<!DOCTYPE html>
            <html>

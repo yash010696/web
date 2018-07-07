@@ -97,13 +97,15 @@ mrequestordersRouter
                                     req.body.pickupDate = newDate;
                                     req.body.request_status = "Request Received";
                                     req.body.pickupdelivery = null;
+                                    req.body.picked_at = null;
+                                    req.body.unpicked_at =null;
                                     req.body.customer = decoded._id;
                                     // req.body.created_by = decoded._id;
                                     // req.body.updated_by = decoded._id;
                                     req.body.state = true;
                                     req.body.status = true;
 
-                                    // console.log('=============', req.body);
+                                   
                                     var requestOrder = new RequestOrder(req.body);
                                     if (home) {
                                         requestOrder.address.push({ home });
@@ -150,7 +152,6 @@ mrequestordersRouter
                                     })
                                 })
                             }).catch((err) => {
-                                // console.log(err);
                                 res.status(400).json({ err });
                             })
                         })
@@ -178,7 +179,6 @@ mrequestordersRouter
                 } else {
                     // Customer.find({'address.0.home.0._id':order.locationType}).then((data)=>{
                     //     order.locationType=data[0].address[0].home ;
-                    //     console.log(order);
                     res.status(200).json({ Success: true, order });
                     // })
                 }
@@ -257,7 +257,6 @@ mrequestordersRouter
     })
 
     .get('/morderdetail/:id', (req, res) => {
-        // console.log(req.params.id);
         Order.find({ 'order_id': req.params.id })
             .then((data) => {
                 var _id = data[0]._id;
@@ -287,7 +286,7 @@ mrequestordersRouter
                         var current_due;
                         var previous_due;
                         var orderList = [];
-
+                        
                         var data = {
                             order_id: invoices[0].order.order_id,
                             order_status: invoices[0].order.order_status,
@@ -311,7 +310,7 @@ mrequestordersRouter
                             previous_due: invoices[0].ordertransaction.previous_due,
                             orderList
                         }
-
+                        
                         invoices[0].tag.tagDetailsService.forEach(services => {
                             services.subservice.forEach(subsevice => {
                                 subsevice.garmentlist.forEach((garment, idx) => {

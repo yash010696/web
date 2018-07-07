@@ -135,6 +135,9 @@ var orderSchema = new Schema({
     default: null
   },
   payment_details: [{
+    payment_type:{
+      type:String
+    },
     mihpayid: {
       type: String,
       trim: true

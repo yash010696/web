@@ -17,7 +17,6 @@ function otpGenerate() {
         otp += chars.substring(rnum, rnum + 1);
     }
     setTimeout(() => {
-        localStorage.removeItem('otp')
     }, 300000); //1000ms=1 sec // 300000ms=300sec=5min
     return otp;
 
@@ -28,7 +27,7 @@ otpRouter
     .post('/login', (req, res) => {
 
         let phone = req.body.mobile;
-        localStorage.setItem('phone', phone);
+        // localStorage.setItem('phone', phone);
         Customer.find({ 'mobile': phone }).then((user) => {
             if (!user[0]) {
                 res.status(200).json({ Success: false, Message: 'Authentication Failed.No User Found' });
@@ -67,17 +66,16 @@ otpRouter
        })
     })
 
-    .post('/otpGenerate', (req, res) => {
-        // console.log(req.body);
-        var phone = localStorage.getItem('phone');
+    // .post('/otpGenerate', (req, res) => {
+    //      var phone = localStorage.getItem('phone');
 
-        otp = otpGenerate();
-        generateSms(phone, `Your Otp is ${otp}`).then((data) => {
-            res.status(200).json({ data, Success: true, Message: 'Otp send to mobile number.' });
-        }, (err) => {
-            res.status(200).json({ Success: false, Message: `${err}` });
-        });
+    //     otp = otpGenerate();
+    //     generateSms(phone, `Your Otp is ${otp}`).then((data) => {
+    //         res.status(200).json({ data, Success: true, Message: 'Otp send to mobile number.' });
+    //     }, (err) => {
+    //         res.status(200).json({ Success: false, Message: `${err}` });
+    //     });
 
-    })
+    // })
 
 module.exports = { otpRouter };
