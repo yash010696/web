@@ -14,7 +14,7 @@ var generateSms = require('./../middlewear/sms');
 var generateMail = require('./../middlewear/mail');
 var serviceType = require('./../models/servicetype');
 var Timeslot = require('./../models/timeslot');
-
+var Ordertype = require('./../models/ordertype');
 
 var mrequestordersRouter = express.Router();
 
@@ -64,6 +64,7 @@ mrequestordersRouter
                 name = customer.first_Name;
                 mobile = customer.mobile;
                 email = customer.email;
+                req.body.ordertype = customer.order_type;
 
                 var counter; var orderid; var store_code;
                 Franchise.find({ statee: true, area: { $in: [req.body.area] } }).
@@ -89,6 +90,7 @@ mrequestordersRouter
 
                             Timeslot.find({ 'time_Slot': req.body.timeSlot }).then((data) => {
                                 req.body.timeSlot = data[0]._id;
+                                req.body.ordertype = ordertype._id
 
                                 serviceType.find({ 'type': req.body.servicetype }).then((servicetype) => {
                                     req.body.servicetype = servicetype[0]._id;
@@ -98,14 +100,13 @@ mrequestordersRouter
                                     req.body.request_status = "Request Received";
                                     req.body.pickupdelivery = null;
                                     req.body.picked_at = null;
-                                    req.body.unpicked_at =null;
+                                    req.body.unpicked_at = null;
                                     req.body.customer = decoded._id;
                                     // req.body.created_by = decoded._id;
                                     // req.body.updated_by = decoded._id;
                                     req.body.state = true;
                                     req.body.status = true;
 
-                                   
                                     var requestOrder = new RequestOrder(req.body);
                                     if (home) {
                                         requestOrder.address.push({ home });
@@ -265,6 +266,7 @@ mrequestordersRouter
                     .populate({ path: 'order', populate: { path: 'requestId' } })
                     .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
                     .then((invoices) => {
+                        console.log(invoices);
                         var order_id;
                         var order_status;
                         var pickupDate;
@@ -286,9 +288,30 @@ mrequestordersRouter
                         var current_due;
                         var previous_due;
                         var orderList = [];
-                        
+
+                        invoices[0].tag.tagDetailsService.forEach(services => {
+                            services.subservice.forEach(subsevice => {
+                                subsevice.garmentlist.forEach((garment, idx) => {
+                                    garment.garmentTagDetails.forEach((tag, index) => {
+                                        let tagsArray = JSON.parse(JSON.stringify((tag.tag_Format).split('|')));
+                                        service = tagsArray[1];
+                                        subservice = tag.subservice;
+                                        dress = tagsArray[3];
+                                        price = tag.price;
+                                    });
+                                    // console.log(service,'/',subservice,'/',dress,'/',price,'/');
+                                    orderList.push({
+                                        'service': service,
+                                        'subservice': subservice,
+                                        'dress': dress,
+                                        'price': price,
+                                    });
+                                });
+                            });
+                        });
+
                         var data = {
-                            order_id: invoices[0].order.order_id,
+                            order_id: console.log(invoices[0].order.order_id),
                             order_status: invoices[0].order.order_status,
                             pickupDate: invoices[0].order.requestId.pickupDate,
                             timeSlot: invoices[0].order.requestId.timeSlot.time_Slot,
@@ -310,27 +333,6 @@ mrequestordersRouter
                             previous_due: invoices[0].ordertransaction.previous_due,
                             orderList
                         }
-                        
-                        invoices[0].tag.tagDetailsService.forEach(services => {
-                            services.subservice.forEach(subsevice => {
-                                subsevice.garmentlist.forEach((garment, idx) => {
-                                    garment.garmentTagDetails.forEach((tag, index) => {
-                                        let tagsArray = JSON.parse(JSON.stringify((tag.tag_Format).split('|')));
-                                        service = tagsArray[1];
-                                        subservice = tag.subservice;
-                                        dress = tagsArray[3];
-                                        price = tag.price;
-                                    });
-
-                                    orderList.push({
-                                        'service': service,
-                                        'subservice': subservice,
-                                        'dress': dress,
-                                        'price': price,
-                                    });
-                                });
-                            });
-                        });
                         res.status(200).json({ Success: true, data });
                     }).catch((err) => {
                         res.status(400).json({ err });

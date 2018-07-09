@@ -12,6 +12,7 @@ var Franchise = require('./../models/franchise');
 var generateSms = require('./../middlewear/sms');
 var generateMail = require('./../middlewear/mail');
 var Customer = require('./../models/customer');
+var Ordertype = require('./ordertype');
 
 
 var pickupboyserviceRouter = express.Router();
@@ -154,6 +155,7 @@ pickupboyserviceRouter
                     order.total_qty = req.body.total_qty;
                     order.pickupdelivery = null;
                     order.paymentstatus = 'UnPaid';
+                    order.ordertype=data.ordertype;
                     order.address.push({ home, other });
                     // order.created_by = order.created_by;
                     // order.updated_by = order.updated_by;

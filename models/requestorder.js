@@ -6,6 +6,7 @@ var Pickupdeliveryboy = require('./pickupdeliveryboy');;
 var Franchise = require('./../models/franchise');
 var Servicetype = require('./../models/servicetype');
 var Timeslot = require('./../models/timeslot');
+var Ordertype = require('./ordertype');
 var User = require('./../models/user');
 
 var RequestOrderSchema = new mongoose.Schema({
@@ -88,6 +89,10 @@ var RequestOrderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Timeslot'
     },
+    ordertype: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ordertype'
+      },
     franchise: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Franchise'

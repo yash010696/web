@@ -62,10 +62,10 @@ paymentRouter
             email: req.body.email,
             phone: req.body.phone,
             firstname: req.body.firstname,
-            // surl: "http://localhost:3000/api/success",
-            // furl: "http://localhost:3000/api/fail",
-            surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
-            furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"            
+            surl: "http://localhost:3000/api/success",
+            furl: "http://localhost:3000/api/fail",
+            // surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
+            // furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"            
         };
         payumoney.makePayment(paymentData, function (error, response) {
             if (error) {
@@ -74,7 +74,7 @@ paymentRouter
                 const bitly = new BitlyClient('e882848e14f6f402b175cb53c404afe9ead68ec3', {});
                 bitly.shorten(response).then((result) => {
                     generateSms(req.body.phone,
-                        `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due [Amount]. ${result.url} Thanks 24:Klen Laundry Science.`
+                        `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due [Amount].You can now pay for your order with the link below ${result.url} Thanks 24:Klen Laundry Science.`
                     )
                 }).catch(function (error) {
                     res.status(400).json({ error });
@@ -91,7 +91,7 @@ paymentRouter
                     <script src="main.js"></script>                                                
                     </head>
                     <body>
-                    <table>s
+                    <table>
                         <tr><td style="width:100%;text-align:left;"><b>Dear Yash,</b></td></tr>
                         
                         <tr><td>Your order is successfully created and in-progress. You can now pay for your order with the link below.</td></tr>
