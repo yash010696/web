@@ -115,15 +115,15 @@ var RequestOrderSchema = new mongoose.Schema({
     status: {
         type: Boolean
     },
-    request_status: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    pickupdelivery: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Pickupdeliveryboy'
-    },
+    // request_status: {
+    //     type: String,
+    //     required: true,
+    //     trim: true
+    // },
+    // pickupdelivery: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Pickupdeliveryboy'
+    // },
     message: {
         type: String,
         default: null

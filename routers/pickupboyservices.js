@@ -130,9 +130,6 @@ pickupboyserviceRouter
                 var name = data.customer.first_Name;
                 var email = data.customer.email;
                 var mobile = data.customer.mobile;
-
-                
-                
                 
                 var store_code = data.franchise.store_code;
                 Order.find({ 'franchise': data.franchise._id }).then((results) => {
@@ -147,8 +144,7 @@ pickupboyserviceRouter
                     order.order_id = id;
                     order.requestId = requestId;
                     order.order_amount = 00;
-                    order.order_status = 'Picked up';
-                    order.partialorder = true;
+                    order.order_status = 'picked up';
                     order.franchise = data.franchise._id;
                     order.customer = data.customer;
                     order.servicetype = data.servicetype;
@@ -167,7 +163,7 @@ pickupboyserviceRouter
                         RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
                             $set: {
                                 status: false,
-                                request_status: "Picked up",
+                                request_status: "picked up",
                                 picked_at : new Date()
                             }
                         }).then((order));

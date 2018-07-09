@@ -38,10 +38,13 @@ paymentRouter
         KEY = "F1z7coeW",
         SALT = "JjckyBbOBD"
         var shasum = crypto.createHash('sha512'),
-            dataSequence = KEY + '|' + req.body.txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
+            // dataSequence = KEY + '|' + req.body.txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
+            dataSequence = KEY + '|' + req.body.txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '||||||' + SALT,
+            // key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt
             Hash = shasum.update(dataSequence).digest('hex');
         res.status(200).json({ success: true, Hash });
     })
+
     .post('/getShaKey', function (req, res) {
         var newdate = new Date();
         var date = formatDate(newdate);
@@ -74,7 +77,7 @@ paymentRouter
                 const bitly = new BitlyClient('e882848e14f6f402b175cb53c404afe9ead68ec3', {});
                 bitly.shorten(response).then((result) => {
                     generateSms(req.body.phone,
-                        `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due [Amount].You can now pay for your order with the link below ${result.url} Thanks 24:Klen Laundry Science.`
+                        `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due 100.You can now pay for your order with the link below ${result.url} Thanks 24:Klen Laundry Science.`
                     )
                 }).catch(function (error) {
                     res.status(400).json({ error });
@@ -99,7 +102,7 @@ paymentRouter
                         <tr><td>Your order details are:</td></tr>
                         <br>
                         <tr><td>Order ID: [OrderID]</td></tr>
-                        <tr><td>Amount to pay: [Amount]</td></tr>
+                        <tr><td>Amount to pay: 100</td></tr>
                         <tr>    
                         <td style="width:100%;text-align:left;">
                         <br>
@@ -151,6 +154,7 @@ paymentRouter
 
     .post('/fail', (req, res) => {
         Order.findOne({'payment_details.0.txnid':req.body.txnid }).then((data)=>{
+            // console.log(data);
             if(data.paymentstatus == 'Paid'){
                 res.status(200).json({ Success: true ,Message:"The Payment Has Been Done Already!"});    
             }else{

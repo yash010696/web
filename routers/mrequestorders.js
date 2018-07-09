@@ -65,7 +65,7 @@ mrequestordersRouter
                 mobile = customer.mobile;
                 email = customer.email;
                 req.body.ordertype = customer.order_type;
-
+                
                 var counter; var orderid; var store_code;
                 Franchise.find({ statee: true, area: { $in: [req.body.area] } }).
                     exec(function (err, franchises) {
@@ -84,14 +84,12 @@ mrequestordersRouter
                             var pad = "0000";
                             var ans = pad.substring(0, pad.length - str.length) + str;
                             requestId = store_code + ans;
-
+                            
                             var date = new Date(req.body.pickupDate);
                             var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000));
-
+                            
                             Timeslot.find({ 'time_Slot': req.body.timeSlot }).then((data) => {
-                                req.body.timeSlot = data[0]._id;
-                                req.body.ordertype = ordertype._id
-
+                                req.body.timeSlot = data[0]._id;    
                                 serviceType.find({ 'type': req.body.servicetype }).then((servicetype) => {
                                     req.body.servicetype = servicetype[0]._id;
                                     req.body.franchise = franchises[0]._id;
@@ -106,7 +104,7 @@ mrequestordersRouter
                                     // req.body.updated_by = decoded._id;
                                     req.body.state = true;
                                     req.body.status = true;
-
+                                    
                                     var requestOrder = new RequestOrder(req.body);
                                     if (home) {
                                         requestOrder.address.push({ home });

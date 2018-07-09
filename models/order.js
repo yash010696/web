@@ -73,9 +73,6 @@ var orderSchema = new Schema({
   paymentstatus: {
     type: String,
   },
-  partialorder: {
-    type: Boolean
-  },
   address: [{
     home: [{
       pincode: {

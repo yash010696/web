@@ -34,8 +34,8 @@ customerProfileRouter
             req.body.dob = newDate;
         }
 
-        Franchise.find({ statee: true, area: { $in: [req.body.area] } }).then((franchise) => {
-            req.body.franchise = franchise[0]._id;
+        // Franchise.find({ statee: true, area: { $in: [req.body.area] } }).then((franchise) => {
+            // req.body.franchise = franchise[0]._id;
 
             Customer.findOneAndUpdate({ '_id': id }, {
                 $set: req.body
@@ -45,10 +45,10 @@ customerProfileRouter
                 } else {
                     res.status(200).json({ Success: true, Message: 'Profile Updated Successfully' });
                 }
+            }).catch((err) => {
+                res.status(400).json(err);
             })
-        }).catch((err) => {
-            res.status(400).json(err);
-        })
+        // })
     })
 
 
