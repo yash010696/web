@@ -7,6 +7,7 @@ var Franchise = require('./franchise');
 var Servicetype = require('./servicetype');
 var Ordertype = require('./ordertype');
 var RequestOrder = require('./requestorder');
+var Pickupdeliveryboy = require('./pickupdeliveryboy');
 var orderSchema = new Schema({
   order_id: {
     type: String,
@@ -65,10 +66,6 @@ var orderSchema = new Schema({
   requestId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'RequestOrder'
-  },
-  pickupdelivery: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Pickupdeliveryboy'
   },
   paymentstatus: {
     type: String,
@@ -130,6 +127,10 @@ var orderSchema = new Schema({
   delivered_at: {
     type: Date,
     default: null
+  },
+  deliveryassign_to: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Pickupdeliveryboy'
   },
   payment_details: [{
     payment_type:{

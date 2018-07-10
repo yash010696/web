@@ -206,9 +206,8 @@ pickupboyserviceRouter
 
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
-        
         Order.find({
-            'pickupdelivery': decoded._id,
+            'deliveryassign_to': decoded._id,
             "order_status": 'Ready for Delivery',
             'state': true,
             'status': true
