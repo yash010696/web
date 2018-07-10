@@ -264,7 +264,6 @@ mrequestordersRouter
                     .populate({ path: 'order', populate: { path: 'requestId' } })
                     .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
                     .then((invoices) => {
-                        console.log(invoices);
                         var order_id;
                         var order_status;
                         var pickupDate;
@@ -309,7 +308,7 @@ mrequestordersRouter
                         });
 
                         var data = {
-                            order_id: console.log(invoices[0].order.order_id),
+                            order_id: invoices[0].order.order_id,
                             order_status: invoices[0].order.order_status,
                             pickupDate: invoices[0].order.requestId.pickupDate,
                             timeSlot: invoices[0].order.requestId.timeSlot.time_Slot,
