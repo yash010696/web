@@ -142,7 +142,6 @@ paymentRouter
             var order_id= 'AU0001';
             //need to use orderid here
             Order.findOneAndUpdate({'order_id':order_id },{$push :{payment_details : success},$set:{paymentstatus:'Paid'} }).then((data)=>{
-                console.log('////////////',data);
                 res.status(200).json({ Success: true,Message :"Payment Successfull" });
             }).catch((error)=>{
                 res.status(400).json({error});

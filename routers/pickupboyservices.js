@@ -263,10 +263,10 @@ pickupboyserviceRouter
                <tr><b>Thanks,</b></tr>
                                                                                        
                <tr><b>Team 24Klen Laundry Science</b></tr>
-            </table>
+           </table>
            </body>
            </html>`,
-                    `Missed the Pickup/Delivery with 24klen Laundry Science`
+           `Missed the Pickup/Delivery with 24klen Laundry Science`
                 );
                 generateSms(mobile,
                     `Dear ${name}, We attempted to complete your request for ${order.order_id} , however it was unsuccessful.`
@@ -321,8 +321,8 @@ pickupboyserviceRouter
                <tr><b>Team 24Klen Laundry Science</b></tr>
             </table>
             </body>
-           </html>`,
-                        `Successful Order Delivery ${req.body.order_id} with 24klen Laundry Science`
+            </html>`,
+            `Successful Order Delivery ${req.body.order_id} with 24klen Laundry Science`
                     );
                     generateSms(mobile,
                         `Dear ${name} Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.Thank you`

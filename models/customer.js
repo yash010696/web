@@ -57,16 +57,6 @@ var customerSchema = new Schema({
     referral_Code: {
         type: String,
     },
-    username: {
-        type: String,
-        trim: true
-    },
-    password: {
-        type: String
-    },
-    confirm_Password: {
-        type: String
-    },
     address: [{
         home: [{
             pincode: {

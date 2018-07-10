@@ -3,7 +3,7 @@ var express = require('express');
 var nodeMailer = require('nodemailer');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+// var logger = require('morgan');
 var morgan = require('morgan');
 var mongoose = require('mongoose');
 var passport = require('passport');
@@ -76,7 +76,7 @@ const router = express.Router()
 var app = express();
 const port = process.env.PORT || 3000;
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());

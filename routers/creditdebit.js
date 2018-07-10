@@ -6,6 +6,7 @@ require('./../config/passport')(passport);
 var config = require('./../config/config');
 
 var creditdebitRouter = express.Router();
+var Ordertransaction = require('../models/ordertransaction');
 var Customer = require('./../models/customer');
 var { CreditDebit } = require('./../models/creditdebit');
 
