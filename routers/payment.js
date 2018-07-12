@@ -139,8 +139,9 @@ paymentRouter
                 mode: req.body.mode,
                 net_amount_debit: req.body.net_amount_debit
             }
-            var order_id= 'AU0001';
-            //need to use orderid here
+            
+            var txnid=req.body.txnid;
+            var order_id=txnid.slice(8,txnid.length);
             Order.findOneAndUpdate({'order_id':order_id },{$push :{payment_details : success},$set:{paymentstatus:'Paid'} }).then((data)=>{
                 res.status(200).json({ Success: true,Message :"Payment Successfull" });
             }).catch((error)=>{

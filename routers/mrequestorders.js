@@ -266,7 +266,10 @@ mrequestordersRouter
                     .then((invoices) => {
                         var order_id;
                         var order_status;
-                        var pickupDate;
+                        var pickupDate=invoices[0].order.requestId.pickupDate;
+                        var pickupDate1=JSON.stringify(pickupDate).slice(1,11);
+                        var deliveryDate=invoices[0].order.due_date;
+                        var deliveryDate1=JSON.stringify(deliveryDate).slice(1,11);
                         var timeSlot;
                         var selectedsgstpercent;
                         var selectedcgstpercent;
@@ -279,7 +282,6 @@ mrequestordersRouter
                         var email;
                         var mobile;
                         var pickupAddress;
-                        var deliveryDate;
                         var balance_due;
                         var advance;
                         var current_due;
@@ -310,7 +312,7 @@ mrequestordersRouter
                         var data = {
                             order_id: invoices[0].order.order_id,
                             order_status: invoices[0].order.order_status,
-                            pickupDate: invoices[0].order.requestId.pickupDate,
+                            pickupDate:pickupDate1,
                             timeSlot: invoices[0].order.requestId.timeSlot.time_Slot,
                             selectedsgstpercent: invoices[0].ordertransaction.selectedsgstpercent,
                             selectedcgstpercent: invoices[0].ordertransaction.selectedcgstpercent,
@@ -323,7 +325,7 @@ mrequestordersRouter
                             email: invoices[0].customer.email,
                             mobile: invoices[0].customer.mobile,
                             pickupAddress: invoices[0].order.requestId.address[0],
-                            deliveryDate: invoices[0].order.due_date,
+                            deliveryDate:deliveryDate1,
                             balance_due: invoices[0].ordertransaction.balance_due,
                             advance: invoices[0].ordertransaction.advance,
                             current_due: invoices[0].ordertransaction.current_due,

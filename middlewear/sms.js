@@ -11,8 +11,8 @@ module.exports=function generateSms(phone,message){
                 request({
                     url: `http://bhashsms.com/api/sendmsg.php?user=laundryscience&pass=24klen123&sender=KLENLS&phone=${phone}&text=${message}&priority=ndnd&stype=normal`,
                     method: 'post',
-                }, function (error, response, data) {
-                    if (error) {
+                }, function (err, response, data) {
+                    if (err) {
                         return reject(err);
                     } else {
                         return resolve(data);

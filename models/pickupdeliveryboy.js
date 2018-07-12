@@ -58,6 +58,9 @@ var pickupdeliveyboySchema = new Schema({
     },
     statee: {
         type: Boolean
+    },
+    otp:{
+        type:String
     }
 },{
     timestamps: true

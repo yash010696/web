@@ -16,10 +16,7 @@ function otpGenerate() {
         var rnum = Math.floor(Math.random() * chars.length);
         otp1 += chars.substring(rnum, rnum + 1);
     }
-    localStorage.setItem('otp1', otp1);
-    setTimeout(() => {
-        localStorage.removeItem('otp1')
-    }, 300000); //1000ms=1 sec // 300000ms=300sec=5min
+    setTimeout(() => {}, 300000); //1000ms=1 sec // 300000ms=300sec=5min
     return otp1;
 }
 
@@ -27,8 +24,7 @@ var token;
 mpickupdeliveryboyRouter
     .post('/plogin', (req, res) => {
         let phone = req.body.mobile;
-        // console.log(phone)
-        localStorage.setItem('phone', phone);
+        // localStorage.setItem('phone', phone);
         Pickupdeliveryboy.find({ 'mobile': phone }).then((user) => {
 
             if (!user[0]) {
@@ -37,6 +33,9 @@ mpickupdeliveryboyRouter
             else {
                 token = jwt.sign(user[0].toJSON(), config.secret, { expiresIn: 604800 });
                 otp1 = otpGenerate();
+                Pickupdeliveryboy.findOneAndUpdate({'_id': user[0]._id},{
+                    $set:{otp:otp1}
+                }).then((data)=>{});
                 generateSms(phone,
                     `Your 24Klen Laundry App One Time Password is ${otp1}. Happy cleaning!`
                 ).then((data) => {
@@ -52,16 +51,16 @@ mpickupdeliveryboyRouter
 
     .post('/pverification', (req, res) => {
         var otp = req.body.otp;
-        var otp1 = localStorage.getItem('otp1');
-        // console.log('otp', otp1, '//', otp);
-        if (otp == otp1) {
-            localStorage.removeItem('otp1');
-            localStorage.removeItem('phone');
-            res.status(200).header('x-auth', `JWT ${token}`).json({ token: 'JWT ' + token, Success: true, Message: 'Logged In Successfully' });
-        } else {
-            localStorage.removeItem('otp1');
-            res.status(200).json({ Success: false, Message: 'Invalid Otp' });
-        }
+        Pickupdeliveryboy.findOne({'otp' :req.body.otp}).then((customer)=>{
+            if(!customer){
+             res.status(200).json({ Success: false, Message: 'Invalid Otp' });
+            }else{
+                Pickupdeliveryboy.findOneAndUpdate({ '_id': customer._id }, {
+                 $set: { otp: null }
+             }).then((data)=>{});   
+             res.status(200).header('x-auth', `JWT ${token}`).json({ token: 'JWT ' + token, Success: true, Message: 'Logged In Successfully' });
+            }
+        })
     })
 
     // .post('/potpGenerate', (req, res) => {

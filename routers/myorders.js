@@ -7,6 +7,9 @@ var config = require('./../config/config');
 var RequestOrder = require('./../models/requestorder');
 var Order = require('./../models/order');
 var orderstatus = require('./../models/orderstatus');
+var fs=require('fs');
+var Customer = require('./../models/customer');
+
 var MyOrdersRouter = express.Router();
 
 MyOrdersRouter
@@ -95,4 +98,43 @@ MyOrdersRouter
             res.status(400).json({ err });
         })
     })
-module.exports = { MyOrdersRouter }
+
+    .post('/database',  (req, res) => {
+        var notestring=fs.readFileSync(__dirname +"./../customer.json");
+        notes=JSON.parse(notestring);
+    
+        notes.forEach(element => {
+            var customer= new Customer();
+            customer.first_Name=element.first_Name;
+            customer.email=element.email;
+            customer.mobile=element.mobile;
+            customer.dob=element.dob;
+            customer.gender=element.gender;
+            customer.whatsup=element.whatsup;
+            customer.franchise='5b309c4f1bd04e00204ca20c';
+            var home=element.home.split(";");
+            // var other=element.other.split(";");
+            
+            var home = {
+                flat_no: home[0],
+                society: home[1],
+                landmark: home[2],
+                pincode: home[3]
+            }
+            // console.log('/////////////////',home);
+            var other = {
+                flat_no: other[0], 
+                society: other[1],
+                landmark: other[2],
+                pincode: other[3]
+            }
+            // console.log('/////////////////',other);
+            customer.address.push({ home, other });
+        
+            console.log('customer',customer);
+            customer.save().then((data)=>{});
+        });
+        res.json("data added");
+    })
+
+    module.exports = { MyOrdersRouter }

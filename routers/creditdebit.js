@@ -9,6 +9,7 @@ var creditdebitRouter = express.Router();
 var Ordertransaction = require('../models/ordertransaction');
 var Customer = require('./../models/customer');
 var { CreditDebit } = require('./../models/creditdebit');
+var Paymentdetail=require('./../models/paymentdetail');
 
 creditdebitRouter
 
@@ -137,20 +138,22 @@ creditdebitRouter
 
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
-
-        CreditDebit.find({ 'created_by': decoded._id }).then((customer) => {
+        Paymentdetail.find({ 'customer': decoded._id }).then((customer) => {
             if (!customer[0]) {
-                res.status(200).json({Success:true,pendingAmount:0,balanceAmount:0});
+                res.status(200).json({Success:true,due_amt:0,advance:0});
             } else {
-                pendingAmount = customer[0].pendingAmount;
-                balanceAmount = customer[0].balanceAmount;
+                due_amt = customer[0].due_amt;
+                advance = customer[0].advance;
 
-                res.status(200).json({ Success: true, pendingAmount, balanceAmount });
+                res.status(200).json({ Success: true, due_amt, advance });
+                
             }
         }, (err) => {
             res.status(400).json({ Success: false, err });
         })
 
     })
+
+
 
 module.exports = { creditdebitRouter };

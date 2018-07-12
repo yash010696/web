@@ -7,6 +7,8 @@ var Coupon = require('../models/coupon');
 var Verifytoken = require('./loginadmin');
 var couponRouter = express.Router();
 const checkAuth = require('../middlewear/check-auth');
+var Customer = require('./../models/customer');
+var generateSms = require('./../middlewear/sms');
 ///Create router for  register the new user.
 
 couponRouter
@@ -232,5 +234,20 @@ couponRouter
                 message: 'Unable to found.'
             });
         });
+    })
+
+    couponRouter
+    .route('/bulksms')
+    .post((req,res)=>{
+        Customer.find().then((customer)=>{
+
+            customer.forEach(element =>{
+                generateSms(element.mobile,
+                    `Bulk SMS from node.js`
+                );
+            })
+            res.json("send");
+            
+        })
     })
 module.exports = couponRouter;
