@@ -8,6 +8,7 @@ var Servicetype = require('./../models/servicetype');
 var Timeslot = require('./../models/timeslot');
 var Ordertype = require('./ordertype');
 var User = require('./../models/user');
+var Coupon = require('../models/coupon');
 
 var RequestOrderSchema = new mongoose.Schema({
     requestId: {
@@ -135,6 +136,10 @@ var RequestOrderSchema = new mongoose.Schema({
     unpicked_at: {
         type: Date,
         default: null
+    },
+    coupon:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon'
     }
 
 },

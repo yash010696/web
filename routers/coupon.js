@@ -62,32 +62,32 @@ couponRouter
     //Create router for fetching All subservice.
     .get(checkAuth, function (req, res) {
         console.log(req.userData);
-        if(req.userData.role=="admin"){
-        Coupon.
-            find({ state: true }).
-            populate('franchise').
-            exec(function (err, coupons) {
-                if (err) {
-                    res.status(500).send(err);
-                    return;
-                }
-                console.log('The Coupon  is %s', coupons);
-                res.json(coupons);
-            });
+        if (req.userData.role == "admin") {
+            Coupon.
+                find({ state: true }).
+                populate('franchise').
+                exec(function (err, coupons) {
+                    if (err) {
+                        res.status(500).send(err);
+                        return;
+                    }
+                    console.log('The Coupon  is %s', coupons);
+                    res.json(coupons);
+                });
         }
-        else{
+        else {
             // var franchiseId = "5b1f9f7789349f3d50c3d854";
             Coupon.
-            find({ state: true ,franchise:req.userData.franchise}).
-            populate('franchise').
-            exec(function (err, coupons) {
-                if (err) {
-                    res.status(500).send(err);
-                    return;
-                }
-                console.log('The Coupon  is %s', coupons);
-                res.json(coupons);
-            });
+                find({ state: true, franchise: req.userData.franchise }).
+                populate('franchise').
+                exec(function (err, coupons) {
+                    if (err) {
+                        res.status(500).send(err);
+                        return;
+                    }
+                    console.log('The Coupon  is %s', coupons);
+                    res.json(coupons);
+                });
         }
     });
 //Get single coupon details
@@ -236,18 +236,37 @@ couponRouter
         });
     })
 
-    couponRouter
+couponRouter
     .route('/bulksms')
-    .post((req,res)=>{
-        Customer.find().then((customer)=>{
+    .post(checkAuth, (req, res) => {
+        Customer.find().then((customer) => {
 
-            customer.forEach(element =>{
+            customer.forEach(element => {
                 generateSms(element.mobile,
                     `Bulk SMS from node.js`
                 );
             })
             res.json("send");
-            
+
         })
     })
+
+couponRouter
+    .route('/mcoupon')
+    .get((req, res) => {
+        var token = req.header('Authorization').split(' ');
+        var decoded = jwt.verify(token[1], config.secret);
+
+        Coupon.find({ state: true, franchise: { '_id': decoded.franchise } }).then((coupon) => {
+            const todayDate = new Date().toLocaleDateString();
+            // const couponexpiryDate =
+            // if( todayDate <= couponexpiryDate){
+                // todayDate <= new Date(element.couponExpireAt).toLocaleDateString()
+            const coupons = coupon.filter(element =>todayDate >= new Date(element.couponExpireAt).toLocaleDateString());
+            // console.log(coupons);
+            res.json({ couponList: coupons });
+        })
+    })
+
+
 module.exports = couponRouter;

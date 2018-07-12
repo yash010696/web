@@ -38,8 +38,8 @@ paymentRouter
         KEY = "F1z7coeW",
         SALT = "JjckyBbOBD"
         var shasum = crypto.createHash('sha512'),
-            // dataSequence = KEY + '|' + req.body.txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
-            dataSequence = KEY + '|' + req.body.txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '||||||' + SALT,
+            dataSequence = KEY + '|' + req.body.txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
+            // dataSequence = KEY + '|' + req.body.txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '||||||' + SALT,
             // key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt
             Hash = shasum.update(dataSequence).digest('hex');
         res.status(200).json({ success: true, Hash });
