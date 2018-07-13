@@ -67,7 +67,7 @@ pickupboyserviceRouter
         RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
             $set: {
                 status: false,
-                request_status: "Order UnPicked",
+                request_status: "unpicked",
                 message: req.body.message,
                 unpicked_at: new Date()
             }
