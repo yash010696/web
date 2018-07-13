@@ -66,7 +66,6 @@ pickupboyserviceRouter
 
         RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
             $set: {
-                status: false,
                 request_status: "unpicked",
                 message: req.body.message,
                 unpicked_at: new Date()
@@ -229,8 +228,7 @@ pickupboyserviceRouter
 
         Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
             $set: {
-                status: false,
-                order_status: "UnDelivered",
+                order_status: "undelivered",
                 message:req.body.message,
                 undelivered_at:new Date()
             }
@@ -283,7 +281,6 @@ pickupboyserviceRouter
 
         Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
             $set: {
-                status: false,
                 order_status: "Delivered",
                 delivered_at:new Date()
             }
