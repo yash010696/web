@@ -140,7 +140,7 @@ pickupboyserviceRouter
                         var ans = pad.substring(0, pad.length - str.length) + str;
                         var id = store_code + ans;
 
-                        // var order = new Order();
+                        var order = new Order();
                         order.order_id = id;
                         order.requestId = requestId;
                         order.order_amount = 00;
