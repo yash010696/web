@@ -12,7 +12,7 @@ var Franchise = require('./../models/franchise');
 var generateSms = require('./../middlewear/sms');
 var generateMail = require('./../middlewear/mail');
 var Customer = require('./../models/customer');
-var Ordertype = require('./ordertype');
+var order_type = require('./../models/ordertype');
 
 
 var pickupboyserviceRouter = express.Router();
@@ -124,52 +124,55 @@ pickupboyserviceRouter
                     res.status(200).json({ Success: false, Message: 'Order Not Found!' });
                 }
                 var home = data.address[0].home[0];
-                var other = data.address[0].other[0];
+                // var other = data.address[0].other[0];
                 var requestId = data._id;
                 var name = data.customer.first_Name;
                 var email = data.customer.email;
                 var mobile = data.customer.mobile;
-                
-                var store_code = data.franchise.store_code;
-                Order.find({ 'franchise': data.franchise._id }).then((results) => {
-                    var count = results.length;
-                    counter = count + 1;
-                    var str = "" + counter;
-                    var pad = "0000";
-                    var ans = pad.substring(0, pad.length - str.length) + str;
-                    var id = store_code + ans;
 
-                    var order = new Order();
-                    order.order_id = id;
-                    order.requestId = requestId;
-                    order.order_amount = 00;
-                    order.order_status = 'picked up';
-                    order.franchise = data.franchise._id;
-                    order.customer = data.customer;
-                    order.servicetype = data.servicetype;
-                    order.total_qty = req.body.total_qty;
-                    order.pickupdelivery = null;
-                    order.paymentstatus = 'UnPaid';
-                    order.ordertype=data.ordertype;
-                    order.address.push({ home, other });
-                    // order.created_by = order.created_by;
-                    // order.updated_by = order.updated_by;
-                    order.status = true;
-                    order.state = true;
-                  
-                    order.save().then((data) => {
-                       
-                        RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
-                            $set: {
-                                status: false,
-                                request_status: "picked up",
-                                picked_at : new Date()
-                            }
-                        }).then((order));
-                        generateSms(mobile,
-                            `Dear ${name},Your Pickup with Qty ${data.total_qty} garments was successful. You will be receiving final bill soon.`
-                        )
-                        res.status(200).json({ Success: true, Message: 'Order Placed SuccessFully' })
+                var store_code = data.franchise.store_code;
+                order_type.findOne({ 'order_type': "on-line" }).then((ordertype) => {
+                    Order.find({ 'franchise': data.franchise._id }).then((results) => {
+                        var count = results.length;
+                        counter = count + 1;
+                        var str = "" + counter;
+                        var pad = "0000";
+                        var ans = pad.substring(0, pad.length - str.length) + str;
+                        var id = store_code + ans;
+
+                        // var order = new Order();
+                        order.order_id = id;
+                        order.requestId = requestId;
+                        order.order_amount = 00;
+                        order.order_status = 'picked up';
+                        order.franchise = data.franchise._id;
+                        order.customer = data.customer;
+                        order.servicetype = data.servicetype;
+                        order.total_qty = req.body.total_qty;
+                        order.pickupdelivery = null;
+                        order.paymentstatus = 'UnPaid';
+                        order.ordertype = ordertype._id;
+                        order.address.push({ home });
+                        // , other
+                        // order.created_by = order.created_by;
+                        // order.updated_by = order.updated_by;
+                        order.status = true;
+                        order.state = true;
+
+                        order.save().then((data) => {
+
+                            RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
+                                $set: {
+                                    status: false,
+                                    request_status: "picked up",
+                                    picked_at: new Date()
+                                }
+                            }).then((order));
+                            generateSms(mobile,
+                                `Dear ${name},Your Pickup with Qty ${data.total_qty} garments was successful. You will be receiving final bill soon.`
+                            )
+                            res.status(200).json({ Success: true, Message: 'Order Placed SuccessFully' })
+                        })
                     })
                 })
             }).catch((err) => {
@@ -212,7 +215,7 @@ pickupboyserviceRouter
             'status': true
         }).populate('customer')
             .then((orders) => {
-                
+
                 if (!orders) {
                     res.status(200).json({ Success: true, Message: "No Orders" });
                 } else {
@@ -229,8 +232,8 @@ pickupboyserviceRouter
         Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
             $set: {
                 order_status: "undelivered",
-                message:req.body.message,
-                undelivered_at:new Date()
+                message: req.body.message,
+                undelivered_at: new Date()
             }
         }).populate('customer')
             .then((order) => {
@@ -239,7 +242,7 @@ pickupboyserviceRouter
                 var mobile = order.customer.mobile;
                 var amount = order.order_amount;
                 var total_qty = order.total_qty;
-                    
+
                 generateMail(email,
                     `<!DOCTYPE html>
            <html>
@@ -263,7 +266,7 @@ pickupboyserviceRouter
            </table>
            </body>
            </html>`,
-           `Missed the Pickup/Delivery with 24klen Laundry Science`
+                    `Missed the Pickup/Delivery with 24klen Laundry Science`
                 );
                 generateSms(mobile,
                     `Dear ${name}, We attempted to complete your request for ${order.order_id} , however it was unsuccessful.`
@@ -282,7 +285,7 @@ pickupboyserviceRouter
         Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
             $set: {
                 order_status: "Delivered",
-                delivered_at:new Date()
+                delivered_at: new Date()
             }
         }).populate('customer')
             .then((order) => {
@@ -294,7 +297,7 @@ pickupboyserviceRouter
                     var mobile = order.customer.mobile;
                     var amount = order.order_amount;
                     var total_qty = order.total_qty;
-                       
+
                     generateMail(email,
                         `<!DOCTYPE html>
            <html>
@@ -318,7 +321,7 @@ pickupboyserviceRouter
             </table>
             </body>
             </html>`,
-            `Successful Order Delivery ${req.body.order_id} with 24klen Laundry Science`
+                        `Successful Order Delivery ${req.body.order_id} with 24klen Laundry Science`
                     );
                     generateSms(mobile,
                         `Dear ${name} Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.Thank you`

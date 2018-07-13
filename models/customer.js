@@ -80,28 +80,28 @@ var customerSchema = new Schema({
                 trim: true
             }
         }],
-        other: [{
-            pincode: {
-                type: String,
-                required: true,
-                trim: true,
-                minlength: 6,
-            },
-            flat_no: {
-                type: String,
-                required: true,
-                trim: true
-            },
-            society: {
-                type: String,
-                trim: true
-            },
-            landmark: {
-                type: String,
-                required: true,
-                trim: true
-            }
-        }],     
+        // other: [{
+        //     pincode: {
+        //         type: String,
+        //         required: true,
+        //         trim: true,
+        //         minlength: 6,
+        //     },
+        //     flat_no: {
+        //         type: String,
+        //         required: true,
+        //         trim: true
+        //     },
+        //     society: {
+        //         type: String,
+        //         trim: true
+        //     },
+        //     landmark: {
+        //         type: String,
+        //         required: true,
+        //         trim: true
+        //     }
+        // }],     
     }],
     city: {
         type: String,

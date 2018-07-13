@@ -48,19 +48,19 @@ mrequestordersRouter
                         req.body.locationType = customer.address[0].home[0]._id;
                     }
                 }
-                else if (req.body.locationType == "Other") {
-                    if (customer.address[0].other[0] == null) {
-                        res.status(200).json({ Success: false, Message: "Other Address Not Found" });
-                    } else {
-                        var other = {
-                            flat_no: customer.address[0].other[0].flat_no,
-                            society: customer.address[0].other[0].society,
-                            landmark: customer.address[0].other[0].landmark,
-                            pincode: customer.address[0].other[0].pincode,
-                        }
-                        req.body.locationType = customer.address[0].other[0]._id;
-                    }
-                }
+                // else if (req.body.locationType == "Other") {
+                //     if (customer.address[0].other[0] == null) {
+                //         res.status(200).json({ Success: false, Message: "Other Address Not Found" });
+                //     } else {
+                //         var other = {
+                //             flat_no: customer.address[0].other[0].flat_no,
+                //             society: customer.address[0].other[0].society,
+                //             landmark: customer.address[0].other[0].landmark,
+                //             pincode: customer.address[0].other[0].pincode,
+                //         }
+                //         req.body.locationType = customer.address[0].other[0]._id;
+                //     }
+                // }
                 name = customer.first_Name;
                 mobile = customer.mobile;
                 email = customer.email;
@@ -108,9 +108,10 @@ mrequestordersRouter
                                     var requestOrder = new RequestOrder(req.body);
                                     if (home) {
                                         requestOrder.address.push({ home });
-                                    } else {
-                                        requestOrder.address.push({ other });
-                                    }
+                                    } 
+                                    // else {
+                                    //     requestOrder.address.push({ other });
+                                    // }
                                     requestOrder.save().then((order) => {
                                         var requestId = order.requestId;
 
@@ -211,22 +212,23 @@ mrequestordersRouter
                         // requestOrder.address.push({home});
                         var locationType = customer.address[0].home[0]._id;
                     }
-                    else if (req.body.locationType == "Other") {
-                        var other = {
-                            flat_no: customer.address[0].other[0].flat_no,
-                            society: customer.address[0].other[0].society,
-                            landmark: customer.address[0].other[0].landmark,
-                            pincode: customer.address[0].other[0].pincode,
-                        }
-                        var locationType = customer.address[0].other[0]._id;
-                    }
+                    // else if (req.body.locationType == "Other") {
+                    //     var other = {
+                    //         flat_no: customer.address[0].other[0].flat_no,
+                    //         society: customer.address[0].other[0].society,
+                    //         landmark: customer.address[0].other[0].landmark,
+                    //         pincode: customer.address[0].other[0].pincode,
+                    //     }
+                    //     var locationType = customer.address[0].other[0]._id;
+                    // }
                     RequestOrder.findOneAndUpdate({ 'requestId': requestId }, {
                         $set: {
                             locationType: locationType,
                             servicetype: req.body.servicetype,
                             pickupDate: req.body.pickupDate,
                             timeSlot: req.body.timeSlot,
-                            'address': { other: other, home: home }
+                            // other: other,
+                            'address': {  home: home }
                         }
                     }, { new: true }).then((requestorder) => {
                         if (!requestorder) {

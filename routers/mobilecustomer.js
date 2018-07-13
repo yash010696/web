@@ -142,35 +142,36 @@ mobilecustomerRouter
                     })
                 }
             })
-        } else if (locationType === "Other") {
-            var other = {
-                pincode: req.body.pincode,
-                flat_no: req.body.flat_no,
-                society: req.body.society,
-                landmark: req.body.landmark,
-            }
-            Customer.findOne({ '_id': decoded._id }).then((customer) => {
-                if (customer.address[0]) {
-                    // console.log('ssssss');
-                    Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address.0.other': other } }, function (err, user) {
-                        if (err) {
-                            res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
-                        } if (user) {
-                            res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
-                        }
-                    })
-                } else {
-                    // console.log('sssssss here');
-                    Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address': { 'other': other } } }, function (err, user) {
-                        if (err) {
-                            res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
-                        } if (user) {
-                            res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
-                        }
-                    })
-                }
-            })
-        }
+        } 
+        // else if (locationType === "Other") {
+        //     var other = {
+        //         pincode: req.body.pincode,
+        //         flat_no: req.body.flat_no,
+        //         society: req.body.society,
+        //         landmark: req.body.landmark,
+        //     }
+        //     Customer.findOne({ '_id': decoded._id }).then((customer) => {
+        //         if (customer.address[0]) {
+        //             // console.log('ssssss');
+        //             Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address.0.other': other } }, function (err, user) {
+        //                 if (err) {
+        //                     res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+        //                 } if (user) {
+        //                     res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
+        //                 }
+        //             })
+        //         } else {
+        //             // console.log('sssssss here');
+        //             Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address': { 'other': other } } }, function (err, user) {
+        //                 if (err) {
+        //                     res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+        //                 } if (user) {
+        //                     res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
+        //                 }
+        //             })
+        //         }
+        //     })
+        // }
     })
 
     .put('/updateaddress', (req, res) => {
@@ -205,21 +206,22 @@ mobilecustomerRouter
                     res.status(200).json({ Success: true, Message: 'Address Updated Successfully' });
                 }
             })
-        } else if (locationType === "Other") {
-            var other = {
-                'address.0.other.0.pincode': req.body.pincode,
-                'address.0.other.0.flat_no': req.body.flat_no,
-                'address.0.other.0.society': req.body.society,
-                'address.0.other.0.landmark': req.body.landmark
-            }
-            Customer.findOneAndUpdate({ '_id': decoded._id }, { $set: other }, function (err, user) {
-                if (err) {
-                    res.status(200).json({ Success: false, Message: 'Unable to update address.' });
-                } if (user) {
-                    res.status(200).json({ Success: true, Message: 'Address Updated Successfully!' });
-                }
-            })
-        }
+        } 
+        // else if (locationType === "Other") {
+        //     var other = {
+        //         'address.0.other.0.pincode': req.body.pincode,
+        //         'address.0.other.0.flat_no': req.body.flat_no,
+        //         'address.0.other.0.society': req.body.society,
+        //         'address.0.other.0.landmark': req.body.landmark
+        //     }
+        //     Customer.findOneAndUpdate({ '_id': decoded._id }, { $set: other }, function (err, user) {
+        //         if (err) {
+        //             res.status(200).json({ Success: false, Message: 'Unable to update address.' });
+        //         } if (user) {
+        //             res.status(200).json({ Success: true, Message: 'Address Updated Successfully!' });
+        //         }
+        //     })
+        // }
     })
 
     .post('/logout', (req, res) => {
