@@ -258,12 +258,9 @@ couponRouter
         var decoded = jwt.verify(token[1], config.secret);
 
         Coupon.find({ state: true, franchise: { '_id': decoded.franchise } }).then((coupon) => {
-            const todayDate = new Date().toLocaleDateString();
-            // const couponexpiryDate =
-            // if( todayDate <= couponexpiryDate){
-                // todayDate <= new Date(element.couponExpireAt).toLocaleDateString()
-            const coupons = coupon.filter(element =>todayDate >= new Date(element.couponExpireAt).toLocaleDateString());
-            // console.log(coupons);
+            const todayDate = new Date();
+            // console.log(';;;;;;;;;;;',Date.parse(todayDate))
+            const coupons = coupon.filter(element => Date.parse(new Date(element.couponExpireAt)) >= Date.parse(todayDate));
             res.json({ couponList: coupons });
         })
     })
