@@ -261,7 +261,7 @@ couponRouter
             const todayDate = new Date();
             // console.log(';;;;;;;;;;;',Date.parse(todayDate))
             const coupons = coupon.filter(element => Date.parse(new Date(element.couponExpireAt)) >= Date.parse(todayDate));
-            res.json({ couponList: coupons });
+            res.status(200).json({Success:true,couponList: coupons });
         })
     })
 
