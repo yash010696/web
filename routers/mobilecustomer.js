@@ -51,6 +51,12 @@ mobilecustomerRouter
                             var ReferralCode = randomstring.toUpperCase();
                             req.body.referral_Code = ReferralCode;
                             // req.body.id = counter;
+                            var home = {
+                                pincode: req.body.pincode,
+                                flat_no: req.body.flat_no,
+                                society: req.body.society,
+                                landmark: req.body.landmark,
+                            }
                             req.body.otp = null;
                             req.body.statee = true;
                             req.body.status = true;
@@ -65,6 +71,7 @@ mobilecustomerRouter
                                 order_type.find({ 'order_type': "on-line" }).then((type) => {
                                     req.body.order_type = type[0]._id;
                                     var customer = new Customer(req.body);
+                                    customer.address.push({'home': home});
                                     customer.save().then((user) => {
                                         var id = user._id;
                                         generateSms(user.mobile,
@@ -110,71 +117,71 @@ mobilecustomerRouter
         }
     })
 
-    .post('/address', (req, res) => {
-        var token = req.header('Authorization').split(' ');
-        var decoded = jwt.verify(token[1], config.secret);
-        var locationType = req.body.locationType;
-        if (locationType === "Home") {
-            var home = {
-                pincode: req.body.pincode,
-                flat_no: req.body.flat_no,
-                society: req.body.society,
-                landmark: req.body.landmark,
-            }
-            Customer.findOne({ '_id': decoded._id }).then((customer) => {
-                if (customer.address[0]) {
-                    // console.log('innnnnn');
-                    Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address.0.home': home } }, function (err, user) {
-                        if (err) {
-                            res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
-                        } if (user) {
-                            res.status(200).json({ Success: true, Message: 'Address Added Successfully' });
-                        }
-                    })
-                } else {
-                    // console.log('innnnnn here');
-                    Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address': { 'home': home } } }, function (err, user) {
-                        if (err) {
-                            res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
-                        } if (user) {
-                            res.status(200).json({ Success: true, Message: 'Address Added Successfully' });
-                        }
-                    })
-                }
-            })
-        } 
-        // else if (locationType === "Other") {
-        //     var other = {
-        //         pincode: req.body.pincode,
-        //         flat_no: req.body.flat_no,
-        //         society: req.body.society,
-        //         landmark: req.body.landmark,
-        //     }
-        //     Customer.findOne({ '_id': decoded._id }).then((customer) => {
-        //         if (customer.address[0]) {
-        //             // console.log('ssssss');
-        //             Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address.0.other': other } }, function (err, user) {
-        //                 if (err) {
-        //                     res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
-        //                 } if (user) {
-        //                     res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
-        //                 }
-        //             })
-        //         } else {
-        //             // console.log('sssssss here');
-        //             Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address': { 'other': other } } }, function (err, user) {
-        //                 if (err) {
-        //                     res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
-        //                 } if (user) {
-        //                     res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
-        //                 }
-        //             })
-        //         }
-        //     })
-        // }
-    })
+    // .post('/address',passport.authenticate('jwt', { session: false }), (req, res) => {
+    //     var token = req.header('Authorization').split(' ');
+    //     var decoded = jwt.verify(token[1], config.secret);
+    //     var locationType = req.body.locationType;
+    //     if (locationType === "Home") {
+    //         var home = {
+    //             pincode: req.body.pincode,
+    //             flat_no: req.body.flat_no,
+    //             society: req.body.society,
+    //             landmark: req.body.landmark,
+    //         }
+    //         Customer.findOne({ '_id': decoded._id }).then((customer) => {
+    //             if (customer.address[0]) {
+    //                 console.log('innnnnn');
+    //                 Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address.0.home': home } }, function (err, user) {
+    //                     if (err) {
+    //                         res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+    //                     } if (user) {
+    //                         res.status(200).json({ Success: true, Message: 'Address Added Successfully' });
+    //                     }
+    //                 })
+    //             } else {
+    //                 console.log('innnnnn here');
+    //                 Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address': { 'home': home } } }, function (err, user) {
+    //                     if (err) {
+    //                         res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+    //                     } if (user) {
+    //                         res.status(200).json({ Success: true, Message: 'Address Added Successfully' });
+    //                     }
+    //                 })
+    //             }
+    //         })
+    //     } 
+    //     // else if (locationType === "Other") {
+    //     //     var other = {
+    //     //         pincode: req.body.pincode,
+    //     //         flat_no: req.body.flat_no,
+    //     //         society: req.body.society,
+    //     //         landmark: req.body.landmark,
+    //     //     }
+    //     //     Customer.findOne({ '_id': decoded._id }).then((customer) => {
+    //     //         if (customer.address[0]) {
+    //     //             // console.log('ssssss');
+    //     //             Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address.0.other': other } }, function (err, user) {
+    //     //                 if (err) {
+    //     //                     res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+    //     //                 } if (user) {
+    //     //                     res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
+    //     //                 }
+    //     //             })
+    //     //         } else {
+    //     //             // console.log('sssssss here');
+    //     //             Customer.findOneAndUpdate({ '_id': decoded._id }, { $push: { 'address': { 'other': other } } }, function (err, user) {
+    //     //                 if (err) {
+    //     //                     res.status(200).json({ Success: false, Message: 'Unable to Add address.' });
+    //     //                 } if (user) {
+    //     //                     res.status(200).json({ Success: true, Message: 'Address Added Successfully!' });
+    //     //                 }
+    //     //             })
+    //     //         }
+    //     //     })
+    //     // }
+    // })
 
-    .put('/updateaddress', (req, res) => {
+    .put('/updateaddress',passport.authenticate('jwt', { session: false }), (req, res) => {
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
         var locationType = req.body.locationType;

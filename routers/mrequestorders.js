@@ -257,7 +257,7 @@ mrequestordersRouter
         })
     })
 
-    .get('/morderdetail/:id', (req, res) => {
+    .get('/morderdetail/:id',passport.authenticate('jwt', { session: false }), (req, res) => {
         Order.find({ 'order_id': req.params.id })
             .then((data) => {
                 var _id = data[0]._id;
@@ -266,25 +266,24 @@ mrequestordersRouter
                     .populate({ path: 'order', populate: { path: 'requestId' } })
                     .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
                     .then((invoices) => {
+                        // console.log(invoices);
+                        if(invoices[0].order.requestId ){
+                            // console.log('///////////////////',invoices[0].order.requestId);
+                            var pickupDate=invoices[0].order.requestId.pickupDate;
+                            var pickupDate1=JSON.stringify(pickupDate).slice(1,11);
+                            var timeSlot=invoices[0].order.requestId.timeSlot.time_Slot;
+                            var pickupAddress= invoices[0].order.requestId.address[0];
+                        }
                         var order_id;
                         var order_status;
-                        var pickupDate=invoices[0].order.requestId.pickupDate;
-                        var pickupDate1=JSON.stringify(pickupDate).slice(1,11);
                         var deliveryDate=invoices[0].order.due_date;
                         var deliveryDate1=JSON.stringify(deliveryDate).slice(1,11);
-                        var timeSlot;
                         var selectedsgstpercent;
                         var selectedcgstpercent;
                         var selectedgstpercent;
-                        var sgst;
-                        var cgst;
-                        var gst;
-                        var net_amount;
-                        var first_Name;
-                        var email;
-                        var mobile;
-                        var pickupAddress;
-                        var balance_due;
+                        var sgst; var cgst; var gst; var net_amount;
+                        var first_Name; var email; var mobile;
+                        var balance_due; 
                         var advance;
                         var current_due;
                         var previous_due;
@@ -315,7 +314,7 @@ mrequestordersRouter
                             order_id: invoices[0].order.order_id,
                             order_status: invoices[0].order.order_status,
                             pickupDate:pickupDate1,
-                            timeSlot: invoices[0].order.requestId.timeSlot.time_Slot,
+                            timeSlot:timeSlot,
                             selectedsgstpercent: invoices[0].ordertransaction.selectedsgstpercent,
                             selectedcgstpercent: invoices[0].ordertransaction.selectedcgstpercent,
                             // selectedgstpercent: (console.log(parseInt(selectedsgstpercent))+ parseInt(selectedcgstpercent)),
@@ -326,7 +325,7 @@ mrequestordersRouter
                             first_Name: invoices[0].customer.first_Name,
                             email: invoices[0].customer.email,
                             mobile: invoices[0].customer.mobile,
-                            pickupAddress: invoices[0].order.requestId.address[0],
+                            pickupAddress:pickupAddress ,
                             deliveryDate:deliveryDate1,
                             balance_due: invoices[0].ordertransaction.balance_due,
                             advance: invoices[0].ordertransaction.advance,

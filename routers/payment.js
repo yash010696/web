@@ -125,6 +125,8 @@ paymentRouter
     })
 
     .post('/success', function (req, res) {
+        KEY = "F1z7coeW";SALT = "JjckyBbOBD"
+        
         var shasum = crypto.createHash('sha512'),
             dataSequence = SALT + '|' + req.body.status + '|||||||||||' + req.body.email + '|' + req.body.firstname + '|' + req.body.productinfo + '|' + req.body.amount + '|' + req.body.txnid + '|' + KEY,
             resultKey = shasum.update(dataSequence).digest('hex');
