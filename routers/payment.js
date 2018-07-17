@@ -126,7 +126,14 @@ paymentRouter
 
     .post('/success', function (req, res) {
         KEY = "F1z7coeW";SALT = "JjckyBbOBD"
-        
+        console.log('////////////',req.body);
+        payumoney.paymentResponse(req.body.txnid, function(error, response) {
+            if (error) {
+                console.log('error:',error);
+            } else {
+              console.log('response=',response);
+            }
+        })
         var shasum = crypto.createHash('sha512'),
             dataSequence = SALT + '|' + req.body.status + '|||||||||||' + req.body.email + '|' + req.body.firstname + '|' + req.body.productinfo + '|' + req.body.amount + '|' + req.body.txnid + '|' + KEY,
             resultKey = shasum.update(dataSequence).digest('hex');

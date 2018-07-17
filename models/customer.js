@@ -12,8 +12,8 @@ var customerSchema = new Schema({
         required: true
     },
     franchise: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Franchise'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Franchise'
     },
     order_type: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,9 +25,9 @@ var customerSchema = new Schema({
     dob: {
         type: Date
     },
-    otp:{
-        type:String,
-        default:null
+    otp: {
+        type: String,
+        default: null
     },
     email: {
         type: String,

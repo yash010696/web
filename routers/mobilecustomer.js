@@ -71,7 +71,7 @@ mobilecustomerRouter
                                 order_type.find({ 'order_type': "on-line" }).then((type) => {
                                     req.body.order_type = type[0]._id;
                                     var customer = new Customer(req.body);
-                                    customer.address.push({'home': home});
+                                    customer.address.push({ 'home': home });
                                     customer.save().then((user) => {
                                         var id = user._id;
                                         generateSms(user.mobile,
@@ -181,7 +181,7 @@ mobilecustomerRouter
     //     // }
     // })
 
-    .put('/updateaddress',passport.authenticate('jwt', { session: false }), (req, res) => {
+    .put('/updateaddress', passport.authenticate('jwt', { session: false }), (req, res) => {
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
         var locationType = req.body.locationType;
@@ -198,7 +198,7 @@ mobilecustomerRouter
         //         } else {}
         //     })
 
-        
+
         if (locationType === "Home") {
             var home = {
                 'address.0.home.0.pincode': req.body.pincode,
@@ -213,7 +213,7 @@ mobilecustomerRouter
                     res.status(200).json({ Success: true, Message: 'Address Updated Successfully' });
                 }
             })
-        } 
+        }
         // else if (locationType === "Other") {
         //     var other = {
         //         'address.0.other.0.pincode': req.body.pincode,

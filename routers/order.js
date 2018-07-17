@@ -32,7 +32,7 @@ var generateSms = require('./../middlewear/sms');
 //Create router for  register the new role.
 orderRouter
     .route('/order')
-    .post(checkAuth, function(req, res) {
+    .post(checkAuth, function (req, res) {
         // console.log("********************************");
         // console.log(JSON.stringify(req.body, undefined, 2));
         // console.log("********************************");
@@ -50,26 +50,26 @@ orderRouter
             var storecode;
             var invoicecode;
             Franchise.find({ _id: req.userData.franchise }).
-            exec(function(err, franchises) {
-                if (err) {
-                    res.status(500).send(err);
-                    return;
-                }
-                console.log('The Franchise  is', req.userData.franchise);
-                console.log('The Franchise  is', franchises[0].store_code);
-                storecode = franchises[0].store_code;
-                Order.find({ franchise: req.userData.franchise }).exec(function(err, results) {
-                    var count = results.length;
-                    counter = count + 1;
-                    var str = "" + counter;
-                    var pad = "0000";
-                    var ans = pad.substring(0, pad.length - str.length) + str;
-                    orderid = storecode + ans;
-                    console.log("orderid", orderid)
-                    savedata(counter, orderid);
+                exec(function (err, franchises) {
+                    if (err) {
+                        res.status(500).send(err);
+                        return;
+                    }
+                    console.log('The Franchise  is', req.userData.franchise);
+                    console.log('The Franchise  is', franchises[0].store_code);
+                    storecode = franchises[0].store_code;
+                    Order.find({ franchise: req.userData.franchise }).exec(function (err, results) {
+                        var count = results.length;
+                        counter = count + 1;
+                        var str = "" + counter;
+                        var pad = "0000";
+                        var ans = pad.substring(0, pad.length - str.length) + str;
+                        orderid = storecode + ans;
+                        console.log("orderid", orderid)
+                        savedata(counter, orderid);
 
+                    });
                 });
-            });
 
         }
 
@@ -78,9 +78,9 @@ orderRouter
             var cc = counter;
             var dueDays = req.body.orderDetails.dueDays;
             var dt = new Date();
-            let newDate  = new Date(dt).setDate(new Date(dt).getDate()+parseInt(dueDays));
+            let newDate = new Date(dt).setDate(new Date(dt).getDate() + parseInt(dueDays));
             let check = new Date(newDate).getDay();
-            if(check === 0){
+            if (check === 0) {
                 newDate = new Date(newDate).setDate(new Date(newDate).getDate() + 1);
             }
 
@@ -94,7 +94,7 @@ orderRouter
                 order_status: "In Process",
                 total_qty: req.body.orderDetails.totalQty,
                 order_amount: req.body.orderDetails.netAmount,
-                due_date:newDate,
+                due_date: newDate,
                 created_by: req.userData._id,
                 created_at: myDateString,
                 updated_by: null,
@@ -104,44 +104,44 @@ orderRouter
             });
 
             order.save(function (err) {
-              if (err) {
-                res.status(400).send(err);
-                return;
-              }
-
-              var orderno = orderid ;
-              var total_qty=req.body.orderDetails.totalQty
-              var order_amount=req.body.orderDetails.netAmount;
-              var deliverydate = new Date(newDate);
-              var d = deliverydate + '';
-              var dateParts = d.split("GMT");
-              var deliverddate = dateParts[0].slice(0, 15);
-
-
-              Customer.findOne({ _id: req.body.orderDetails.userid}, function (err, res) {
-                console.log("customer data============",res);
-                var customername = res.first_Name;
-                var mobile = res.mobile;
-                generateSms(mobile,
-                  `Dear ${customername} Order No ${orderno} of amount Rs. ${order_amount}, consisting of ${total_qty} garments will be delivered on or before ${deliverddate}`
-              );
-              });
-            //   generateSms(mobile,
-            //     `Dear ${customername} Order No ${orderno} of amount Rs. ${order_amount}, consisting of ${total_qty} garments will be delivered on or before ${myDateString}`
-            // );
-            // sendmail(email,
-            //     `Dear ${name}, Thank you for being part of 24Klen Laundry Science. Happy Cleaning!`,
-            //     'New User Registered'
-            // );
-              Order.findOne({ order_id: orderid }, function (err, orderResult) {
                 if (err) {
-                  res.status(500).send(err);
-                  return;
+                    res.status(400).send(err);
+                    return;
                 }
-                autoGeneratedOrderId = orderResult._id;
-      
-                saveorderdata(counter, orderid, autoGeneratedOrderId);
-              });
+
+                var orderno = orderid;
+                var total_qty = req.body.orderDetails.totalQty
+                var order_amount = req.body.orderDetails.netAmount;
+                var deliverydate = new Date(newDate);
+                var d = deliverydate + '';
+                var dateParts = d.split("GMT");
+                var deliverddate = dateParts[0].slice(0, 15);
+
+
+                Customer.findOne({ _id: req.body.orderDetails.userid }, function (err, res) {
+                    console.log("customer data============", res);
+                    var customername = res.first_Name;
+                    var mobile = res.mobile;
+                    generateSms(mobile,
+                        `Dear ${customername} Order No ${orderno} of amount Rs. ${order_amount}, consisting of ${total_qty} garments will be delivered on or before ${deliverddate}`
+                    );
+                });
+                //   generateSms(mobile,
+                //     `Dear ${customername} Order No ${orderno} of amount Rs. ${order_amount}, consisting of ${total_qty} garments will be delivered on or before ${myDateString}`
+                // );
+                // sendmail(email,
+                //     `Dear ${name}, Thank you for being part of 24Klen Laundry Science.`,
+                //     'New User Registered'
+                // );
+                Order.findOne({ order_id: orderid }, function (err, orderResult) {
+                    if (err) {
+                        res.status(500).send(err);
+                        return;
+                    }
+                    autoGeneratedOrderId = orderResult._id;
+
+                    saveorderdata(counter, orderid, autoGeneratedOrderId);
+                });
             });
 
 
@@ -151,7 +151,7 @@ orderRouter
                 var cc = counter;
 
                 req.body.orderServicesList.forEach((service, index) => {
-                    
+
                     const subServiceList = [];
                     const subServiceListForTag = [];
                     service.subservices.forEach((subservice, subIndex) => {
@@ -178,7 +178,7 @@ orderRouter
                                 //let dt  =  new Date();
                                 let price = garment.price;
                                 let tag = orderid + '|' + firstName + '|' + service.code + '|' + garmentQtyText + '|' + garmentDetail.brand.brand_name + '|' + garmentDetail.color.color_name + '|' + garmentDetail.defect.defect_name + '|' + garmentDetail.pattern.pattern_name + '|' + garmentDetail.specialservice.specialservice_name +
-                                    '|'+ myDateString+ '|' + garment.garment.name + ' ' + garment.qty + '|'+ newDate;
+                                    '|' + myDateString + '|' + garment.garment.name + ' ' + garment.qty + '|' + newDate;
 
                                 let tagFormat = orderid + '|' + service.name + '|' + subservice.name + '|' + garment.garment.name + '|Qyt:' + garment.qty + '|' +
                                     garmentDetail.brand.brand_name + '|' + garmentDetail.color.color_name + '|' + garmentDetail.defect.defect_name + '|' + garmentDetail.pattern.pattern_name;
@@ -255,7 +255,7 @@ orderRouter
                     "updated_at": myDateString,
                     "status": true
                 })
-               
+
                 var ordertransaction = new Ordertransaction({
                     "order_id": orderid,
                     "service": orderTransaction_array,
@@ -270,9 +270,9 @@ orderRouter
                     "total_afetrdis": req.body.orderDetails.totalAfterDiscount,
                     "net_amount": req.body.orderDetails.netAmount,
                     "discount_amount": req.body.orderDetails.discountAmt,
-                    "due_date":newDate,
-                    "selectedsgstpercent" : req.body.orderDetails.selectedSGSTPercent,
-                    "selectedcgstpercent" : req.body.orderDetails.selectedCGSTPercent,
+                    "due_date": newDate,
+                    "selectedsgstpercent": req.body.orderDetails.selectedSGSTPercent,
+                    "selectedcgstpercent": req.body.orderDetails.selectedCGSTPercent,
                     "cgst": req.body.orderDetails.selectedCGSTAmt,
                     "sgst": req.body.orderDetails.selectedSGSTAmt,
                     "gst": req.body.orderDetails.selectedCGSTAmt + req.body.orderDetails.selectedSGSTAmt,
@@ -284,12 +284,12 @@ orderRouter
 
                 });
 
-                finalTagGeneration.save(function(err, tagRes) {
+                finalTagGeneration.save(function (err, tagRes) {
                     if (err) {
                         res.status(400).send(err);
                         return;
                     } else {
-                        ordertransaction.save(function(err) {
+                        ordertransaction.save(function (err) {
                             if (err) {
                                 res.status(400).send(err);
                                 return;
@@ -304,30 +304,30 @@ orderRouter
 
                 function saveinvoice(counter, orderid, tagId) {
                     Franchise.find({ _id: req.userData.franchise }).
-                    exec(function(err, franchises) {
-                        if (err) {
-                            res.status(500).send(err);
-                            return;
-                        }
-                        invoicecode = franchises[0].store_code;
-                        Invoice.find({ franchise: req.userData.franchise }).exec(function(err, results) {
-                            var count = results.length;
-                            counter = count + 1;
-                            var str = "" + counter;
-                            var pad = "0000";
-                            var ans = pad.substring(0, pad.length - str.length) + str;
-                            invoiceid = invoicecode + ans;
+                        exec(function (err, franchises) {
+                            if (err) {
+                                res.status(500).send(err);
+                                return;
+                            }
+                            invoicecode = franchises[0].store_code;
+                            Invoice.find({ franchise: req.userData.franchise }).exec(function (err, results) {
+                                var count = results.length;
+                                counter = count + 1;
+                                var str = "" + counter;
+                                var pad = "0000";
+                                var ans = pad.substring(0, pad.length - str.length) + str;
+                                invoiceid = invoicecode + ans;
 
-                            Order.find({ order_id: orderid }).exec(function(err, results) {
-                                var orderno = results[0]._id;
-                                var ordertransactionno;
-                                Ordertransaction.find({ order_id: orderid }).exec(function(err, results) {
-                                    ordertransactionno = results[0]._id;
-                                    saveinvoicedata(counter, invoiceid, orderno, ordertransactionno, tagId);
+                                Order.find({ order_id: orderid }).exec(function (err, results) {
+                                    var orderno = results[0]._id;
+                                    var ordertransactionno;
+                                    Ordertransaction.find({ order_id: orderid }).exec(function (err, results) {
+                                        ordertransactionno = results[0]._id;
+                                        saveinvoicedata(counter, invoiceid, orderno, ordertransactionno, tagId);
+                                    });
                                 });
                             });
                         });
-                    });
 
                     function saveinvoicedata(counter, invoiceid, orderno, ordertransactionno, tagId) {
                         var myDateString = Date();
@@ -348,7 +348,7 @@ orderRouter
                             status: true,
                             state: true
                         });
-                        invoice.save(function(err, invoiceRes) {
+                        invoice.save(function (err, invoiceRes) {
                             if (err) {
                                 res.status(400).send(err);
                                 return;
@@ -369,57 +369,57 @@ orderRouter
         }
     })
     //Create router for fetching All roles.
-    .get(checkAuth, function(req, res) {
+    .get(checkAuth, function (req, res) {
         if (req.userData.role == "admin") {
             Order.
-            find().
-            sort({ order_id: 'ascending' }).
+                find().
+                sort({ order_id: 'ascending' }).
                 // sort('order_id', 'descending').
-            populate('customer servicetype franchise').
-            exec(function(err, orders) {
-                if (err) {
-                    res.status(500).send(err);
-                    return;
-                }
-                console.log('The Price  is %s', orders);
-                res.json(orders);
-            });
+                populate('customer servicetype franchise').
+                exec(function (err, orders) {
+                    if (err) {
+                        res.status(500).send(err);
+                        return;
+                    }
+                    console.log('The Price  is %s', orders);
+                    res.json(orders);
+                });
         } else {
             Order.
-            find({ franchise: req.userData.franchise }).
-            sort({ order_id: 'ascending' }).
-            populate('customer servicetype franchise').
-            exec(function(err, orders) {
-                if (err) {
-                    res.status(500).send(err);
-                    return;
-                }
-                res.json(orders);
-            });
+                find({ franchise: req.userData.franchise }).
+                sort({ order_id: 'ascending' }).
+                populate('customer servicetype franchise').
+                exec(function (err, orders) {
+                    if (err) {
+                        res.status(500).send(err);
+                        return;
+                    }
+                    res.json(orders);
+                });
         }
     });
 
 
 orderRouter
     .route('/orderbystore/:storeId')
-    .get(checkAuth, function(req, res) {
+    .get(checkAuth, function (req, res) {
         var storeId = req.params.storeId;
         Order.
-        find({ franchise: storeId }).
-        sort({ order_id: 'ascending' }).
-        populate('customer servicetype franchise').
-        exec(function(err, orders) {
-            if (err) {
-                res.status(500).send(err);
-                return;
-            }
-            res.json(orders);
-        });
+            find({ franchise: storeId }).
+            sort({ order_id: 'ascending' }).
+            populate('customer servicetype franchise').
+            exec(function (err, orders) {
+                if (err) {
+                    res.status(500).send(err);
+                    return;
+                }
+                res.json(orders);
+            });
     })
 // sendmail(email,
-            //     `Dear ${name}, Thank you for being part of 24Klen Laundry Science. Happy Cleaning!`,
-            //     'New User Registered'
-            // );
+//     `Dear ${name}, Thank you for being part of 24Klen Laundry Science.`,
+//     'New User Registered'
+// );
 /**
  * Start Function
  * Send Invoice On Mail When Invoice Created
@@ -504,12 +504,12 @@ const sendInvoiceOnMail = (getInvoiceRes) => {
             </tr>`
         }
         invoiceTableLayout += '</tbody></table>'
-            // console.log("***************************************");
-            // console.log(getInvoiceRes[0]);
-            // console.log(tagListArray);
-            // console.log("***************************************");
+        // console.log("***************************************");
+        // console.log(getInvoiceRes[0]);
+        // console.log(tagListArray);
+        // console.log("***************************************");
         sendmail(getInvoiceRes[0].customer.email,
-                ` <!doctype html>
+            ` <!doctype html>
                 <html>
                 <head>
                     <meta charset="utf-8">
@@ -775,7 +775,7 @@ const sendInvoiceOnMail = (getInvoiceRes) => {
                 
                                                                 </td>
                                                                 <td class="date_box">
-                                                                    ${ orderDate + 5 }
+                                                                    ${ orderDate + 5}
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -878,13 +878,12 @@ const sendInvoiceOnMail = (getInvoiceRes) => {
                         </div>        
                     </div>
                 </div>
-                <p>Happy Cleaning!</p>
                 <strong>Thanks,</strong>
                 <strong>Team 24Klen Laundry Science</strong>
                     </body>
                 </html>`,
-                `Successful Order Creation (${getInvoiceRes[0].ordertransaction.order_id}) with 24klen Laundry Science`
-            );
+            `Successful Order Creation (${getInvoiceRes[0].ordertransaction.order_id}) with 24klen Laundry Science`
+        );
 
 
         // let transpoter = nodemailer.createTransport({
@@ -896,355 +895,354 @@ const sendInvoiceOnMail = (getInvoiceRes) => {
         //     }
         // });
 
-//         let mailOptions = {
-//             from: "Aflak Arshi <aflakarshi09@gmail.com>",
-//             to: getInvoiceRes[0].customer.email,
-//             subject: `Successful Order Creation (${getInvoiceRes[0].ordertransaction.order_id}) with 24klen Laundry Science`,
-//             html: `
-//             <!doctype html>
-// <html>
-// <head>
-//     <meta charset="utf-8">
-//     <title>24Klen Invoice</title>
-    
-//     <style>
-//     .m-invoice__wrapper .m-invoice__head .m-invoice__desc {
-//         text-align: center;
-//         display: block;
-//         padding: 1rem 0 5px;
-//         color: #464646;
-//         font-weight: 500;
-//       }
-//       .m-invoice__wrapper .m-invoice__head .m-invoice__items {
-//         display: table;
-//         width: 100%;
-//         padding: 1rem 0 1rem;
-//         table-layout: fixed;
-//         border-top: 1px solid #464646;
-//       }
-//       .m-invoice__wrapper .m-invoice__head .m-invoice__items .m-invoice__text {
-//         color: #464646;
-//         font-weight: 400;
-//       }
-//       .m-invoice__wrapper .summation_tbl {
-//         margin-bottom: 0rem;
-//       }
-//       .m-invoice__wrapper .summation_tbl tr td {
-//         font-size: 13px;
-//         font-weight: 400;
-//       }
-//       .m-invoice__wrapper .summation_tbl .total_td_summation {
-//         color: #464646;
-//       }
-//       .m-invoice__wrapper .summation_tbl .common_td_txt {
-//         width: 200px;
-//       }
-//       .m-invoice__wrapper .summation_tbl .symbol_td {
-//         width: 50px;
-//       }
-//       .m-invoice__wrapper .summation_tbl .m-invoice-1 .m-invoice__wrapper .m-invoice__body table tbody tr:first-child td {
-//         padding-top: 1rem;
-//       }
-//       .m-invoice__wrapper .summation_tbl .total_pcs {
-//         text-align: left;
-//         font-weight: 400;
-//         color: #464646;
-//       }
-//       .m-invoice__wrapper .summation_tbl .date_box {
-//         text-align: right !important;
-//         color: #464646;
-//         font-weight: 400;
-//       }
-//       .date_box {
-//         text-align: right !important;
-//       }
-//       .m-invoice__wrapper .m-invoice__body--centered {
-//         padding: 0rem 0 0 !important;
-//         border-bottom: 1px solid #464646 !important;
-//         border-top: 1px solid #464646 !important;
-//       }
-//       .m-invoice__wrapper .date_pcs {
-//         border-top: 0px !important;
-//       }
-//       .m-invoice__wrapper .items_tbl thead tr th {
-//         padding: 1rem 0 0rem 0;
-//         border-top: none;
-//         color: #464646;
-//         border-bottom: none;
-//         text-align: left;
-//       }
-//       .m-invoice__wrapper .items_tbl .amount_th {
-//         text-align: right !important;
-//       }
-//       .m-invoice__wrapper .items_tbl tbody tr td {
-//         color: #464646;
-//         font-weight: 400;
-//         font-size: 12px;
-//         text-align: left;
-//       }
-//       .m-invoice__wrapper .items_tbl tbody tr:first-child td {
-//         padding-top: 5px;
-//       }
-//       .m-invoice__wrapper .m-invoice__footer {
-//         margin-top: 0rem;
-//       }
-//       .m-invoice__wrapper .m-invoice__footer .m-invoice__container {
-//         display: table;
-//         padding: 1rem 0 0rem !important;
-//         background-color: #fff;
-//       }
-//       .m-invoice__wrapper .m-invoice__footer .footer_subtotal {
-//         padding: 0rem 0 0rem !important;
-//       }
-//       .m-invoice__wrapper .subtotal_tbl {
-//         width: 55%;
-//         float: right;
-//       }
-//       .m-invoice__wrapper .subtotal_tbl tr td {
-//         padding-top: 0px;
-//         padding-bottom: 3px;
-//         text-align: right !important;
-//         padding-right: 0px;
-//         font-weight: 500 !important;
-//         border-top: 0px solid #f4f5f8;
-//       }
-//       .m-invoice__wrapper .m-invoice__content1 {
-//         float: left;
-//         visibility: hidden;
-//       }
-//       .m-invoice__wrapper .m-invoice__content {
-//         display: block !important;
-//       }
-//       .m-invoice__wrapper .items_tbl_div {
-//         border-top: 0px !important;
-//       }
-//     </style>
-// </head>
-//     <body>
-//         <strong> Dear ${getInvoiceRes[0].customer.first_Name}</strong>
-//         <p>Order No[Booking No] of amount Rs. ${getInvoiceRes[0].ordertransaction.net_amount}, consisting of ${tagListArray[0].qty} garments will be delivered on or before [Delivery Date].</p>
-//         <p>Below is the detailed invoice:</p>
-//     <div id="print-section">
-//     <div class="m-portlet__body">
-//         <div class="m-content">
-//             <div class="m-portlet">
-//                 <div class="m-portlet__body m-portlet__body--no-padding">
-//                     <div class="m-invoice-1">
-//                         <div class="m-invoice__wrapper">
-//                             <div class="m-invoice__head">
-//                                 <div class="m-invoice__container m-invoice__container--centered">
-//                                     <table style="visibility: hidden">
-//                                         <tr>
-//                                             <td style="color: #2b2a29;font-weight: 800;">
-//                                                 Customer Care<br> 82 52 24 24 24<br><br>
-//                                                 <span style="color: #2b2a29;font-weight: 600;">www.24klen.com</span>
-//                                             </td>
-//                                             <td style="text-align:center;">
-//                                                 <img src="" style="width: 253px;text-align: center;position: relative;top: 6px;">
-//                                             </td>
-//                                             <td style="text-align:right;">
-//                                                 <div style="color: #2b2a29;font-weight: 800;text-align: center;font-size: 18px;line-height: 36px;position: relative;top: -6px;">
-//                                                     PREMIUM<br> FABRIC
-//                                                     <br> CARE
-//                                                 </div>
-//                                             </td>
-//                                         </tr>
-//                                     </table>
-//                                     <span class="m-invoice__desc">
-//                                         <span>
-//                                             ${gstin_Number}
-//                                         </span>
-//                                     </span>
-//                                     <div class="m-invoice__items">
-//                                         <div class="m-invoice__item">
-//                                             <span class="m-invoice__text">
-//                                                 ${getInvoiceRes[0].ordertransaction.order_id}
-//                                             </span>
-//                                         </div>
-//                                         <div class="m-invoice__item">
-//                                             <span class="m-invoice__text">
-//                                                 ${orderDate}
-//                                             </span>
-//                                         </div>
-//                                         <div class="m-invoice__item">
-//                                             <span class="m-invoice__text">
-//                                                 ${getInvoiceRes[0].customer.first_Name} - ${getInvoiceRes[0].customer.mobile} <br>
-//                                                 ${getInvoiceRes[0].customer.address[0].home[0].flat_no} - ${getInvoiceRes[0].customer.address[0].home[0].society} <br>
-//                                                 ${getInvoiceRes[0].customer.address[0].home[0].landmark} - ${getInvoiceRes[0].customer.city} - ${getInvoiceRes[0].customer.state} - ${getInvoiceRes[0].customer.address[0].home[0].pincode}
-//                                             </span>
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                             <div class="m-invoice__body m-invoice__body--centered">
-//                                 <div class="table-responsive">
-//                                     <table class="table summation_tbl">
-//                                         <tbody>
-//                                             <tr>
-//                                                 <td class="common_td_txt">
-//                                                     INR: 0.00 Prevoius Due
+        //         let mailOptions = {
+        //             from: "Aflak Arshi <aflakarshi09@gmail.com>",
+        //             to: getInvoiceRes[0].customer.email,
+        //             subject: `Successful Order Creation (${getInvoiceRes[0].ordertransaction.order_id}) with 24klen Laundry Science`,
+        //             html: `
+        //             <!doctype html>
+        // <html>
+        // <head>
+        //     <meta charset="utf-8">
+        //     <title>24Klen Invoice</title>
 
-//                                                 </td>
-//                                                 <td class="symbol_td">
-//                                                     +
-//                                                 </td>
-//                                                 <td class="common_td_txt">
-//                                                     INR: 0.00 Current Due
+        //     <style>
+        //     .m-invoice__wrapper .m-invoice__head .m-invoice__desc {
+        //         text-align: center;
+        //         display: block;
+        //         padding: 1rem 0 5px;
+        //         color: #464646;
+        //         font-weight: 500;
+        //       }
+        //       .m-invoice__wrapper .m-invoice__head .m-invoice__items {
+        //         display: table;
+        //         width: 100%;
+        //         padding: 1rem 0 1rem;
+        //         table-layout: fixed;
+        //         border-top: 1px solid #464646;
+        //       }
+        //       .m-invoice__wrapper .m-invoice__head .m-invoice__items .m-invoice__text {
+        //         color: #464646;
+        //         font-weight: 400;
+        //       }
+        //       .m-invoice__wrapper .summation_tbl {
+        //         margin-bottom: 0rem;
+        //       }
+        //       .m-invoice__wrapper .summation_tbl tr td {
+        //         font-size: 13px;
+        //         font-weight: 400;
+        //       }
+        //       .m-invoice__wrapper .summation_tbl .total_td_summation {
+        //         color: #464646;
+        //       }
+        //       .m-invoice__wrapper .summation_tbl .common_td_txt {
+        //         width: 200px;
+        //       }
+        //       .m-invoice__wrapper .summation_tbl .symbol_td {
+        //         width: 50px;
+        //       }
+        //       .m-invoice__wrapper .summation_tbl .m-invoice-1 .m-invoice__wrapper .m-invoice__body table tbody tr:first-child td {
+        //         padding-top: 1rem;
+        //       }
+        //       .m-invoice__wrapper .summation_tbl .total_pcs {
+        //         text-align: left;
+        //         font-weight: 400;
+        //         color: #464646;
+        //       }
+        //       .m-invoice__wrapper .summation_tbl .date_box {
+        //         text-align: right !important;
+        //         color: #464646;
+        //         font-weight: 400;
+        //       }
+        //       .date_box {
+        //         text-align: right !important;
+        //       }
+        //       .m-invoice__wrapper .m-invoice__body--centered {
+        //         padding: 0rem 0 0 !important;
+        //         border-bottom: 1px solid #464646 !important;
+        //         border-top: 1px solid #464646 !important;
+        //       }
+        //       .m-invoice__wrapper .date_pcs {
+        //         border-top: 0px !important;
+        //       }
+        //       .m-invoice__wrapper .items_tbl thead tr th {
+        //         padding: 1rem 0 0rem 0;
+        //         border-top: none;
+        //         color: #464646;
+        //         border-bottom: none;
+        //         text-align: left;
+        //       }
+        //       .m-invoice__wrapper .items_tbl .amount_th {
+        //         text-align: right !important;
+        //       }
+        //       .m-invoice__wrapper .items_tbl tbody tr td {
+        //         color: #464646;
+        //         font-weight: 400;
+        //         font-size: 12px;
+        //         text-align: left;
+        //       }
+        //       .m-invoice__wrapper .items_tbl tbody tr:first-child td {
+        //         padding-top: 5px;
+        //       }
+        //       .m-invoice__wrapper .m-invoice__footer {
+        //         margin-top: 0rem;
+        //       }
+        //       .m-invoice__wrapper .m-invoice__footer .m-invoice__container {
+        //         display: table;
+        //         padding: 1rem 0 0rem !important;
+        //         background-color: #fff;
+        //       }
+        //       .m-invoice__wrapper .m-invoice__footer .footer_subtotal {
+        //         padding: 0rem 0 0rem !important;
+        //       }
+        //       .m-invoice__wrapper .subtotal_tbl {
+        //         width: 55%;
+        //         float: right;
+        //       }
+        //       .m-invoice__wrapper .subtotal_tbl tr td {
+        //         padding-top: 0px;
+        //         padding-bottom: 3px;
+        //         text-align: right !important;
+        //         padding-right: 0px;
+        //         font-weight: 500 !important;
+        //         border-top: 0px solid #f4f5f8;
+        //       }
+        //       .m-invoice__wrapper .m-invoice__content1 {
+        //         float: left;
+        //         visibility: hidden;
+        //       }
+        //       .m-invoice__wrapper .m-invoice__content {
+        //         display: block !important;
+        //       }
+        //       .m-invoice__wrapper .items_tbl_div {
+        //         border-top: 0px !important;
+        //       }
+        //     </style>
+        // </head>
+        //     <body>
+        //         <strong> Dear ${getInvoiceRes[0].customer.first_Name}</strong>
+        //         <p>Order No[Booking No] of amount Rs. ${getInvoiceRes[0].ordertransaction.net_amount}, consisting of ${tagListArray[0].qty} garments will be delivered on or before [Delivery Date].</p>
+        //         <p>Below is the detailed invoice:</p>
+        //     <div id="print-section">
+        //     <div class="m-portlet__body">
+        //         <div class="m-content">
+        //             <div class="m-portlet">
+        //                 <div class="m-portlet__body m-portlet__body--no-padding">
+        //                     <div class="m-invoice-1">
+        //                         <div class="m-invoice__wrapper">
+        //                             <div class="m-invoice__head">
+        //                                 <div class="m-invoice__container m-invoice__container--centered">
+        //                                     <table style="visibility: hidden">
+        //                                         <tr>
+        //                                             <td style="color: #2b2a29;font-weight: 800;">
+        //                                                 Customer Care<br> 82 52 24 24 24<br><br>
+        //                                                 <span style="color: #2b2a29;font-weight: 600;">www.24klen.com</span>
+        //                                             </td>
+        //                                             <td style="text-align:center;">
+        //                                                 <img src="" style="width: 253px;text-align: center;position: relative;top: 6px;">
+        //                                             </td>
+        //                                             <td style="text-align:right;">
+        //                                                 <div style="color: #2b2a29;font-weight: 800;text-align: center;font-size: 18px;line-height: 36px;position: relative;top: -6px;">
+        //                                                     PREMIUM<br> FABRIC
+        //                                                     <br> CARE
+        //                                                 </div>
+        //                                             </td>
+        //                                         </tr>
+        //                                     </table>
+        //                                     <span class="m-invoice__desc">
+        //                                         <span>
+        //                                             ${gstin_Number}
+        //                                         </span>
+        //                                     </span>
+        //                                     <div class="m-invoice__items">
+        //                                         <div class="m-invoice__item">
+        //                                             <span class="m-invoice__text">
+        //                                                 ${getInvoiceRes[0].ordertransaction.order_id}
+        //                                             </span>
+        //                                         </div>
+        //                                         <div class="m-invoice__item">
+        //                                             <span class="m-invoice__text">
+        //                                                 ${orderDate}
+        //                                             </span>
+        //                                         </div>
+        //                                         <div class="m-invoice__item">
+        //                                             <span class="m-invoice__text">
+        //                                                 ${getInvoiceRes[0].customer.first_Name} - ${getInvoiceRes[0].customer.mobile} <br>
+        //                                                 ${getInvoiceRes[0].customer.address[0].home[0].flat_no} - ${getInvoiceRes[0].customer.address[0].home[0].society} <br>
+        //                                                 ${getInvoiceRes[0].customer.address[0].home[0].landmark} - ${getInvoiceRes[0].customer.city} - ${getInvoiceRes[0].customer.state} - ${getInvoiceRes[0].customer.address[0].home[0].pincode}
+        //                                             </span>
+        //                                         </div>
+        //                                     </div>
+        //                                 </div>
+        //                             </div>
+        //                             <div class="m-invoice__body m-invoice__body--centered">
+        //                                 <div class="table-responsive">
+        //                                     <table class="table summation_tbl">
+        //                                         <tbody>
+        //                                             <tr>
+        //                                                 <td class="common_td_txt">
+        //                                                     INR: 0.00 Prevoius Due
 
-//                                                 </td>
-//                                                 <td class="symbol_td">
-//                                                     -
-//                                                 </td>
+        //                                                 </td>
+        //                                                 <td class="symbol_td">
+        //                                                     +
+        //                                                 </td>
+        //                                                 <td class="common_td_txt">
+        //                                                     INR: 0.00 Current Due
 
-//                                                 <td class="common_td_txt">
-//                                                     INR: 0.00 Advance
-//                                                 </td>
-//                                                 <td class="symbol_td">
-//                                                     -
-//                                                 </td>
-//                                                 <td class="common_td_txt">
-//                                                     INR: 0.00 Paid
-//                                                 </td>
-//                                                 <td class="symbol_td">
-//                                                     =
-//                                                 </td>
+        //                                                 </td>
+        //                                                 <td class="symbol_td">
+        //                                                     -
+        //                                                 </td>
+
+        //                                                 <td class="common_td_txt">
+        //                                                     INR: 0.00 Advance
+        //                                                 </td>
+        //                                                 <td class="symbol_td">
+        //                                                     -
+        //                                                 </td>
+        //                                                 <td class="common_td_txt">
+        //                                                     INR: 0.00 Paid
+        //                                                 </td>
+        //                                                 <td class="symbol_td">
+        //                                                     =
+        //                                                 </td>
 
 
-//                                                 <td class="common_td_txt total_td_summation">
-//                                                     INR: 855.00 Balance Due
-//                                                 </td>
+        //                                                 <td class="common_td_txt total_td_summation">
+        //                                                     INR: 855.00 Balance Due
+        //                                                 </td>
 
-//                                             </tr>
-//                                         </tbody>
-//                                     </table>
-//                                 </div>
-//                             </div>
+        //                                             </tr>
+        //                                         </tbody>
+        //                                     </table>
+        //                                 </div>
+        //                             </div>
 
-//                             <div class="m-invoice__body m-invoice__body--centered date_pcs">
-//                                 <div class="table-responsive">
-//                                     <table class="table summation_tbl">
-//                                         <tbody>
-//                                             <tr>
-//                                                 <td class="total_pcs">
-//                                                     Total Pcs : ${3}
+        //                             <div class="m-invoice__body m-invoice__body--centered date_pcs">
+        //                                 <div class="table-responsive">
+        //                                     <table class="table summation_tbl">
+        //                                         <tbody>
+        //                                             <tr>
+        //                                                 <td class="total_pcs">
+        //                                                     Total Pcs : ${3}
 
-//                                                 </td>
-//                                                 <td class="date_box">
-//                                                     ${ orderDate + 5 }
-//                                                 </td>
-//                                             </tr>
-//                                         </tbody>
-//                                     </table>
-//                                 </div>
-//                             </div>
-//                             <div class="m-invoice__body m-invoice__body--centered items_tbl_div">
-//                                 <div class="table-responsive">
-//                                     ${invoiceTableLayout}
-//                                 </div>
-//                             </div>
-//                             <div class=" m-invoice__footer ">
-//                                 <div class="m-invoice__container m-invoice__container--centered footer_subtotal">
-//                                     <div class="m-invoice__content m-invoice__content1">
-//                                         <span>
-//                                                     BANK TRANSFER
-//                                                 </span>
-//                                         <span>
-//                                                     <span>
-//                                                         Account Name:
-//                                                     </span>
-//                                         <span>
-//                                                         Barclays UK
-//                                                     </span>
-//                                         </span>
-//                                         <span>
-//                                                     <span>
-//                                                         Account Number:
-//                                                     </span>
-//                                         <span>
-//                                                         1234567890934
-//                                                     </span>
-//                                         </span>
-//                                         <span>
-//                                                     <span>
-//                                                         Code:
-//                                                     </span>
-//                                         <span>
-//                                                         BARC0032UK
-//                                                     </span>
-//                                         </span>
-//                                     </div>
-//                                     <div class="m-invoice__content ">
-//                                         <table class="table summation_tbl items_tbl subtotal_tbl">
-//                                             <tbody>
-//                                                 <tr>
-//                                                     <td class="common_td_items">
-//                                                         Subtotal
+        //                                                 </td>
+        //                                                 <td class="date_box">
+        //                                                     ${ orderDate + 5 }
+        //                                                 </td>
+        //                                             </tr>
+        //                                         </tbody>
+        //                                     </table>
+        //                                 </div>
+        //                             </div>
+        //                             <div class="m-invoice__body m-invoice__body--centered items_tbl_div">
+        //                                 <div class="table-responsive">
+        //                                     ${invoiceTableLayout}
+        //                                 </div>
+        //                             </div>
+        //                             <div class=" m-invoice__footer ">
+        //                                 <div class="m-invoice__container m-invoice__container--centered footer_subtotal">
+        //                                     <div class="m-invoice__content m-invoice__content1">
+        //                                         <span>
+        //                                                     BANK TRANSFER
+        //                                                 </span>
+        //                                         <span>
+        //                                                     <span>
+        //                                                         Account Name:
+        //                                                     </span>
+        //                                         <span>
+        //                                                         Barclays UK
+        //                                                     </span>
+        //                                         </span>
+        //                                         <span>
+        //                                                     <span>
+        //                                                         Account Number:
+        //                                                     </span>
+        //                                         <span>
+        //                                                         1234567890934
+        //                                                     </span>
+        //                                         </span>
+        //                                         <span>
+        //                                                     <span>
+        //                                                         Code:
+        //                                                     </span>
+        //                                         <span>
+        //                                                         BARC0032UK
+        //                                                     </span>
+        //                                         </span>
+        //                                     </div>
+        //                                     <div class="m-invoice__content ">
+        //                                         <table class="table summation_tbl items_tbl subtotal_tbl">
+        //                                             <tbody>
+        //                                                 <tr>
+        //                                                     <td class="common_td_items">
+        //                                                         Subtotal
 
-//                                                     </td>
-//                                                     <td class="common_td_items">
-//                                                         ${getInvoiceRes[0].ordertransaction.total_beforedis}
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr>
-//                                                     <td>
-//                                                         Dis(10.00%)
+        //                                                     </td>
+        //                                                     <td class="common_td_items">
+        //                                                         ${getInvoiceRes[0].ordertransaction.total_beforedis}
+        //                                                     </td>
+        //                                                 </tr>
+        //                                                 <tr>
+        //                                                     <td>
+        //                                                         Dis(10.00%)
 
-//                                                     </td>
-//                                                     <td class="common_td_items amount_th">
-//                                                         ${getInvoiceRes[0].ordertransaction.discount_amount}
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr>
-//                                                     <td>
-//                                                         CGST(${getInvoiceRes[0].ordertransaction.cgst}%)
+        //                                                     </td>
+        //                                                     <td class="common_td_items amount_th">
+        //                                                         ${getInvoiceRes[0].ordertransaction.discount_amount}
+        //                                                     </td>
+        //                                                 </tr>
+        //                                                 <tr>
+        //                                                     <td>
+        //                                                         CGST(${getInvoiceRes[0].ordertransaction.cgst}%)
 
-//                                                     </td>
-//                                                     <td class="common_td_items amount_th">
-//                                                         ${getInvoiceRes[0].ordertransaction.cgst}
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr>
-//                                                     <td>
-//                                                         SGST(${getInvoiceRes[0].ordertransaction.sgst}%)
+        //                                                     </td>
+        //                                                     <td class="common_td_items amount_th">
+        //                                                         ${getInvoiceRes[0].ordertransaction.cgst}
+        //                                                     </td>
+        //                                                 </tr>
+        //                                                 <tr>
+        //                                                     <td>
+        //                                                         SGST(${getInvoiceRes[0].ordertransaction.sgst}%)
 
-//                                                     </td>
-//                                                     <td class="common_td_items amount_th">
-//                                                         ${getInvoiceRes[0].ordertransaction.sgst}
-//                                                     </td>
-//                                                 </tr>
-//                                                 <tr>
-//                                                     <td>
-//                                                         Current Due
+        //                                                     </td>
+        //                                                     <td class="common_td_items amount_th">
+        //                                                         ${getInvoiceRes[0].ordertransaction.sgst}
+        //                                                     </td>
+        //                                                 </tr>
+        //                                                 <tr>
+        //                                                     <td>
+        //                                                         Current Due
 
-//                                                     </td>
-//                                                     <td class="common_td_items amount_th">
-//                                                         ${getInvoiceRes[0].ordertransaction.net_amount}
-//                                                     </td>
-//                                                 </tr>
-//                                             </tbody>
-//                                         </table>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>        
-//     </div>
-// </div>
-// <p>Happy Cleaning!</p>
-// <strong>Thanks,</strong>
-// <strong>Team 24Klen Laundry Science</strong>
-//     </body>
-// </html>`};
-//         transpoter.sendMail(mailOptions, (err, info) => {
-//             if (err) {
-//                 console.log(err);
-//             } else {
-//                 console.log(`Invoice send successfully. Order id is ${getInvoiceRes[0].ordertransaction.order_id}`);
-//             }
-//         });
+        //                                                     </td>
+        //                                                     <td class="common_td_items amount_th">
+        //                                                         ${getInvoiceRes[0].ordertransaction.net_amount}
+        //                                                     </td>
+        //                                                 </tr>
+        //                                             </tbody>
+        //                                         </table>
+        //                                     </div>
+        //                                 </div>
+        //                             </div>
+        //                         </div>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //         </div>        
+        //     </div>
+        // </div>
+        // <strong>Thanks,</strong>
+        // <strong>Team 24Klen Laundry Science</strong>
+        //     </body>
+        // </html>`};
+        //         transpoter.sendMail(mailOptions, (err, info) => {
+        //             if (err) {
+        //                 console.log(err);
+        //             } else {
+        //                 console.log(`Invoice send successfully. Order id is ${getInvoiceRes[0].ordertransaction.order_id}`);
+        //             }
+        //         });
     });
 };
 /**
@@ -1260,15 +1258,15 @@ const sendInvoiceOnMail = (getInvoiceRes) => {
 const getInvoiceDetails = (invoiceRes) => {
     return new Promise((resolve, reject) => {
         Invoice.
-        find({ _id: invoiceRes._id }).
-        populate('ordertransaction customer franchise tag').
-        exec(function(err, invoice) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(invoice);
-            }
-        });
+            find({ _id: invoiceRes._id }).
+            populate('ordertransaction customer franchise tag').
+            exec(function (err, invoice) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(invoice);
+                }
+            });
     });
 };
 /**
@@ -1280,23 +1278,23 @@ orderRouter
     .route('/assigntoworkshop/:orderId')
     .put(checkAuth, function (req, res) {
         var orderId = req.params.orderId;
-        console.log("order status ",  req.body.order_status );
+        console.log("order status ", req.body.order_status);
         Order.findOne({ _id: orderId }, function (err, orders) {
             var myDateString = Date();
             if (orders) {
-                if(req.body.order_status=="In Process"){
-                orders.order_status = "TO Workshop",
-                orders.workshopto_at = myDateString,
-                    orders.save();
-                res.json({orders:orders,  success: true, msg: 'Order assigned successfully' });
-                return;
-                }
-                else{
-                    orders.order_status = "Cloths Ready",
-                    orders.ready_at = myDateString,
+                if (req.body.order_status == "In Process") {
+                    orders.order_status = "TO Workshop",
+                        orders.workshopto_at = myDateString,
                         orders.save();
-                    res.json({orders:orders,  success: true, msg: 'Order assigned successfully' });
-                    return; 
+                    res.json({ orders: orders, success: true, msg: 'Order assigned successfully' });
+                    return;
+                }
+                else {
+                    orders.order_status = "Cloths Ready",
+                        orders.ready_at = myDateString,
+                        orders.save();
+                    res.json({ orders: orders, success: true, msg: 'Order assigned successfully' });
+                    return;
                 }
             }
 

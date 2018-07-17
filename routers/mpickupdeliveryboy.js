@@ -16,7 +16,7 @@ function otpGenerate() {
         var rnum = Math.floor(Math.random() * chars.length);
         otp1 += chars.substring(rnum, rnum + 1);
     }
-    setTimeout(() => {}, 300000); //1000ms=1 sec // 300000ms=300sec=5min
+    setTimeout(() => { }, 300000); //1000ms=1 sec // 300000ms=300sec=5min
     return otp1;
 }
 
@@ -33,11 +33,11 @@ mpickupdeliveryboyRouter
             else {
                 token = jwt.sign(user[0].toJSON(), config.secret, { expiresIn: 604800 });
                 otp1 = otpGenerate();
-                Pickupdeliveryboy.findOneAndUpdate({'_id': user[0]._id},{
-                    $set:{otp:otp1}
-                }).then((data)=>{});
+                Pickupdeliveryboy.findOneAndUpdate({ '_id': user[0]._id }, {
+                    $set: { otp: otp1 }
+                }).then((data) => { });
                 generateSms(phone,
-                    `Your 24Klen Laundry App One Time Password is ${otp1}. Happy cleaning!`
+                    `Your 24Klen Laundry App One Time Password is ${otp1}.`
                 ).then((data) => {
                     res.status(200).json({ Success: true, Message: 'Otp send to mobile number.' });
                 }, (err) => {
@@ -51,29 +51,29 @@ mpickupdeliveryboyRouter
 
     .post('/pverification', (req, res) => {
         var otp = req.body.otp;
-        Pickupdeliveryboy.findOne({'otp' :req.body.otp}).then((customer)=>{
-            if(!customer){
-             res.status(200).json({ Success: false, Message: 'Invalid Otp' });
-            }else{
+        Pickupdeliveryboy.findOne({ 'otp': req.body.otp }).then((customer) => {
+            if (!customer) {
+                res.status(200).json({ Success: false, Message: 'Invalid Otp' });
+            } else {
                 Pickupdeliveryboy.findOneAndUpdate({ '_id': customer._id }, {
-                 $set: { otp: null }
-             }).then((data)=>{});   
-             res.status(200).header('x-auth', `JWT ${token}`).json({ token: 'JWT ' + token, Success: true, Message: 'Logged In Successfully' });
+                    $set: { otp: null }
+                }).then((data) => { });
+                res.status(200).header('x-auth', `JWT ${token}`).json({ token: 'JWT ' + token, Success: true, Message: 'Logged In Successfully' });
             }
         })
     })
 
-    // .post('/potpGenerate', (req, res) => {
-    //     // console.log(req.body);
-    //     var phone = localStorage.getItem('phone');
-    //     otp1 = otpGenerate();
-    //     generateSms(phone,
-    //         `Your 24Klen Laundry App One Time Password is ${otp1}. Happy cleaning!`
-    //     ).then((data) => {
-    //         res.status(200).json({ data, Success: true, Message: 'Otp send to mobile number.' });
-    //     }, (err) => {
-    //         res.status(200).json({ Success: false, Message: `${err}` });
-    //     });
-    // })
+// .post('/potpGenerate', (req, res) => {
+//     // console.log(req.body);
+//     var phone = localStorage.getItem('phone');
+//     otp1 = otpGenerate();
+//     generateSms(phone,
+//         `Your 24Klen Laundry App One Time Password is ${otp1}.`
+//     ).then((data) => {
+//         res.status(200).json({ data, Success: true, Message: 'Otp send to mobile number.' });
+//     }, (err) => {
+//         res.status(200).json({ Success: false, Message: `${err}` });
+//     });
+// })
 
 module.exports = { mpickupdeliveryboyRouter };

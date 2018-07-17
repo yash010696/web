@@ -38,7 +38,7 @@ otpRouter
                 otp = otpGenerate();
                 Customer.findOneAndUpdate({ '_id': user[0]._id }, {
                     $set: { otp: otp }
-                }).then((data)=>{});
+                }).then((data) => { });
                 generateSms(phone,
                     `Your 24Klen Laundry App One Time Password is ${otp}.`
                 ).then((data) => {
@@ -54,28 +54,28 @@ otpRouter
 
     .post('/verification', (req, res) => {
         var otp1 = req.body.otp;
-       Customer.findOne({'otp' :req.body.otp}).then((customer)=>{
-           if(!customer){
-            res.status(200).json({ Success: false, Message: 'Invalid Otp' });
-           }else{
-            Customer.findOneAndUpdate({ '_id': customer._id }, {
-                $set: { otp: null }
-            }).then((data)=>{});   
-            res.status(200).header('x-auth', `JWT ${token}`).json({ token: 'JWT ' + token, Success: true, Message: 'Logged In Successfully' });
-           }
-       })
+        Customer.findOne({ 'otp': req.body.otp }).then((customer) => {
+            if (!customer) {
+                res.status(200).json({ Success: false, Message: 'Invalid Otp' });
+            } else {
+                Customer.findOneAndUpdate({ '_id': customer._id }, {
+                    $set: { otp: null }
+                }).then((data) => { });
+                res.status(200).header('x-auth', `JWT ${token}`).json({ token: 'JWT ' + token, Success: true, Message: 'Logged In Successfully' });
+            }
+        })
     })
 
-    // .post('/otpGenerate', (req, res) => {
-    //      var phone = localStorage.getItem('phone');
+// .post('/otpGenerate', (req, res) => {
+//      var phone = localStorage.getItem('phone');
 
-    //     otp = otpGenerate();
-    //     generateSms(phone, `Your Otp is ${otp}`).then((data) => {
-    //         res.status(200).json({ data, Success: true, Message: 'Otp send to mobile number.' });
-    //     }, (err) => {
-    //         res.status(200).json({ Success: false, Message: `${err}` });
-    //     });
+//     otp = otpGenerate();
+//     generateSms(phone, `Your Otp is ${otp}`).then((data) => {
+//         res.status(200).json({ data, Success: true, Message: 'Otp send to mobile number.' });
+//     }, (err) => {
+//         res.status(200).json({ Success: false, Message: `${err}` });
+//     });
 
-    // })
+// })
 
 module.exports = { otpRouter };

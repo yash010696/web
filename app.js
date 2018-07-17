@@ -71,6 +71,7 @@ var { creditdebitRouter } = require('./routers/creditdebit');
 var {mfranchiseRouter}=require('./routers/mfranchise');
 var {mpickupdeliveryboyRouter}=require('./routers/mpickupdeliveryboy');
 var {paymentRouter}=require('./routers/payment');
+var paymentAdjustmentRoutes=require('./routers/payment-adjustment');
 
 const router = express.Router()
 var app = express();
@@ -144,6 +145,8 @@ app.use('/api', creditdebitRouter);
 app.use('/api', mfranchiseRouter);
 app.use('/api', mpickupdeliveryboyRouter);
 app.use('/api', paymentRouter);
+app.use('/api', paymentAdjustmentRoutes);
+
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

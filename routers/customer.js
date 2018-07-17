@@ -95,10 +95,10 @@ customerRouter
                     return;
                 }
                 generateSms(mobile,
-                    `Dear ${name}, Thank you for being part of 24Klen Laundry Science. Happy Cleaning!`
+                    `Dear ${name}, Thank you for being part of 24Klen Laundry Science.`
                 );
                 sendmail(email,
-                    `Dear ${name}, Thank you for being part of 24Klen Laundry Science. Happy Cleaning!`,
+                    `Dear ${name}, Thank you for being part of 24Klen Laundry Science.`,
                     'New User Registered'
                 );
                 res.json({ data: customer, success: true, msg: 'Successful created new customer.' });

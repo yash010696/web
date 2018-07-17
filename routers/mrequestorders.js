@@ -65,7 +65,7 @@ mrequestordersRouter
                 mobile = customer.mobile;
                 email = customer.email;
                 req.body.ordertype = customer.order_type;
-                
+
                 var counter; var orderid; var store_code;
                 Franchise.find({ statee: true, area: { $in: [req.body.area] } }).
                     exec(function (err, franchises) {
@@ -84,12 +84,12 @@ mrequestordersRouter
                             var pad = "0000";
                             var ans = pad.substring(0, pad.length - str.length) + str;
                             requestId = store_code + ans;
-                            
+
                             var date = new Date(req.body.pickupDate);
                             var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000));
-                            
+
                             Timeslot.find({ 'time_Slot': req.body.timeSlot }).then((data) => {
-                                req.body.timeSlot = data[0]._id;    
+                                req.body.timeSlot = data[0]._id;
                                 serviceType.find({ 'type': req.body.servicetype }).then((servicetype) => {
                                     req.body.servicetype = servicetype[0]._id;
                                     req.body.franchise = franchises[0]._id;
@@ -104,11 +104,11 @@ mrequestordersRouter
                                     // req.body.updated_by = decoded._id;
                                     req.body.state = true;
                                     req.body.status = true;
-                                    
+
                                     var requestOrder = new RequestOrder(req.body);
                                     if (home) {
                                         requestOrder.address.push({ home });
-                                    } 
+                                    }
                                     // else {
                                     //     requestOrder.address.push({ other });
                                     // }
@@ -228,7 +228,7 @@ mrequestordersRouter
                             pickupDate: req.body.pickupDate,
                             timeSlot: req.body.timeSlot,
                             // other: other,
-                            'address': {  home: home }
+                            'address': { home: home }
                         }
                     }, { new: true }).then((requestorder) => {
                         if (!requestorder) {
@@ -257,7 +257,7 @@ mrequestordersRouter
         })
     })
 
-    .get('/morderdetail/:id',passport.authenticate('jwt', { session: false }), (req, res) => {
+    .get('/morderdetail/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
         Order.find({ 'order_id': req.params.id })
             .then((data) => {
                 var _id = data[0]._id;
@@ -267,23 +267,23 @@ mrequestordersRouter
                     .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
                     .then((invoices) => {
                         // console.log(invoices);
-                        if(invoices[0].order.requestId ){
+                        if (invoices[0].order.requestId) {
                             // console.log('///////////////////',invoices[0].order.requestId);
-                            var pickupDate=invoices[0].order.requestId.pickupDate;
-                            var pickupDate1=JSON.stringify(pickupDate).slice(1,11);
-                            var timeSlot=invoices[0].order.requestId.timeSlot.time_Slot;
-                            var pickupAddress= invoices[0].order.requestId.address[0];
+                            var pickupDate = invoices[0].order.requestId.pickupDate;
+                            var pickupDate = JSON.stringify(pickupDate).slice(1, 11);
+                            var timeSlot = invoices[0].order.requestId.timeSlot.time_Slot;
+                            var pickupAddress = invoices[0].order.requestId.address[0];
                         }
                         var order_id;
                         var order_status;
-                        var deliveryDate=invoices[0].order.due_date;
-                        var deliveryDate1=JSON.stringify(deliveryDate).slice(1,11);
+                        var deliveryDate = invoices[0].order.due_date;
+                        var deliveryDate1 = JSON.stringify(deliveryDate).slice(1, 11);
                         var selectedsgstpercent;
                         var selectedcgstpercent;
                         var selectedgstpercent;
                         var sgst; var cgst; var gst; var net_amount;
                         var first_Name; var email; var mobile;
-                        var balance_due; 
+                        var balance_due;
                         var advance;
                         var current_due;
                         var previous_due;
@@ -313,8 +313,8 @@ mrequestordersRouter
                         var data = {
                             order_id: invoices[0].order.order_id,
                             order_status: invoices[0].order.order_status,
-                            pickupDate:pickupDate1,
-                            timeSlot:timeSlot,
+                            pickupDate: pickupDate,
+                            timeSlot: timeSlot,
                             selectedsgstpercent: invoices[0].ordertransaction.selectedsgstpercent,
                             selectedcgstpercent: invoices[0].ordertransaction.selectedcgstpercent,
                             // selectedgstpercent: (console.log(parseInt(selectedsgstpercent))+ parseInt(selectedcgstpercent)),
@@ -325,8 +325,8 @@ mrequestordersRouter
                             first_Name: invoices[0].customer.first_Name,
                             email: invoices[0].customer.email,
                             mobile: invoices[0].customer.mobile,
-                            pickupAddress:pickupAddress ,
-                            deliveryDate:deliveryDate1,
+                            pickupAddress: pickupAddress,
+                            deliveryDate: deliveryDate1,
                             balance_due: invoices[0].ordertransaction.balance_due,
                             advance: invoices[0].ordertransaction.advance,
                             current_due: invoices[0].ordertransaction.current_due,
