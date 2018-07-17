@@ -21,6 +21,7 @@ var Coupon = require('../models/coupon');
 var Paymentdetails = require('../models/paymentdetail')
 var ordertransactionRouter = express.Router();
 const checkAuth = require('../middlewear/check-auth');
+var Invoice = require('../models/invoice');
 //Create router for  register the new role.
 ordertransactionRouter
   .route('/ordertransaction/:orderid')
@@ -78,4 +79,20 @@ const updateTransaction = (req, orderid) => {
     })
   })
 }
+
+ordertransactionRouter
+  .route('/ordertransaction')
+  .get(checkAuth, function (req, res) {
+    // {'invoices.$.order.0.deliveryassign_to':"5b46e8ec93f9ac002012e609"}
+    Invoice.find()
+    .populate(' customer ordertransaction order')
+    .then((data)=>{
+      var aa='5b46e8ec93f9ac002012e609';
+     var data1=data.filter(element =>element.order.deliveryassign_to == aa );
+      console.log('//////',data1);
+      res.json({data});
+    })
+
+  })
+
 module.exports = ordertransactionRouter;

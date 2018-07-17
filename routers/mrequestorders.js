@@ -266,14 +266,19 @@ mrequestordersRouter
                     .populate({ path: 'order', populate: { path: 'requestId' } })
                     .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
                     .then((invoices) => {
-                        // console.log(invoices);
-                        if (invoices[0].order.requestId) {
-                            // console.log('///////////////////',invoices[0].order.requestId);
-                            var pickupDate = invoices[0].order.requestId.pickupDate;
-                            var pickupDate = JSON.stringify(pickupDate).slice(1, 11);
-                            var timeSlot = invoices[0].order.requestId.timeSlot.time_Slot;
-                            var pickupAddress = invoices[0].order.requestId.address[0];
-                        }
+                        // console.log(invoices[0].tag.tagDetailsService);
+                        // if (invoices[0].order.requestId) {
+                        //     // console.log('///////////////////',invoices[0].order.requestId);
+                        //     var pickupDate = invoices[0].order.requestId.pickupDate;
+                        //     var pickupDate = JSON.stringify(pickupDate).slice(1, 11);
+                        //     var timeSlot = invoices[0].order.requestId.timeSlot.time_Slot;
+                        //     var pickupAddress = invoices[0].order.requestId.address[0];
+                        // }
+                        var pickupDate = invoices[0].order.requestId ? invoices[0].order.requestId.pickupDate : "";
+                        var pickupDate = pickupDate ? JSON.stringify(pickupDate).slice(1, 11) : "";
+                        var timeSlot = invoices[0].order.requestId ? invoices[0].order.requestId.timeSlot.time_Slot : "";
+                        var pickupAddress = invoices[0].order.requestId ? invoices[0].order.requestId.address[0] : "";
+
                         var order_id;
                         var order_status;
                         var deliveryDate = invoices[0].order.due_date;
@@ -292,12 +297,15 @@ mrequestordersRouter
                         invoices[0].tag.tagDetailsService.forEach(services => {
                             services.subservice.forEach(subsevice => {
                                 subsevice.garmentlist.forEach((garment, idx) => {
+                                    
                                     garment.garmentTagDetails.forEach((tag, index) => {
                                         let tagsArray = JSON.parse(JSON.stringify((tag.tag_Format).split('|')));
+                                        console.log('/////////',tagsArray);
                                         service = tagsArray[1];
                                         subservice = tag.subservice;
                                         dress = tagsArray[3];
                                         price = tag.price;
+                                        qty= tagsArray[4].split(":");
                                     });
                                     // console.log(service,'/',subservice,'/',dress,'/',price,'/');
                                     orderList.push({
@@ -305,6 +313,7 @@ mrequestordersRouter
                                         'subservice': subservice,
                                         'dress': dress,
                                         'price': price,
+                                        'qty':qty[1],
                                     });
                                 });
                             });
