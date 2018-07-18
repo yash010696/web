@@ -253,7 +253,7 @@ couponRouter
 
 couponRouter
     .route('/mcoupon')
-    .get((req, res) => {
+    .get(checkAuth, (req, res) => {
         var token = req.header('Authorization').split(' ');
         var decoded = jwt.verify(token[1], config.secret);
 
@@ -261,7 +261,7 @@ couponRouter
             const todayDate = new Date();
             // console.log(';;;;;;;;;;;',Date.parse(todayDate))
             const coupons = coupon.filter(element => Date.parse(new Date(element.couponExpireAt)) >= Date.parse(todayDate));
-            res.status(200).json({Success:true,couponList: coupons });
+            res.status(200).json({ Success: true, couponList: coupons });
         })
     })
 

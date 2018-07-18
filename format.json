@@ -1,0 +1,24 @@
+[
+    {
+        "": "",
+        "first_Name": "yash",
+        "email": "yash.shah@encureit.com",
+        "mobile": "9673067099",
+        "home": "flat_no:22;society:aaaaa;landmark:bbb;pincode:411041",
+        "dob": "25_06_1996",
+        "gender": "male",
+        "Area Location": "Aundh",
+        "whatsup": "9673067099"
+    },
+    {
+        "": "",
+        "first_Name": "shah",
+        "email": "yash@encureit.com",
+        "mobile": "9999999999",
+        "home": "flat_no:22;society:aaaaa;landmark:bbb;pincode:411042",
+        "dob": "30_12_1996",
+        "gender": "male",
+        "Area Location": "Aundh",
+        "whatsup": "9999999999"
+    }
+]

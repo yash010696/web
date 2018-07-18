@@ -73,7 +73,7 @@ MyOrdersRouter
             'order_status': 'Delivered'
         }).then((orders) => {
             if (!orders[0]) {
-                res.status(200).json({ Success: true, Message: 'No Orders' });
+                res.status(200).json({ Success: true, Message: 'No Past Orders' });
             } else {
                 res.status(200).json({ Success: true, orders });
             }
@@ -100,7 +100,7 @@ MyOrdersRouter
     })
 
     .post('/database',  (req, res) => {
-        var notestring=fs.readFileSync(__dirname +"./../customer.json");
+        var notestring=fs.readFileSync(__dirname +"./../format.json");
         notes=JSON.parse(notestring);
     
         notes.forEach(element => {
@@ -108,7 +108,14 @@ MyOrdersRouter
             customer.first_Name=element.first_Name;
             customer.email=element.email;
             customer.mobile=element.mobile;
-            customer.dob=element.dob;
+            date=element.dob;
+            // console.log(date);
+            newdate=date.split("_");
+            date1= new Date(newdate[2] +'/'+newdate[1] + '/'+ newdate[0]);
+            var newDate = new Date(date1.getTime() + Math.abs(date1.getTimezoneOffset() * 60000))
+            console.log(newDate);
+            customer.dob=newDate
+
             customer.gender=element.gender;
             customer.whatsup=element.whatsup;
             customer.franchise='5b309c4f1bd04e00204ca20c';
@@ -122,14 +129,14 @@ MyOrdersRouter
                 pincode: home[3]
             }
             // console.log('/////////////////',home);
-            var other = {
-                flat_no: other[0], 
-                society: other[1],
-                landmark: other[2],
-                pincode: other[3]
-            }
+            // var other = {
+            //     flat_no: other[0], 
+            //     society: other[1],
+            //     landmark: other[2],
+            //     pincode: other[3]
+            // }
             // console.log('/////////////////',other);
-            customer.address.push({ home, other });
+            customer.address.push({ home });
         
             console.log('customer',customer);
             customer.save().then((data)=>{});

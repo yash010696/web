@@ -141,11 +141,11 @@ ordertransactionRouter
     Invoice.find()
     .populate(' customer ordertransaction order')
     .then((data)=>{
-      // var aa='5b348939e4044000207f3a8f';
+      var aa='5b348939e4044000207f3a8f';
       // console.log(req.userData._id);
-     var data1=data.filter(element =>element.order.deliveryassign_to == req.userData._id );
-      console.log('//////',data1);
-      res.json({data});
+     var newdata=data.filter(element =>element.order.deliveryassign_to == aa );
+      console.log('//////',newdata);
+      res.json({newdata});
     })
 
   })
