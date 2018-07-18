@@ -136,6 +136,16 @@ var ordertransactionSchema = new Schema({
     type:String,
     default:0
   },
+  paid_amt: {
+    type:String,
+    default:0
+  },
+  payment_mode_adv:{
+    type: String
+  },
+  payment_mode_delivery:{
+    type: String
+  },
   balance_due: {
     type:String,
     default:0

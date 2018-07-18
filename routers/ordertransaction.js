@@ -22,6 +22,8 @@ var Paymentdetails = require('../models/paymentdetail')
 var ordertransactionRouter = express.Router();
 const checkAuth = require('../middlewear/check-auth');
 var Invoice = require('../models/invoice');
+var generateSms = require('./../middlewear/sms');
+var generateMail = require('./../middlewear/mail');
 //Create router for  register the new role.
 ordertransactionRouter
   .route('/ordertransaction/:orderid')
@@ -41,15 +43,67 @@ ordertransactionRouter
         res.json(orderdata);
       });
   })
+
   .put(checkAuth, function (req, res) {
     let orderid = req.params.orderid;
     updateTransaction(req, orderid).then(result => {
-      Paymentdetails.findOne({ customer: req.body.customer_id }, function (error, result) {
+      Paymentdetails.findOne({ 'customer': req.body.customer_id }, function (error, result) {
         result.advance = req.body.pd_advance,
           result.due_amt = req.body.pd_due_amt,
           result.updated_by = req.userData._id,
           result.save();
-          res.json({success:true, msg:'Payment details has updated successfully!'});
+
+          Order.findOneAndUpdate({ 'order_id': orderid }, {
+            $set: {
+                order_status: "Delivered",
+                paymentstatus:"Paid",
+                delivered_at: new Date()
+            }
+        }).populate('customer')
+            .then((order) => {
+                if (!order) {
+                    res.status(200).json({ Success: false, Message: "No Such Order Found" });
+                } else {
+                    var name = order.customer.first_Name;
+                    var email = order.customer.email;
+                    var mobile = order.customer.mobile;
+                    var amount = order.order_amount;
+                    var total_qty = order.total_qty;
+
+                    generateMail(email,
+                        `<!DOCTYPE html>
+           <html>
+           <head>
+               <meta charset="utf-8" />
+               <meta http-equiv="X-UA-Compatible" content="IE=edge">
+               <title>Page Title</title>
+               <meta name="viewport" content="width=device-width, initial-scale=1">
+               <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+               <script src="main.js"></script>
+           </head>
+           <body>
+           <table>
+               <tr><b>Dear ${name},</b></tr>
+
+               <tr>Your Order ${orderid} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.</tr>
+           
+               <tr><b>Thanks,</b></tr>
+                                                                                       
+               <tr><b>Team 24Klen Laundry Science</b></tr>
+            </table>
+            </body>
+            </html>`,
+                        `Successful Order Delivery ${orderid} with 24klen Laundry Science`
+                    );
+                    generateSms(mobile,
+                        `Dear ${name} Your Order ${orderid} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.Thank you`
+                    ).catch((err) => {
+                        res.status(400).json(err);
+                    })
+                    res.status(200).json({ Success: true, Message: "Order Delivered" });
+                }
+            })
+          // res.json({success:true, msg:'Payment details has updated successfully!'});
       })
     }).catch(error => {
       res.json({success:false, msg:'Failed to update payment details!'});
@@ -87,8 +141,9 @@ ordertransactionRouter
     Invoice.find()
     .populate(' customer ordertransaction order')
     .then((data)=>{
-      var aa='5b46e8ec93f9ac002012e609';
-     var data1=data.filter(element =>element.order.deliveryassign_to == aa );
+      // var aa='5b348939e4044000207f3a8f';
+      // console.log(req.userData._id);
+     var data1=data.filter(element =>element.order.deliveryassign_to == req.userData._id );
       console.log('//////',data1);
       res.json({data});
     })

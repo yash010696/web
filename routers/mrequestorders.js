@@ -279,6 +279,7 @@ mrequestordersRouter
                         var timeSlot = invoices[0].order.requestId ? invoices[0].order.requestId.timeSlot.time_Slot : "";
                         var pickupAddress = invoices[0].order.requestId ? invoices[0].order.requestId.address[0] : "";
 
+                        var customer_id;
                         var order_id;
                         var order_status;
                         var deliveryDate = invoices[0].order.due_date;
@@ -297,10 +298,9 @@ mrequestordersRouter
                         invoices[0].tag.tagDetailsService.forEach(services => {
                             services.subservice.forEach(subsevice => {
                                 subsevice.garmentlist.forEach((garment, idx) => {
-                                    
                                     garment.garmentTagDetails.forEach((tag, index) => {
                                         let tagsArray = JSON.parse(JSON.stringify((tag.tag_Format).split('|')));
-                                        console.log('/////////',tagsArray);
+                                        // console.log('/////////',tagsArray);
                                         service = tagsArray[1];
                                         subservice = tag.subservice;
                                         dress = tagsArray[3];
@@ -320,6 +320,7 @@ mrequestordersRouter
                         });
 
                         var data = {
+                            customer_id:invoices[0].customer._id,
                             order_id: invoices[0].order.order_id,
                             order_status: invoices[0].order.order_status,
                             pickupDate: pickupDate,
