@@ -60,6 +60,8 @@ mobilecustomerRouter
                             req.body.otp = null;
                             req.body.statee = true;
                             req.body.status = true;
+                            req.body.city="Pune";
+                            req.body.state="Maharashtra";
 
                             var date = new Date(req.body.dob);
                             var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000))

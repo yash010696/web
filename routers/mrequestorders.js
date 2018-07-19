@@ -266,7 +266,7 @@ mrequestordersRouter
                     .populate({ path: 'order', populate: { path: 'requestId' } })
                     .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
                     .then((invoices) => {
-                        // console.log(invoices[0].tag.tagDetailsService);
+                        // console.log(invoices);
                         // if (invoices[0].order.requestId) {
                         //     // console.log('///////////////////',invoices[0].order.requestId);
                         //     var pickupDate = invoices[0].order.requestId.pickupDate;
@@ -293,6 +293,7 @@ mrequestordersRouter
                         var advance;
                         var current_due;
                         var previous_due;
+                        var paymentstatus;
                         var orderList = [];
 
                         invoices[0].tag.tagDetailsService.forEach(services => {
@@ -341,6 +342,7 @@ mrequestordersRouter
                             advance: invoices[0].ordertransaction.advance,
                             current_due: invoices[0].ordertransaction.current_due,
                             previous_due: invoices[0].ordertransaction.previous_due,
+                            paymentstatus:invoices[0].order.paymentstatus,
                             orderList
                         }
                         res.status(200).json({ Success: true, data });
