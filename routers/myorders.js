@@ -121,7 +121,7 @@ MyOrdersRouter
             customer.franchise='5b309c4f1bd04e00204ca20c';
             var home=element.home.split(";");
             // var other=element.other.split(";");
-            
+            console.log('///////////////',home);
             var home = {
                 flat_no: home[0],
                 society: home[1],
@@ -138,7 +138,7 @@ MyOrdersRouter
             // console.log('/////////////////',other);
             customer.address.push({ home });
         
-            console.log('customer',customer);
+            // console.log('customer',customer);
             customer.save().then((data)=>{});
         });
         res.json("data added");

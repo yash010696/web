@@ -140,7 +140,7 @@ creditdebitRouter
         var decoded = jwt.verify(token[1], config.secret);
         Paymentdetail.find({ 'customer': decoded._id }).then((customer) => {
             if (!customer[0]) {
-                res.status(200).json({ Success: true, due_amt: 0, advance: 0 });
+                res.status(200).json({ Success: true, due_amt: "0", advance: "0" });
             } else {
                 due_amt = customer[0].due_amt;
                 advance = customer[0].advance;

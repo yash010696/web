@@ -164,7 +164,10 @@ var orderSchema = new Schema({
       type: String,
       trim: true
     },
-  }]
+  }],
+  payment_link:{
+    type:String
+  }
 }, {
     timestamps: true
   }, { collection: 'orders' });
