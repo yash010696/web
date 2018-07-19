@@ -56,6 +56,7 @@ ordertransactionRouter
           Order.findOneAndUpdate({ 'order_id': orderid }, {
             $set: {
                 order_status: "Delivered",
+                status:false,
                 paymentstatus:"Paid",
                 delivered_at: new Date()
             }

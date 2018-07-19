@@ -150,7 +150,7 @@ pickupboyserviceRouter
                         order.servicetype = data.servicetype;
                         order.total_qty = req.body.total_qty;
                         order.pickupdelivery = null;
-                        order.paymentstatus = 'UnPaid';
+                        order.paymentstatus = 'unpaid';
                         order.ordertype = ordertype._id;
                         order.address.push({ home });
                         // , other
