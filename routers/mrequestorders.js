@@ -294,6 +294,7 @@ mrequestordersRouter
                         var current_due;
                         var previous_due;
                         var paymentstatus;
+                        var payment_link;
                         var orderList = [];
 
                         invoices[0].tag.tagDetailsService.forEach(services => {
@@ -343,6 +344,7 @@ mrequestordersRouter
                             current_due: invoices[0].ordertransaction.current_due,
                             previous_due: invoices[0].ordertransaction.previous_due,
                             paymentstatus:invoices[0].order.paymentstatus,
+                            payment_link:invoices[0].order.payment_link,
                             orderList
                         }
                         res.status(200).json({ Success: true, data });

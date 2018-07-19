@@ -52,8 +52,7 @@ paymentRouter
         var txnid = 'Tx' + date + '' + req.body.order_id;
         payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
 
-        KEY = "F1z7coeW",
-            SALT = "JjckyBbOBD"
+        KEY = "F1z7coeW"; SALT = "JjckyBbOBD"
 
         var shasum = crypto.createHash('sha512'),
             dataSequence = KEY + '|' + txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
