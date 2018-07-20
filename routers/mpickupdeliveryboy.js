@@ -28,7 +28,7 @@ mpickupdeliveryboyRouter
         Pickupdeliveryboy.find({ 'mobile': phone }).then((user) => {
 
             if (!user[0]) {
-                res.status(200).json({ Success: false, Message: 'Authentication Failed.No User Found' });
+                res.status(200).json({ Success: false, Message: 'Authentication Failed. No User Found' });
             }
             else {
                 token = jwt.sign(user[0].toJSON(), config.secret, { expiresIn: 604800 });
@@ -39,7 +39,7 @@ mpickupdeliveryboyRouter
                 generateSms(phone,
                     `Your 24Klen Laundry App One Time Password is ${otp1}.`
                 ).then((data) => {
-                    res.status(200).json({ Success: true, Message: 'Otp send to mobile number.' });
+                    res.status(200).json({ Success: true, Message: 'OTP sent to mobile number.' });
                 }, (err) => {
                     res.status(400).json({ Success: false, Message: 'Invalid Phone Number' });
                 })
@@ -53,7 +53,7 @@ mpickupdeliveryboyRouter
         var otp = req.body.otp;
         Pickupdeliveryboy.findOne({ 'otp': req.body.otp }).then((customer) => {
             if (!customer) {
-                res.status(200).json({ Success: false, Message: 'Invalid Otp' });
+                res.status(200).json({ Success: false, Message: 'Invalid OTP. Kindly check and reenter the OTP.' });
             } else {
                 Pickupdeliveryboy.findOneAndUpdate({ '_id': customer._id }, {
                     $set: { otp: null }

@@ -30,7 +30,7 @@ otpRouter
         // localStorage.setItem('phone', phone);
         Customer.find({ 'mobile': phone }).then((user) => {
             if (!user[0]) {
-                res.status(200).json({ Success: false, Message: 'Authentication Failed.No User Found' });
+                res.status(200).json({ Success: false, Message: 'Authentication Failed. No User Found with given mobile number.' });
             }
             else {
 
@@ -42,7 +42,7 @@ otpRouter
                 generateSms(phone,
                     `Your 24Klen Laundry App One Time Password is ${otp}.`
                 ).then((data) => {
-                    res.status(200).json({ Success: true, Message: 'Otp send to mobile number.' });
+                    res.status(200).json({ Success: true, Message: 'OTP sent to mobile number.' });
                 }, (err) => {
                     res.status(400).json({ Success: false, Message: 'Invalid Phone Number' });
                 })
@@ -56,7 +56,7 @@ otpRouter
         var otp1 = req.body.otp;
         Customer.findOne({ 'otp': req.body.otp }).then((customer) => {
             if (!customer) {
-                res.status(200).json({ Success: false, Message: 'Invalid Otp' });
+                res.status(200).json({ Success: false, Message: 'Invalid OTP. Kindly check and reenter the OTP.' });
             } else {
                 Customer.findOneAndUpdate({ '_id': customer._id }, {
                     $set: { otp: null }

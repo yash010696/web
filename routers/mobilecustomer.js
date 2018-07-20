@@ -29,14 +29,14 @@ mobilecustomerRouter
                 if (err)
                     res.status(400).json({ Success: false, Message: "Enter Valid Values!" });
                 if (user)
-                    res.status(200).json({ Success: false, Message: "Mobile Number is taken." });
+                    res.status(200).json({ Success: false, Message: "Mobile Number is already registered." });
 
                 else {
                     Customer.findOne({ 'email': req.body.email }, function (err, user) {
                         if (err)
                             res.status(400).json({ Success: false, Message: "Enter Valid Values!" });
                         if (user)
-                            res.status(200).json({ Success: false, Message: "Email Id is taken." });
+                            res.status(200).json({ Success: false, Message: "Email ID is already registered with us. Please register with another email address." });
                         else {
                             // Customer.find().then((results) => {
                             //     var count = results.length;
@@ -105,7 +105,7 @@ mobilecustomerRouter
                                            </html>`,
                                             'Successful Registration with 24klen Laundry Science'
                                         );
-                                        res.status(200).json({ id, Success: true, Message: "Registration Successfull" });
+                                        res.status(200).json({ id, Success: true, Message: "Registration Successfull." });
                                     })
                                 })
                             }).catch((err) => {
