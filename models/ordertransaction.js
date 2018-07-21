@@ -180,6 +180,13 @@ var ordertransactionSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  delivered_by:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Pickupdeliveryboy'
+  },
+  amt_received:{
+    type:String
+  },
   status:{
     type: Boolean
   },

@@ -129,7 +129,9 @@ const updateTransaction = (req, orderid) => {
           result.adjustmentReason = req.body.adjustmentReason;
           result.updated_by = req.userData._id;
           result.updated_at = new Date();
-          result.save();
+          result.delivered_by = req.userData._id,
+            result.amt_received = req.body.paid_amount,
+            result.save();
           resolve();
         }
       }
@@ -188,6 +190,28 @@ ordertransactionRouter
       })
   })
 
+  ordertransactionRouter
+  .route('/paytmperday')
+  .get(checkAuth, function (req, res) {
+    // {'invoices.$.order.0.deliveryassign_to':"5b46e8ec93f9ac002012e609"}
+    Invoice.find()
+      .populate(' customer ordertransaction order')
+      .then((data) => {
+        console.log(req.userData._id)
+        var newdata = data.filter(element => element.order.deliveryassign_to == req.userData._id);
+
+        var data = newdata.filter(element => element.ordertransaction.payment_mode_delivery == "Paytm")
+        var data1 = data.filter(element => Date.parse(new Date(element.order.delivered_at).toDateString()) == Date.parse(new Date().toDateString()));
+        var amount = 0;
+        data1.forEach(element => {
+          amount += parseFloat(element.ordertransaction.paid_amt)
+        });
+        res.status(200).json({ Success: true, "paytmperday": amount });
+      }).catch(err => {
+        res.status(400).json(err);
+      })
+  })
+
 ordertransactionRouter
   .route('/monthlydata')
   .get(checkAuth, function (req, res) {
@@ -202,22 +226,55 @@ ordertransactionRouter
         // console.log('/////////////////', Date.parse(getCurrentMonthFirstDay));
         // console.log('/////////////////', Date.parse(getCurrentMonthLastDay));
         var data1 = newdata.filter(element => Date.parse(new Date(element.order.delivered_at).toDateString()) >= Date.parse(getCurrentMonthFirstDay.toDateString()) && Date.parse(new Date(element.order.delivered_at).toDateString()) <= Date.parse(getCurrentMonthLastDay.toDateString()));
+       
+        // var monthlydata = [];
+        // // data1.forEach((element, index) => {
+        // Paymentdetail.find().then((data) => {
+        //   const filterData = data1.filter(item => data.find(datafind => item.customer._id == console.log(datafind.customer)));
+        //   console.log(filterData);
+        //   // data.forEach(element => {
+        //   //   if ()
+        //   // });
+        //   res.status(200).json({ Success: true, filterData });
+        //   // const monthlydataObject = {
+        //   //   orderid: element.order.order_id,
+        //   //   Customername: element.customer.first_Name,
+        //   //   amountpaid: element.ordertransaction.paid_amt,
+        //   //   delivered_at: element.order.delivered_at,
+        //   //   due_amount: data.due_amt
+        //   // }
+        //   // monthlydata.push(monthlydataObject);
+        //   // if (index == data1.length - 1) {
+        //   //   res.status(200).json({ Success: true, monthlydata });
+        //   // }
+        // });
+        // // });
+
+
         var monthlydata = [];
+        Paymentdetail.find().then((data) => {
         data1.forEach((element, index) => {
-          Paymentdetail.findOne({ customer: element.customer._id }).then((data) => {
-            const monthlydataObject = {
-              orderid: element.order.order_id,
-              Customername: element.customer.first_Name,
-              amountpaid: element.ordertransaction.paid_amt,
-              delivered_at: element.order.delivered_at,
-              due_amount: data.due_amt
-            }
-            monthlydata.push(monthlydataObject);
-            if (index == data1.length -1) {
-              res.json({ monthlydata }); 
-            }
-          });
+        
+          const monthlydata = data.filter(item =>item.customer == element.customer._id);
+          console.log('////',monthlydata);
+          // data.forEach(element => {
+          //   if ()
+          // });
+         
+          // const monthlydataObject = {
+          //   orderid: element.order.order_id,
+          //   Customername: element.customer.first_Name,
+          //   amountpaid: element.ordertransaction.paid_amt,
+          //   delivered_at: element.order.delivered_at,
+          //   due_amount: data.due_amt
+          // }
+          // monthlydata.push(monthlydataObject);
+          // if (index == data1.length - 1) {
+          //   res.status(200).json({ Success: true, monthlydata });
+          // }
         });
+        });
+        res.status(200).json({ Success: true, monthlydata });
       })
   })
 

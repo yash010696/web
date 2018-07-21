@@ -4,16 +4,18 @@ var crypto = require('crypto');
 var { BitlyClient } = require('bitly');
 var Order = require('./../models/order');
 var Invoice = require('../models/invoice');
+var request = require('request');
 
 
-module.exports = function payumoney(order_id) {
+module.exports = function payumoney1(order_id) {
     console.log("in hereeee", order_id);
+    
     return new Promise((resolve, reject) => {
-
+        payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
         Order.findOne({ 'order_id': order_id }).then((order) => {
 
             console.log(order.paymentstatus);
-            if (paymentstatus == "Paid") {
+            if (order.paymentstatus == "Paid") {
                 resolve(true)
             } else {
                 function formatDate(d) {
@@ -30,25 +32,30 @@ module.exports = function payumoney(order_id) {
                     }
                     return date + month + year;
                 }
-
+                const email='yash.shah@encureit.com';
+                const productinfo='yash';
+                const amount = 123;
+                const phone =9673067099;
+                const firstname = 'yash';
                 var newdate = new Date();
                 var date = formatDate(newdate);
-                var order_id = req.body.order_id;
-                var txnid = 'Tx' + date + '' + req.body.order_id;
-                payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
+                var order_id = order_id;
+                var txnid = 'Tx' + date + '' + order_id;
+                
 
                 KEY = "F1z7coeW"; SALT = "JjckyBbOBD"
 
                 var shasum = crypto.createHash('sha512'),
-                    dataSequence = KEY + '|' + txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
+                
+                    dataSequence = KEY + '|' + txnid + '|' + amount + '|' + productinfo + '|' + firstname + '|' + email + '|||||||||||' + SALT,
                     resultKey = shasum.update(dataSequence).digest('hex');
                 var paymentData = {
-                    productinfo: req.body.productinfo,
+                    productinfo:productinfo,
                     txnid: txnid,
-                    amount: req.body.amount,
-                    email: req.body.email,
-                    phone: req.body.phone,
-                    firstname: req.body.firstname,
+                    amount: amount,
+                    email: email,
+                    phone: phone,
+                    firstname:firstname,
                     surl: "http://localhost:3000/api/success",
                     furl: "http://localhost:3000/api/fail",
                     // surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
@@ -60,10 +67,19 @@ module.exports = function payumoney(order_id) {
                     } else {
                         Order.findOneAndUpdate({ 'order_id': order_id }, {
                             $set: { payment_link: response }
-                        }).then((data) => {
-                            resolve(response);
-                            res
-                        })
+                        }).then((data) => { })
+                            // request({
+                            //     url: response,
+                            //     method: 'post',
+                            // }, function (err, response, data) {
+                            //     if (err) {
+                            //         return reject(err);
+                            //     } else {
+                            //         console.log(';;;;;;;;;;;;;;;;',data);
+                            //         return resolve(data);
+                            //     }
+                            // });
+                       
                     }
                 })
             }
