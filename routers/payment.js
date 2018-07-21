@@ -77,12 +77,14 @@ paymentRouter
         //             $set: { payment_link: response }
         //         }).then((data) => {
 
-           var aa= payumoney1(req.body.order_id , req ,res);
+        //    var aa= payumoney1(req.body.order_id , req ,res);
+           var url=`https://sheltered-atoll-29861.herokuapp.com/api/checkstatus/${req.body.order_id}`;
                     const bitly = new BitlyClient('e882848e14f6f402b175cb53c404afe9ead68ec3', {});
-                    bitly.shorten(aa).then((result) => {
-                        // generateSms(req.body.phone,
-                        //     `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due 100.You can now pay for your order with the link below ${result.url} Thanks 24:Klen Laundry Science.`
-                        // )
+                    bitly.shorten(url).then((result) => {
+                        console.log('////////////',result);
+                        generateSms(req.body.phone,
+                            `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due 100.You can now pay for your order with the link below ${result.url} Thanks 24:Klen Laundry Science.`
+                        )
                     })
                     generateMail(req.body.email,
                         `<!DOCTYPE html>
@@ -108,7 +110,7 @@ paymentRouter
                         <tr>    
                         <td style="width:100%;text-align:left;">
                         <br>
-                        <a style="background-color: #22b9ff;max-width: 100px;padding: 7px 17px;text-decoration: none;color: #fff;opacity: 1;text-transform: uppercase;font-weight: 600;margin-top: 15px;margin-bottom: 20px;border-radius: 30px;" href="${aa}">Pay Now</a>
+                        <a style="background-color: #22b9ff;max-width: 100px;padding: 7px 17px;text-decoration: none;color: #fff;opacity: 1;text-transform: uppercase;font-weight: 600;margin-top: 15px;margin-bottom: 20px;border-radius: 30px;" href="${url}">Pay Now</a>
                         <br><br>
                         </td>
                         </tr>
@@ -121,13 +123,83 @@ paymentRouter
                     </html>`,
                         'Payment Link for [Order ID]'
                     );
-                    res.status(200).json({ "Link":"okkkkkkk" });
+                    res.status(200).json({ "Link":"result" });
             //     }).catch(function (error) {
             //         res.status(400).json({ error });
             //     });
             // }
         // })
     })
+
+    .get('/checkstatus/:order_id', function (req, res) {
+        var order_id=req.params.order_id;
+        console.log('...............',order_id);
+        payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
+        Order.findOne({ 'order_id': order_id }).then((order) => {
+
+            console.log(order.paymentstatus);
+            if (order.paymentstatus == "Paid") {
+                res.status(200).json({Success:true,Message:"The Payment Has Been Done Already!"});
+            } else {
+                function formatDate(d) {
+                    var month = d.getMonth();
+                    var date = d.getDate().toString();
+                    var year = d.getFullYear();
+                    year = year.toString().substr(-2);
+                    month = (month + 1).toString();
+                    if (month.length === 1) {
+                        month = "0" + month;
+                    }
+                    if (date.length === 1) {
+                        date = "0" + date;
+                    }
+                    return date + month + year;
+                }
+                const email='yash.shah@encureit.com';
+                const productinfo='yash';
+                const amount = 123;
+                const phone =9673067099;
+                const firstname = 'yash';
+                var newdate = new Date();
+                var date = formatDate(newdate);
+                var order_id = order_id;
+                var txnid = 'Tx' + date + '' + order_id;
+                
+
+                KEY = "F1z7coeW"; SALT = "JjckyBbOBD"
+
+                var shasum = crypto.createHash('sha512'),
+                
+                    dataSequence = KEY + '|' + txnid + '|' + amount + '|' + productinfo + '|' + firstname + '|' + email + '|||||||||||' + SALT,
+                    resultKey = shasum.update(dataSequence).digest('hex');
+                var paymentData = {
+                    productinfo:productinfo,
+                    txnid: txnid,
+                    amount: amount,
+                    email: email,
+                    phone: phone,
+                    firstname:firstname,
+                    surl: "http://localhost:3000/api/success",
+                    furl: "http://localhost:3000/api/fail",
+                    // surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
+                    // furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"            
+                };
+                payumoney.makePayment(paymentData, function (error, response) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        Order.findOneAndUpdate({ 'order_id': order_id }, {
+                            $set: { payment_link: response }
+                        }).then((data) => { })
+                          res.redirect(response);
+                    }
+                })
+            }
+        })
+
+    })
+
+
 
     .post('/success', function (req, res) {
         KEY = "F1z7coeW"; SALT = "JjckyBbOBD"

@@ -249,7 +249,7 @@ ordertransactionRouter
         //   // }
         // });
         // // });
-
+    
 
         var monthlydata = [];
         Paymentdetail.find().then((data) => {

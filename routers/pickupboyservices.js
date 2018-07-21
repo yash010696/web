@@ -285,6 +285,7 @@ pickupboyserviceRouter
         Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
             $set: {
                 order_status: "Delivered",
+                status:false,
                 delivered_at: new Date()
             }
         }).populate('customer')
