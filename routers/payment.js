@@ -7,7 +7,9 @@ var { BitlyClient } = require('bitly');
 var generateMail = require('./../middlewear/mail');
 var generateSms = require('./../middlewear/sms');
 var Order = require('./../models/order');
-var payumoney1=require('./../middlewear/payumoney');
+var payumoney1 = require('./../middlewear/payumoney');
+var Invoice = require('../models/invoice');
+
 
 var paymentRouter = express.Router();
 // payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
@@ -45,7 +47,7 @@ paymentRouter
         //     }
         //     return date + month + year;
         // }
-        
+
         // var newdate = new Date();
         // var date = formatDate(newdate);
         // var order_id = req.body.order_id;
@@ -79,15 +81,20 @@ paymentRouter
 
         //    var aa= payumoney1(req.body.order_id , req ,res);
            var url=`https://sheltered-atoll-29861.herokuapp.com/api/checkstatus/${req.body.order_id}`;
-                    const bitly = new BitlyClient('e882848e14f6f402b175cb53c404afe9ead68ec3', {});
-                    bitly.shorten(url).then((result) => {
-                        console.log('////////////',result);
-                        generateSms(req.body.phone,
-                            `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due 100.You can now pay for your order with the link below ${result.url} Thanks 24:Klen Laundry Science.`
-                        )
-                    })
-                    generateMail(req.body.email,
-                        `<!DOCTYPE html>
+        // var url = `http://localhost:3000/api/checkstatus/${req.body.order_id}`;
+
+        const bitly = new BitlyClient('e882848e14f6f402b175cb53c404afe9ead68ec3', {});
+        bitly.shorten(url).then((result) => {
+            console.log('////////////', result);
+            Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
+                $set: { payment_link: result.url }
+            }).then((data) => { })
+            generateSms(req.body.phone,
+                `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due 100.You can now pay for your order with the link below ${result.url} Thanks 24:Klen Laundry Science.`
+            )
+        })
+        generateMail(req.body.email,
+            `<!DOCTYPE html>
                 <html>
                 <head>
                     <meta charset="utf-8" />
@@ -121,25 +128,22 @@ paymentRouter
                     </table>    
                     </body>
                     </html>`,
-                        'Payment Link for [Order ID]'
-                    );
-                    res.status(200).json({ "Link":"result" });
-            //     }).catch(function (error) {
-            //         res.status(400).json({ error });
-            //     });
-            // }
+            'Payment Link for [Order ID]'
+        );
+        res.status(200).json({ "Link": "result" });
+        //     }).catch(function (error) {
+        //         res.status(400).json({ error });
+        //     });
+        // }
         // })
     })
 
     .get('/checkstatus/:order_id', function (req, res) {
-        var order_id=req.params.order_id;
-        console.log('...............',order_id);
+        var orderId = req.params.order_id;
         payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
-        Order.findOne({ 'order_id': order_id }).then((order) => {
-
-            console.log(order.paymentstatus);
+        Order.findOne({ 'order_id': orderId }).then((order) => {
             if (order.paymentstatus == "Paid") {
-                res.status(200).json({Success:true,Message:"The Payment Has Been Done Already!"});
+                res.status(200).json({ Success: true, Message: "The Payment Has Been Done Already!" });
             } else {
                 function formatDate(d) {
                     var month = d.getMonth();
@@ -155,45 +159,55 @@ paymentRouter
                     }
                     return date + month + year;
                 }
-                const email='yash.shah@encureit.com';
-                const productinfo='yash';
-                const amount = 123;
-                const phone =9673067099;
-                const firstname = 'yash';
+                // const email = 'yash.shah@encureit.com';
+                // const productinfo = 'yash';
+                // const amount = 123;
+                // const phone = 9673067099;
+                // const firstname = 'yash';
                 var newdate = new Date();
                 var date = formatDate(newdate);
-                var order_id = order_id;
-                var txnid = 'Tx' + date + '' + order_id;
-                
-
+                // var order_id = order_id;
+                var txnid = 'Tx' + date + '' + orderId;
+                console.log(orderId,'///',txnid);
                 KEY = "F1z7coeW"; SALT = "JjckyBbOBD"
 
-                var shasum = crypto.createHash('sha512'),
-                
-                    dataSequence = KEY + '|' + txnid + '|' + amount + '|' + productinfo + '|' + firstname + '|' + email + '|||||||||||' + SALT,
-                    resultKey = shasum.update(dataSequence).digest('hex');
-                var paymentData = {
-                    productinfo:productinfo,
-                    txnid: txnid,
-                    amount: amount,
-                    email: email,
-                    phone: phone,
-                    firstname:firstname,
-                    surl: "http://localhost:3000/api/success",
-                    furl: "http://localhost:3000/api/fail",
-                    // surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
-                    // furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"            
-                };
-                payumoney.makePayment(paymentData, function (error, response) {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        Order.findOneAndUpdate({ 'order_id': order_id }, {
-                            $set: { payment_link: response }
-                        }).then((data) => { })
-                          res.redirect(response);
-                    }
-                })
+                Invoice.findOne({ 'order': order._id })
+                    .populate('order customer  ordertransaction tag  ')
+                    .then((data) => {
+                        console.log(data)
+                        var obj = {
+                            productinfo: "invoice payment",
+                            txnid: txnid,
+                            amount: data.ordertransaction.balance_due,
+                            email: data.customer.email,
+                            phone: data.customer.mobile,
+                            firstname: data.customer.first_Name,
+                        }
+                        console.log(';;;;;;;;;;;;', obj);
+
+                        var shasum = crypto.createHash('sha512'),
+                            dataSequence = KEY + '|' + txnid + '|' + data.ordertransaction.balance_due + '|' + "invoice payment" + '|' + data.customer.first_Name + '|' + data.customer.email + '|||||||||||' + SALT,
+                            resultKey = shasum.update(dataSequence).digest('hex');
+                        var paymentData = {
+                            productinfo: "invoice payment",
+                            txnid: txnid,
+                            amount: data.ordertransaction.balance_due,
+                            email: data.customer.email,
+                            phone: data.customer.mobile,
+                            firstname: data.customer.first_Name,
+                            surl: "http://localhost:3000/api/success",
+                            furl: "http://localhost:3000/api/fail",
+                            // surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
+                            // furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"            
+                        };
+                        payumoney.makePayment(paymentData, function (error, response) {
+                            if (error) {
+                                reject(error);
+                            } else {
+                                res.redirect(response);
+                            }
+                        })
+                    })
             }
         })
 
@@ -204,13 +218,13 @@ paymentRouter
     .post('/success', function (req, res) {
         KEY = "F1z7coeW"; SALT = "JjckyBbOBD"
         console.log('////////////', req.body);
-        payumoney.paymentResponse(req.body.txnid, function (error, response) {
-            if (error) {
-                console.log('error:', error);
-            } else {
-                console.log('response=', response);
-            }
-        })
+        // payumoney.paymentResponse(req.body.txnid, function (error, response) {
+        //     if (error) {
+        //         console.log('error:', error);
+        //     } else {
+        //         console.log('response=', response);
+        //     }
+        // })
         var shasum = crypto.createHash('sha512'),
             dataSequence = SALT + '|' + req.body.status + '|||||||||||' + req.body.email + '|' + req.body.firstname + '|' + req.body.productinfo + '|' + req.body.amount + '|' + req.body.txnid + '|' + KEY,
             resultKey = shasum.update(dataSequence).digest('hex');

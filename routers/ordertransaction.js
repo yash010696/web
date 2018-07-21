@@ -190,7 +190,7 @@ ordertransactionRouter
       })
   })
 
-  ordertransactionRouter
+ordertransactionRouter
   .route('/paytmperday')
   .get(checkAuth, function (req, res) {
     // {'invoices.$.order.0.deliveryassign_to':"5b46e8ec93f9ac002012e609"}
@@ -226,55 +226,31 @@ ordertransactionRouter
         // console.log('/////////////////', Date.parse(getCurrentMonthFirstDay));
         // console.log('/////////////////', Date.parse(getCurrentMonthLastDay));
         var data1 = newdata.filter(element => Date.parse(new Date(element.order.delivered_at).toDateString()) >= Date.parse(getCurrentMonthFirstDay.toDateString()) && Date.parse(new Date(element.order.delivered_at).toDateString()) <= Date.parse(getCurrentMonthLastDay.toDateString()));
-       
-        // var monthlydata = [];
-        // // data1.forEach((element, index) => {
-        // Paymentdetail.find().then((data) => {
-        //   const filterData = data1.filter(item => data.find(datafind => item.customer._id == console.log(datafind.customer)));
-        //   console.log(filterData);
-        //   // data.forEach(element => {
-        //   //   if ()
-        //   // });
-        //   res.status(200).json({ Success: true, filterData });
-        //   // const monthlydataObject = {
-        //   //   orderid: element.order.order_id,
-        //   //   Customername: element.customer.first_Name,
-        //   //   amountpaid: element.ordertransaction.paid_amt,
-        //   //   delivered_at: element.order.delivered_at,
-        //   //   due_amount: data.due_amt
-        //   // }
-        //   // monthlydata.push(monthlydataObject);
-        //   // if (index == data1.length - 1) {
-        //   //   res.status(200).json({ Success: true, monthlydata });
-        //   // }
-        // });
-        // // });
-    
 
         var monthlydata = [];
+
         Paymentdetail.find().then((data) => {
-        data1.forEach((element, index) => {
-        
-          const monthlydata = data.filter(item =>item.customer == element.customer._id);
-          console.log('////',monthlydata);
-          // data.forEach(element => {
-          //   if ()
-          // });
-         
-          // const monthlydataObject = {
-          //   orderid: element.order.order_id,
-          //   Customername: element.customer.first_Name,
-          //   amountpaid: element.ordertransaction.paid_amt,
-          //   delivered_at: element.order.delivered_at,
-          //   due_amount: data.due_amt
-          // }
-          // monthlydata.push(monthlydataObject);
-          // if (index == data1.length - 1) {
-          //   res.status(200).json({ Success: true, monthlydata });
-          // }
+
+          data1.forEach((element, index) => {
+
+            const filterData = data.filter(item =>item.customer == element.customer._id);
+
+            console.log('////////////', filterData);
+
+            const monthlydataObject = {
+              orderid: element.order.order_id,
+              Customername: element.customer.first_Name,
+              amountpaid: element.ordertransaction.paid_amt,
+              delivered_at: element.order.delivered_at,
+              // due_amount: data.due_amt
+            }
+            monthlydata.push(monthlydataObject);
+
+          });
+          res.status(200).json({ Success: true, monthlydata });
         });
-        });
-        res.status(200).json({ Success: true, monthlydata });
+
+
       })
   })
 
