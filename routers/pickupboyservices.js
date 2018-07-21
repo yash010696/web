@@ -216,7 +216,7 @@ pickupboyserviceRouter
         }).populate('customer')
             .then((orders) => {
 
-                if (!orders) {
+                if (!orders[0]) {
                     res.status(200).json({ Success: true, Message: "No Orders" });
                 } else {
                     res.status(200).json({ Success: true, orders });

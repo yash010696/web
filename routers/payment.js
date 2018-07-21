@@ -4,16 +4,11 @@ var createHash = require('js-sha512');
 var payumoney = require('payumoney-node');
 var crypto = require('crypto');
 var { BitlyClient } = require('bitly');
-
 var generateMail = require('./../middlewear/mail');
 var generateSms = require('./../middlewear/sms');
-var payumoney=require('./../middlewear/payumoney');
 var Order = require('./../models/order');
 
-
 var paymentRouter = express.Router();
-
-
 // payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
 
 paymentRouter
@@ -35,60 +30,59 @@ paymentRouter
 
     .post('/getShaKey', function (req, res) {
 
-        // function formatDate(d) {
-        //     var month = d.getMonth();
-        //     var date = d.getDate().toString();
-        //     var year = d.getFullYear();
-        //     year = year.toString().substr(-2);
-        //     month = (month + 1).toString();
-        //     if (month.length === 1) {
-        //         month = "0" + month;
-        //     }
-        //     if (date.length === 1) {
-        //         date = "0" + date;
-        //     }
-        //     return date + month + year;
-        // }
-
+        function formatDate(d) {
+            var month = d.getMonth();
+            var date = d.getDate().toString();
+            var year = d.getFullYear();
+            year = year.toString().substr(-2);
+            month = (month + 1).toString();
+            if (month.length === 1) {
+                month = "0" + month;
+            }
+            if (date.length === 1) {
+                date = "0" + date;
+            }
+            return date + month + year;
+        }
         
-        // var newdate = new Date();
-        // var date = formatDate(newdate);
-        // var order_id = req.body.order_id;
-        // var txnid = 'Tx' + date + '' + req.body.order_id;
-        // payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
+        var newdate = new Date();
+        var date = formatDate(newdate);
+        var order_id = req.body.order_id;
+        var txnid = 'Tx' + date + '' + req.body.order_id;
+        payumoney.setKeys('F1z7coeW', 'JjckyBbOBD', 'Mf6swfJ/ifF7PGYf5lmGbY5w+Ao78i5GzHb+Ch4EH6s=');
 
-        // KEY = "F1z7coeW"; SALT = "JjckyBbOBD"
+        KEY = "F1z7coeW"; SALT = "JjckyBbOBD"
 
-        // var shasum = crypto.createHash('sha512'),
-        //     dataSequence = KEY + '|' + txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
-        //     resultKey = shasum.update(dataSequence).digest('hex');
-        // var paymentData = {
-        //     productinfo: req.body.productinfo,
-        //     txnid: txnid,
-        //     amount: req.body.amount,
-        //     email: req.body.email,
-        //     phone: req.body.phone,
-        //     firstname: req.body.firstname,
-        //     surl: "http://localhost:3000/api/success",
-        //     furl: "http://localhost:3000/api/fail",
-        //     // surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
-        //     // furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"            
-        // };
-        // payumoney.makePayment(paymentData, function (error, response) {
-        //     if (error) {
-        //         res.json({ error });
-        //     } else {
-        //         Order.findOneAndUpdate({ 'order_id': order_id }, {
-        //             $set: { payment_link: response }
-        //         }).then((data) => {
+        var shasum = crypto.createHash('sha512'),
+            dataSequence = KEY + '|' + txnid + '|' + req.body.amount + '|' + req.body.productinfo + '|' + req.body.firstname + '|' + req.body.email + '|||||||||||' + SALT,
+            resultKey = shasum.update(dataSequence).digest('hex');
+        var paymentData = {
+            productinfo: req.body.productinfo,
+            txnid: txnid,
+            amount: req.body.amount,
+            email: req.body.email,
+            phone: req.body.phone,
+            firstname: req.body.firstname,
+            surl: "http://localhost:3000/api/success",
+            furl: "http://localhost:3000/api/fail",
+            // surl: "https://sheltered-atoll-29861.herokuapp.com/api/success",
+            // furl: "https://sheltered-atoll-29861.herokuapp.com/api/fail"            
+        };
+        payumoney.makePayment(paymentData, function (error, response) {
+            if (error) {
+                res.json({ error });
+            } else {
+                Order.findOneAndUpdate({ 'order_id': order_id }, {
+                    $set: { payment_link: response }
+                }).then((data) => {
 
-                    payumoney(req.body.order_id);
+
                     const bitly = new BitlyClient('e882848e14f6f402b175cb53c404afe9ead68ec3', {});
-                    // bitly.shorten(response).then((result) => {
-                        // generateSms(req.body.phone,
-                        //     `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due 100.You can now pay for your order with the link below ${result.url} Thanks 24:Klen Laundry Science.`
-                        // )
-                    // })
+                    bitly.shorten(response).then((result) => {
+                        generateSms(req.body.phone,
+                            `Dear Customer, Your Order [Booking No] consist of [Quantity] garments are out for delivery and it will be delivered today. Amount due 100.You can now pay for your order with the link below ${result.url} Thanks 24:Klen Laundry Science.`
+                        )
+                    })
                     generateMail(req.body.email,
                         `<!DOCTYPE html>
                 <html>
@@ -126,12 +120,12 @@ paymentRouter
                     </html>`,
                         'Payment Link for [Order ID]'
                     );
-                    res.status(200).json( "Link");
-        //         }).catch(function (error) {
-        //             res.status(400).json({ error });
-        //         });
-        //     }
-        // })
+                    res.status(200).json({ "Link": response });
+                }).catch(function (error) {
+                    res.status(400).json({ error });
+                });
+            }
+        })
     })
 
     .post('/success', function (req, res) {

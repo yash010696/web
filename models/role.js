@@ -7,7 +7,7 @@ var roleSchema = new Schema({
   name: {
     type:String,
     required:true,
-    unique:true
+    // unique:true
   },
   created_by:{
     type: mongoose.Schema.Types.ObjectId,
