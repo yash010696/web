@@ -13,6 +13,8 @@ var generateSms = require('./../middlewear/sms');
 var generateMail = require('./../middlewear/mail');
 var Customer = require('./../models/customer');
 var order_type = require('./../models/ordertype');
+var checkAuth = require('../middlewear/check-auth');
+var DailyCollection = require('./../models/dailycollection');
 
 
 var pickupboyserviceRouter = express.Router();
@@ -153,6 +155,7 @@ pickupboyserviceRouter
                         order.paymentstatus = 'unpaid';
                         order.ordertype = ordertype._id;
                         order.address.push({ home });
+                        order.registration_source = "Mobile";
                         // , other
                         // order.created_by = order.created_by;
                         // order.updated_by = order.updated_by;
@@ -169,7 +172,7 @@ pickupboyserviceRouter
                                 }
                             }).then((order));
                             generateSms(mobile,
-                                `Dear ${name},Your Pickup with Qty ${data.total_qty} garments was successful. You will be receiving final bill soon.`
+                                `Dear ${name},Your Pickup ${id} with Qty ${data.total_qty} garments was successful. You will be receiving final bill soon.`
                             )
                             res.status(200).json({ Success: true, Message: 'Order Placed SuccessFully' })
                         })
@@ -285,7 +288,7 @@ pickupboyserviceRouter
         Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
             $set: {
                 order_status: "Delivered",
-                status:false,
+                status: false,
                 delivered_at: new Date()
             }
         }).populate('customer')
@@ -336,5 +339,20 @@ pickupboyserviceRouter
             })
     })
 
+    .post('/dailycollection', checkAuth, (req, res) => {
+        var dailyCollection = new DailyCollection();
+        dailyCollection.amount_submitted_cash = req.body.amount_submitted_cash;
+        dailyCollection.amount_submitted_paytm=req.body.amount_submitted_paytm;
+        dailyCollection.amount_submitted_card=req.body.amount_submitted_card;
+        dailyCollection.amount_submitted_cheque_bank=req.body.amount_submitted_cheque_bank;
+        dailyCollection.submitted_to = req.body.submitted_to;
+        dailyCollection.submitted_by = req.userData._id;
+        dailyCollection.submitted_at = new Date();
+
+        dailyCollection.save().then((data) => {
+            res.status(200).json({ Success: true, Message: "Submitted To Store" });
+        })
+
+    })
 
 module.exports = { pickupboyserviceRouter }

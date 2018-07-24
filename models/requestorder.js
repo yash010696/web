@@ -76,7 +76,7 @@ var RequestOrderSchema = new mongoose.Schema({
         ref: 'Pickupdeliveryboy'
     },
     quantity: {
-        type: Number,
+        type: String,
     },
     servicetype: {
         type: mongoose.Schema.Types.ObjectId,

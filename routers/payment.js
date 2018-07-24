@@ -85,7 +85,6 @@ paymentRouter
 
         const bitly = new BitlyClient('e882848e14f6f402b175cb53c404afe9ead68ec3', {});
         bitly.shorten(url).then((result) => {
-            console.log('////////////', result);
             Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
                 $set: { payment_link: result.url }
             }).then((data) => { })
@@ -168,22 +167,21 @@ paymentRouter
                 var date = formatDate(newdate);
                 // var order_id = order_id;
                 var txnid = 'Tx' + date + '' + orderId;
-                console.log(orderId,'///',txnid);
+                // console.log(orderId,'///',txnid);
                 KEY = "F1z7coeW"; SALT = "JjckyBbOBD"
 
                 Invoice.findOne({ 'order': order._id })
                     .populate('order customer  ordertransaction tag  ')
                     .then((data) => {
-                        console.log(data)
-                        var obj = {
-                            productinfo: "invoice payment",
-                            txnid: txnid,
-                            amount: data.ordertransaction.balance_due,
-                            email: data.customer.email,
-                            phone: data.customer.mobile,
-                            firstname: data.customer.first_Name,
-                        }
-                        console.log(';;;;;;;;;;;;', obj);
+                        // var obj = {
+                        //     productinfo: "invoice payment",
+                        //     txnid: txnid,
+                        //     amount: data.ordertransaction.balance_due,
+                        //     email: data.customer.email,
+                        //     phone: data.customer.mobile,
+                        //     firstname: data.customer.first_Name,
+                        // }
+                        // console.log(';;;;;;;;;;;;', obj);
 
                         var shasum = crypto.createHash('sha512'),
                             dataSequence = KEY + '|' + txnid + '|' + data.ordertransaction.balance_due + '|' + "invoice payment" + '|' + data.customer.first_Name + '|' + data.customer.email + '|||||||||||' + SALT,
@@ -217,7 +215,7 @@ paymentRouter
 
     .post('/success', function (req, res) {
         KEY = "F1z7coeW"; SALT = "JjckyBbOBD"
-        console.log('////////////', req.body);
+        // console.log('////////////', req.body);
         // payumoney.paymentResponse(req.body.txnid, function (error, response) {
         //     if (error) {
         //         console.log('error:', error);
@@ -255,7 +253,10 @@ paymentRouter
     .post('/fail', (req, res) => {
         Order.findOne({ 'payment_details.0.txnid': req.body.txnid }).then((data) => {
             // console.log(data);
-            if (data.paymentstatus == 'Paid') {
+            if(!data){
+                res.status(200).json({ Success: true, Message: "Payment Cancelled" });
+            }
+            else if (data.paymentstatus == 'Paid') {
                 res.status(200).json({ Success: true, Message: "The Payment Has Been Done Already!" });
             } else {
                 res.status(200).json({ Success: false });

@@ -167,6 +167,9 @@ var orderSchema = new Schema({
   }],
   payment_link:{
     type:String
+  },
+  registration_source:{
+    type:String
   }
 }, {
     timestamps: true

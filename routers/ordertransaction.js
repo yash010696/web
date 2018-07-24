@@ -171,46 +171,64 @@ const updatePaymentDetails = (req) => {
 // }
 
 ordertransactionRouter
-  .route('/cashperday')
+  .route('/amountperday')
   .get(checkAuth, function (req, res) {
     // {'invoices.$.order.0.deliveryassign_to':"5b46e8ec93f9ac002012e609"}
     Invoice.find()
       .populate(' customer ordertransaction order')
       .then((data) => {
         var newdata = data.filter(element => element.order.deliveryassign_to == req.userData._id);
-        var data = newdata.filter(element => element.ordertransaction.payment_mode_delivery == "Cash")
-        var data1 = data.filter(element => Date.parse(new Date(element.order.delivered_at).toDateString()) == Date.parse(new Date().toDateString()));
-        var amount = 0;
+
+        // var data = newdata.filter(element => element.ordertransaction.payment_mode_delivery == "Cash")
+        var data1 = newdata.filter(element => Date.parse(new Date(element.order.delivered_at).toDateString()) == Date.parse(new Date().toDateString()));
+        var cashamount = 0; var paytmamount = 0; var cardamount = 0;
+        var creditamount = 0; var bank_chequeamount = 0;
+        var amount = [];
         data1.forEach(element => {
-          amount += parseFloat(element.ordertransaction.paid_amt)
-        });
-        res.status(200).json({ Success: true, "cashperday": amount });
+          if (element.ordertransaction.payment_mode_delivery == "Cash") {
+            cashamount += parseFloat(element.ordertransaction.paid_amt)
+          }
+          if (element.ordertransaction.payment_mode_delivery == "Paytm") {
+            paytmamount += parseFloat(element.ordertransaction.paid_amt)
+          }
+          if (element.ordertransaction.payment_mode_delivery == "Card") {
+            cardamount += parseFloat(element.ordertransaction.paid_amt)
+          }
+          if (element.ordertransaction.payment_mode_delivery == "Credit") {
+            creditamount += parseFloat(element.ordertransaction.paid_amt)
+          }
+          if (element.ordertransaction.payment_mode_delivery == "Cheque/Bank") {
+            bank_chequeamount += parseFloat(element.ordertransaction.paid_amt)
+          }
+        })
+        amount.push({ cashamount, paytmamount, cardamount, creditamount, bank_chequeamount })
+        res.status(200).json({ Success: true, "amount": amount });
       }).catch(err => {
         res.status(400).json(err);
       })
   })
 
-ordertransactionRouter
-  .route('/paytmperday')
-  .get(checkAuth, function (req, res) {
-    // {'invoices.$.order.0.deliveryassign_to':"5b46e8ec93f9ac002012e609"}
-    Invoice.find()
-      .populate(' customer ordertransaction order')
-      .then((data) => {
-        console.log(req.userData._id)
-        var newdata = data.filter(element => element.order.deliveryassign_to == req.userData._id);
+// ordertransactionRouter
+//   .route('/paytmperday')
+//   .get(checkAuth, function (req, res) {
+//     // {'invoices.$.order.0.deliveryassign_to':"5b46e8ec93f9ac002012e609"}
+//     Invoice.find()
+//       .populate(' customer ordertransaction order')
+//       .then((data) => {
+//         // console.log(req.userData._id)
+//         var newdata = data.filter(element => element.order.deliveryassign_to == req.userData._id);
 
-        var data = newdata.filter(element => element.ordertransaction.payment_mode_delivery == "Paytm")
-        var data1 = data.filter(element => Date.parse(new Date(element.order.delivered_at).toDateString()) == Date.parse(new Date().toDateString()));
-        var amount = 0;
-        data1.forEach(element => {
-          amount += parseFloat(element.ordertransaction.paid_amt)
-        });
-        res.status(200).json({ Success: true, "paytmperday": amount });
-      }).catch(err => {
-        res.status(400).json(err);
-      })
-  })
+//         var data = newdata.filter(element => element.ordertransaction.payment_mode_delivery == "Paytm")
+//         var data1 = data.filter(element => Date.parse(new Date(element.order.delivered_at).toDateString()) == Date.parse(new Date().toDateString()));
+//         var amount = 0;
+//         data1.forEach(element => {
+//           amount += parseFloat(element.ordertransaction.paid_amt)
+//         });
+//         res.status(200).json({ Success: true, "paytmperday": amount });
+//       }).catch(err => {
+//         res.status(400).json(err);
+//       })
+//   })
 
 ordertransactionRouter
   .route('/monthlydata')
@@ -229,23 +247,29 @@ ordertransactionRouter
 
         var monthlydata = [];
 
-        Paymentdetail.find().then((data) => {
+        Paymentdetail.find().populate("customer").then((data) => {
+          data1.forEach((element) => {
 
-          data1.forEach((element, index) => {
+            var onlyInB = data.filter(comparer(data1));
+            console.log('******************************************');
+            console.log(onlyInB);
+            console.log('*******************************************');
+            onlyInB.forEach(element1 => {
 
-            const filterData = data.filter(item =>item.customer == element.customer._id);
+              // let filterData = data.filter(item => data1.some(other => console.log(item.customer._id == other.customer._id)));
 
-            console.log('////////////', filterData);
+              // const filterData = data1.filter(item => !data.some(other => item.customer._id == other.customer));
+              // console.log('////////////', filterData);
 
-            const monthlydataObject = {
-              orderid: element.order.order_id,
-              Customername: element.customer.first_Name,
-              amountpaid: element.ordertransaction.paid_amt,
-              delivered_at: element.order.delivered_at,
-              // due_amount: data.due_amt
-            }
-            monthlydata.push(monthlydataObject);
-
+              const monthlydataObject = {
+                orderid: element.order.order_id,
+                Customername: element.customer.first_Name,
+                amountpaid: element.ordertransaction.paid_amt,
+                delivered_at: element.order.delivered_at,
+                due_amount: element1.due_amt
+              }
+              monthlydata.push(monthlydataObject);
+            });
           });
           res.status(200).json({ Success: true, monthlydata });
         });
@@ -253,5 +277,13 @@ ordertransactionRouter
 
       })
   })
+
+function comparer(otherArray) {
+  return function (current) {
+    return otherArray.filter(function (other) {
+      return other.customer._id == current.customer._id && other.customer.email == current.customer.email
+    }).length == 0;
+  }
+}
 
 module.exports = ordertransactionRouter;
