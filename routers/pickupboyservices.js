@@ -15,6 +15,7 @@ var Customer = require('./../models/customer');
 var order_type = require('./../models/ordertype');
 var checkAuth = require('../middlewear/check-auth');
 var DailyCollection = require('./../models/dailycollection');
+var Ordertransaction = require('../models/ordertransaction');
 
 
 var pickupboyserviceRouter = express.Router();
@@ -248,27 +249,27 @@ pickupboyserviceRouter
 
                 generateMail(email,
                     `<!DOCTYPE html>
-           <html>
-           <head>
-               <meta charset="utf-8" />
-               <meta http-equiv="X-UA-Compatible" content="IE=edge">
-               <title>Page Title</title>
-               <meta name="viewport" content="width=device-width, initial-scale=1">
-               <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-               <script src="main.js"></script>
-           </head>
-           <body>
-           <table>
-              <tr><b>Dear ${name},</b></tr>
+                    <html>
+                    <head>
+                        <meta charset="utf-8" />
+                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                        <title>Page Title</title>
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+                        <script src="main.js"></script>
+                    </head>
+                    <body>
+                    <table>
+                        <tr><b>Dear ${name},</b></tr>
 
-               <tr>We attempted to complete your request for ${order.order_id} , however it was unsuccessful due to ${req.body.message}.</tr>
-                                                   
-               <tr><b>Thanks,</b></tr>
-                                                                                       
-               <tr><b>Team 24Klen Laundry Science</b></tr>
-           </table>
-           </body>
-           </html>`,
+                        <tr>We attempted to complete your request for ${order.order_id} , however it was unsuccessful due to ${req.body.message}.</tr>
+                                                            
+                        <tr><b>Thanks,</b></tr>
+                                                                                                
+                        <tr><b>Team 24Klen Laundry Science</b></tr>
+                    </table>
+                    </body>
+                    </html>`,
                     `Missed the Pickup/Delivery with 24klen Laundry Science`
                 );
                 generateSms(mobile,
@@ -283,12 +284,12 @@ pickupboyserviceRouter
     })
 
     // ready order which is Delivered
-    .post('/orderdelivered', passport.authenticate('jwt', { session: false }), (req, res) => {
-
+    .post('/orderdelivered', checkAuth, (req, res) => {
         Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
             $set: {
                 order_status: "Delivered",
                 status: false,
+                paymentstatus: "Paid",
                 delivered_at: new Date()
             }
         }).populate('customer')
@@ -296,6 +297,11 @@ pickupboyserviceRouter
                 if (!order) {
                     res.status(200).json({ Success: false, Message: "No Such Order Found" });
                 } else {
+                    Ordertransaction.findOne({ 'order_id': req.body.order_id }).then((result) => {
+                        result.delivered_by = req.userData._id
+                        result.updated_by = req.userData._id;
+                        result.save();
+                    })
                     var name = order.customer.first_Name;
                     var email = order.customer.email;
                     var mobile = order.customer.mobile;
@@ -304,34 +310,32 @@ pickupboyserviceRouter
 
                     generateMail(email,
                         `<!DOCTYPE html>
-           <html>
-           <head>
-               <meta charset="utf-8" />
-               <meta http-equiv="X-UA-Compatible" content="IE=edge">
-               <title>Page Title</title>
-               <meta name="viewport" content="width=device-width, initial-scale=1">
-               <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-               <script src="main.js"></script>
-           </head>
-           <body>
-           <table>
-               <tr><b>Dear ${name},</b></tr>
+                        <html>
+                        <head>
+                            <meta charset="utf-8" />
+                            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                            <title>Page Title</title>
+                            <meta name="viewport" content="width=device-width, initial-scale=1">
+                            <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+                            <script src="main.js"></script>
+                        </head>
+                        <body>
+                        <table>
+                            <tr><b>Dear ${name},</b></tr>
 
-               <tr>Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.</tr>
-           
-               <tr><b>Thanks,</b></tr>
-                                                                                       
-               <tr><b>Team 24Klen Laundry Science</b></tr>
-            </table>
-            </body>
-            </html>`,
+                            <tr>Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.</tr>
+                        
+                            <tr><b>Thanks,</b></tr>
+                                                                                                    
+                            <tr><b>Team 24Klen Laundry Science</b></tr>
+                        </table>
+                        </body>
+                        </html>`,
                         `Successful Order Delivery ${req.body.order_id} with 24klen Laundry Science`
                     );
                     generateSms(mobile,
                         `Dear ${name} Your Order ${req.body.order_id} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.Thank you`
-                    ).catch((err) => {
-                        res.status(400).json(err);
-                    })
+                    )
                     res.status(200).json({ Success: true, Message: "Order Delivered" });
                 }
             }).catch((err) => {
@@ -342,9 +346,9 @@ pickupboyserviceRouter
     .post('/dailycollection', checkAuth, (req, res) => {
         var dailyCollection = new DailyCollection();
         dailyCollection.amount_submitted_cash = req.body.amount_submitted_cash;
-        dailyCollection.amount_submitted_paytm=req.body.amount_submitted_paytm;
-        dailyCollection.amount_submitted_card=req.body.amount_submitted_card;
-        dailyCollection.amount_submitted_cheque_bank=req.body.amount_submitted_cheque_bank;
+        dailyCollection.amount_by_paytm = req.body.amount_by_paytm;
+        dailyCollection.amount_by_card = req.body.amount_by_card;
+        dailyCollection.amount_by_cheque_bank = req.body.amount_by_cheque_bank;
         dailyCollection.submitted_to = req.body.submitted_to;
         dailyCollection.submitted_by = req.userData._id;
         dailyCollection.submitted_at = new Date();
@@ -352,7 +356,6 @@ pickupboyserviceRouter
         dailyCollection.save().then((data) => {
             res.status(200).json({ Success: true, Message: "Submitted To Store" });
         })
-
     })
 
 module.exports = { pickupboyserviceRouter }

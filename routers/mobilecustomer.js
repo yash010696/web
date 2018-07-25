@@ -14,12 +14,6 @@ var generateSms = require('./../middlewear/sms');
 var order_type = require('./../models/ordertype');
 
 mobilecustomerRouter
-    .get('/getarea', (req, res) => {
-        Franchise.find().then((data) => {
-            res.json(data)
-        })
-    })
-
     .post('/registration', (req, res) => {
 
         if (req.body.mobile.length != 10)

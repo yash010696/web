@@ -140,6 +140,10 @@ var ordertransactionSchema = new Schema({
     type:String,
     default:0
   },
+  credit_amt: {
+    type:String,
+    default:0
+  },
   payment_mode_adv:{
     type: String
   },

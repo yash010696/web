@@ -11,7 +11,7 @@ var Garment = require('./garment');
 
 var priceSchema = new Schema({
   price: {
-    type:String,
+    type: String,
   },
   servicetype: {
     type: mongoose.Schema.Types.ObjectId,
@@ -33,26 +33,26 @@ var priceSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Garment'
   },
-  created_by:{
+  created_by: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  created_at:{
+  created_at: {
     type: Date,
   },
-  updated_by:{
+  updated_by: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  updated_at:{
+  updated_at: {
     type: Date
   },
-  status:{
+  status: {
     type: Boolean
   },
-  state:{
+  state: {
     type: Boolean
   }
-}, { collection: 'prices' });
+}, { timestamps: true }, { collection: 'prices' });
 
 module.exports = mongoose.model('Price', priceSchema);

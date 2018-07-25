@@ -93,14 +93,12 @@ ordertransactionRouter
               );
               generateSms(mobile,
                 `Dear ${name} Your Order ${orderid} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.Thank you`
-              ).catch((err) => {
-                res.status(400).json(err);
-              })
+              )
               res.status(200).json({ Success: true, Message: "Order Delivered" });
             }
+          }).catch((err) => {
+            res.status(400).json(err);
           })
-
-
         // res.json({ success: true, result: orderResult, msg: 'Payment details has been updated successfully!' });
       })
     }).catch(error => {
@@ -114,7 +112,9 @@ const updateTransaction = (req, orderid) => {
       if (result !== null || result.length !== 0) {
         if (req.body.payment_mode_delivery == 'Credit') {
           result.payment_mode_delivery = req.body.payment_mode_delivery;
-          result.updated_at = new Date();
+          result.credit_amt = req.body.credit_amt;
+          result.delivered_by = req.userData._id,
+            result.updated_at = new Date();
           result.save();
           resolve();
         }
@@ -177,12 +177,12 @@ ordertransactionRouter
     Invoice.find()
       .populate(' customer ordertransaction order')
       .then((data) => {
-        var newdata = data.filter(element => element.order.deliveryassign_to == req.userData._id);
+        var newdata = data.filter(element => element.ordertransaction.delivered_by == req.userData._id);
 
         // var data = newdata.filter(element => element.ordertransaction.payment_mode_delivery == "Cash")
         var data1 = newdata.filter(element => Date.parse(new Date(element.order.delivered_at).toDateString()) == Date.parse(new Date().toDateString()));
-        var cashamount = 0; var paytmamount = 0; var cardamount = 0;
-        var creditamount = 0; var bank_chequeamount = 0;
+        var cashamount = 0; var paytmamount = 0;
+        var cardamount = 0; var bank_chequeamount = 0;
         var amount = [];
         data1.forEach(element => {
           if (element.ordertransaction.payment_mode_delivery == "Cash") {
@@ -194,14 +194,11 @@ ordertransactionRouter
           if (element.ordertransaction.payment_mode_delivery == "Card") {
             cardamount += parseFloat(element.ordertransaction.paid_amt)
           }
-          if (element.ordertransaction.payment_mode_delivery == "Credit") {
-            creditamount += parseFloat(element.ordertransaction.paid_amt)
-          }
           if (element.ordertransaction.payment_mode_delivery == "Cheque/Bank") {
             bank_chequeamount += parseFloat(element.ordertransaction.paid_amt)
           }
         })
-        amount.push({ cashamount, paytmamount, cardamount, creditamount, bank_chequeamount })
+        amount.push({ cashamount, paytmamount, cardamount, bank_chequeamount })
         res.status(200).json({ Success: true, "amount": amount });
       }).catch(err => {
         res.status(400).json(err);
@@ -240,7 +237,7 @@ ordertransactionRouter
         const getCurrentMonthFirstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         const getCurrentMonthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
-        var newdata = data.filter(element => element.order.deliveryassign_to == req.userData._id);
+        var newdata = data.filter(element => element.ordertransaction.delivered_by == req.userData._id);
         // console.log('/////////////////', Date.parse(getCurrentMonthFirstDay));
         // console.log('/////////////////', Date.parse(getCurrentMonthLastDay));
         var data1 = newdata.filter(element => Date.parse(new Date(element.order.delivered_at).toDateString()) >= Date.parse(getCurrentMonthFirstDay.toDateString()) && Date.parse(new Date(element.order.delivered_at).toDateString()) <= Date.parse(getCurrentMonthLastDay.toDateString()));
@@ -250,26 +247,27 @@ ordertransactionRouter
         Paymentdetail.find().populate("customer").then((data) => {
           data1.forEach((element) => {
 
-            var onlyInB = data.filter(comparer(data1));
-            console.log('******************************************');
-            console.log(onlyInB);
-            console.log('*******************************************');
-            onlyInB.forEach(element1 => {
+            // var onlyInB = data.filter(comparer(data1));
+            // console.log('******************************************');
+            // console.log(onlyInB);
+            // console.log('*******************************************');
+            // onlyInB.forEach(element1 => {
 
-              // let filterData = data.filter(item => data1.some(other => console.log(item.customer._id == other.customer._id)));
+            // let filterData = data.filter(item => data1.some(other => console.log(item.customer._id == other.customer._id)));
 
-              // const filterData = data1.filter(item => !data.some(other => item.customer._id == other.customer));
-              // console.log('////////////', filterData);
-
-              const monthlydataObject = {
-                orderid: element.order.order_id,
-                Customername: element.customer.first_Name,
-                amountpaid: element.ordertransaction.paid_amt,
-                delivered_at: element.order.delivered_at,
-                due_amount: element1.due_amt
-              }
-              monthlydata.push(monthlydataObject);
-            });
+            // const filterData = data1.filter(item => !data.some(other => item.customer._id == other.customer));
+            // console.log('////////////', filterData);
+            date = element.order.delivered_at;
+            delivered_at = JSON.stringify(date).slice(1, 11);
+            const monthlydataObject = {
+              orderid: element.order.order_id,
+              Customername: element.customer.first_Name,
+              amountpaid: element.ordertransaction.paid_amt,
+              delivered_at: delivered_at,
+              credit_amt: element.ordertransaction.credit_amt
+            }
+            monthlydata.push(monthlydataObject);
+            // });
           });
           res.status(200).json({ Success: true, monthlydata });
         });
@@ -278,12 +276,12 @@ ordertransactionRouter
       })
   })
 
-function comparer(otherArray) {
-  return function (current) {
-    return otherArray.filter(function (other) {
-      return other.customer._id == current.customer._id && other.customer.email == current.customer.email
-    }).length == 0;
-  }
-}
+// function comparer(otherArray) {
+//   return function (current) {
+//     return otherArray.filter(function (other) {
+//       return other.customer._id !== current.customer._id && other.customer.email !== current.customer.email
+//     }).length == 0;
+//   }
+// }
 
 module.exports = ordertransactionRouter;

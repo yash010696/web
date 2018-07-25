@@ -1,0 +1,23 @@
+[
+    {
+        "price": "80",
+        "servicetype": "Normal",
+        "service": "Dry Cleaning",
+        "subservice": "Gentlemen",
+        "garment": "Shirt"
+    },
+    {
+        "price": "50",
+        "servicetype": "Normal",
+        "service": "Premium Wash",
+        "subservice": "Kids",
+        "garment": "Trouser/Pant"
+    },
+    {
+        "price": "40",
+        "servicetype": "Normal",
+        "service": "Steam Iron",
+        "subservice": "Ladies",
+        "garment": "Shorts"
+    }
+]

@@ -7,13 +7,13 @@ var dailycollectionSchema = new mongoose.Schema({
     amount_submitted_cash: {
         type: String
     },
-    amount_submitted_paytm: {
+    amount_by_paytm: {
         type: String
     },
-    amount_submitted_card: {
+    amount_by_card: {
         type: String
     },
-    amount_submitted_cheque_bank: {
+    amount_by_cheque_bank: {
         type: String
     },
     submitted_to: {

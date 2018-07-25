@@ -262,7 +262,7 @@ mrequestordersRouter
             .then((data) => {
                 var _id = data[0]._id;
                 Invoice.find({ 'order': _id })
-                    .populate('order customer  ordertransaction tag  ')
+                    .populate('order customer  ordertransaction tag')
                     .populate({ path: 'order', populate: { path: 'requestId' } })
                     .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
                     .then((invoices) => {
@@ -307,7 +307,7 @@ mrequestordersRouter
                                         subservice = tag.subservice;
                                         dress = tagsArray[3];
                                         price = tag.price;
-                                        qty= tagsArray[4].split(":");
+                                        qty = tagsArray[4].split(":");
                                     });
                                     // console.log(service,'/',subservice,'/',dress,'/',price,'/');
                                     orderList.push({
@@ -315,14 +315,14 @@ mrequestordersRouter
                                         'subservice': subservice,
                                         'dress': dress,
                                         'price': price,
-                                        'qty':qty[1],
+                                        'qty': qty[1],
                                     });
                                 });
                             });
                         });
 
                         var data = {
-                            customer_id:invoices[0].customer._id,
+                            customer_id: invoices[0].customer._id,
                             order_id: invoices[0].order.order_id,
                             order_status: invoices[0].order.order_status,
                             pickupDate: pickupDate,
@@ -343,8 +343,8 @@ mrequestordersRouter
                             advance: invoices[0].ordertransaction.advance,
                             current_due: invoices[0].ordertransaction.current_due,
                             previous_due: invoices[0].ordertransaction.previous_due,
-                            paymentstatus:invoices[0].order.paymentstatus,
-                            payment_link:invoices[0].order.payment_link,
+                            paymentstatus: invoices[0].order.paymentstatus,
+                            payment_link: invoices[0].order.payment_link,
                             orderList
                         }
                         res.status(200).json({ Success: true, data });
