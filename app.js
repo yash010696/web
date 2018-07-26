@@ -154,47 +154,8 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.post('/send-email', function(req, res) {
-    let transporter = nodeMailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-            user: 'ajitpawar005@gmail.com',
-            pass: '@engineering@05'
-        }
-    });
-    let mailOptions = {
-        from: '"Ajit Pawar" <ajitpawar005@gmail.com>', // sender address
-        to: req.body.to, // list of receivers
-        subject: req.body.subject, // Subject line
-        text: req.body.body, // plain text body
-        html: '<h1>Welcome</h1><br><p>ELaundry</p>' // html body
-    };
-
-    transporter.sendMail(mailOptions, (err, info) => {
-        if (err) {
-            res.status(400).send(err);
-            return;
-        }
-        res.json({ success: true, msg: 'Successful Mail Sent.' });
-    });
-});
-
-
-
 app.listen(port, () => {
     console.log(`Started up at port ${port}`);
 });
-// app.use('/api', router);
-// router.get('/uploads/images/:imagename', (req, res) => {
 
-//     let imagename = req.params.imagename;
-//     let imagepath = "http://localhost:3000" + "/uploads/images/" + imagename;
-//     // let image = fs.readFileSync(imagepath)
-//     // let mime = fileType(image).mime
-
-// 	// res.writeHead(200, {'Content-Type': mime })
-// 	res.end(imagepath, 'binary');
-// })
 module.exports = { app };

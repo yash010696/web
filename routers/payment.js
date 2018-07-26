@@ -7,7 +7,6 @@ var { BitlyClient } = require('bitly');
 var generateMail = require('./../middlewear/mail');
 var generateSms = require('./../middlewear/sms');
 var Order = require('./../models/order');
-var payumoney1 = require('./../middlewear/payumoney');
 var Invoice = require('../models/invoice');
 
 
@@ -79,7 +78,6 @@ paymentRouter
         //             $set: { payment_link: response }
         //         }).then((data) => {
 
-        //    var aa= payumoney1(req.body.order_id , req ,res);
            var url=`https://sheltered-atoll-29861.herokuapp.com/api/checkstatus/${req.body.order_id}`;
         // var url = `http://localhost:3000/api/checkstatus/${req.body.order_id}`;
 
