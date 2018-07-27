@@ -129,6 +129,6 @@ var customerSchema = new Schema({
     statee: {
         type: Boolean
     }
-}, { collection: 'customers' });
+},{timestamps:true}, { collection: 'customers' });
 
 module.exports = mongoose.model('Customer', customerSchema);

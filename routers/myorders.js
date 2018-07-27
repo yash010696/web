@@ -123,7 +123,28 @@ MyOrdersRouter
 
             customer.gender = element.gender;
             customer.whatsup = element.whatsup;
-            customer.franchise = '5b309c4f1bd04e00204ca20c';
+            customer.city = 'Pune';
+            customer.state = 'Maharastra';
+            customer.status = true;
+            customer.statee = true;
+
+            var randomstring = "";
+            var chars = "123456789ABCDEFGHIJKLMNOPQRSTUVWXTZ";
+            var string_length = 6;
+            for (var i = 0; i < string_length; i++) {
+                var rnum = Math.floor(Math.random() * chars.length);
+                randomstring += chars.substring(rnum, rnum + 1);
+            }
+            var ReferralCode = randomstring.toUpperCase();
+            customer.referral_Code = ReferralCode;
+
+            if (element.Area_Location == "Aundh") {
+                customer.franchise = '5b309c4f1bd04e00204ca20c';
+            }
+            if (element.Area_Location == "Tathawade") {
+                customer.franchise = '5b309cc91bd04e00204ca20e';
+            }
+
             var home = element.home.split(";");
             // var other=element.other.split(";");
             console.log('///////////////', home);
@@ -153,7 +174,11 @@ MyOrdersRouter
 
         var notestring = fs.readFileSync(__dirname + "./../price.json");
         prices = JSON.parse(notestring);
-
+        Price.remove().then((price) => {
+            console.log(';;;;;;;;;;;;;;;;;;;;;;;;', price)
+        }).catch(err => {
+            console.log(err);
+        })
         prices.forEach(element => {
             // console.log('element:',element);
             var price = new Price();
@@ -164,10 +189,10 @@ MyOrdersRouter
                 Service.findOne({ 'name': element.service }).then((service) => {
 
                     price.service = service._id;
-                    Subservice.findOne({'name':element.subservice}).then((subservice) => {
+                    Subservice.findOne({ 'name': element.subservice }).then((subservice) => {
 
                         price.subservice = subservice._id;
-                        Garment.findOne({'name':element.garment}).then((garment) => {
+                        Garment.findOne({ 'name': element.garment }).then((garment) => {
 
                             price.garment = garment._id;
                             price.status = true;
@@ -175,7 +200,7 @@ MyOrdersRouter
 
                             console.log('////////////////////////', price);
                             price.save()
-                            
+
                         })
                     })
                 })
@@ -184,4 +209,38 @@ MyOrdersRouter
         res.send("okkkkkkkkkkkkkk");
     })
 
+    .get('/pricejson', (req, res) => {
+        Price.find().then(data => {
+            var headers = 'price' + ',' + 'servicetype' + ',' + 'service' + ',' + 'subservice' + ',' + 'garment';
+
+            var writeStr = "";
+            data.forEach(element => {
+                // console.log('//////////////////',element);
+                Servicetype.findOne({ '_id': element.servicetype }).then((servicetype) => {
+                    Service.findOne({ '_id': element.service }).then((service) => {
+                        Subservice.findOne({ '_id': element.subservice }).then((subservice) => {
+                            Garment.findOne({ '_id': element.garment }).then((garment) => {
+                                writeStr += element.price + ',' + servicetype.type + ',' + service.name + ',' + subservice.name + ',' + garment.name + "\n";  //.join(",") + "\n";
+
+                                var NewString = headers + '\n' + writeStr;
+                                fs.writeFile(__dirname + "./../price.csv", NewString, function (err) {
+
+                                })
+                            })
+                        })
+                    })
+
+                })
+
+            });
+            res.json("kkkkkkkkkkkkkkk");
+            // for (var i = 0; i < rows.length; i++) {
+            //     writeStr += rows[i].join(",") + "\n";
+            // }
+
+            //writes to a file, but you will presumably send the csv as a      
+            //response instead
+
+        })
+    })
 module.exports = { MyOrdersRouter }

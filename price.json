@@ -1,20 +1,20 @@
 [
     {
-        "price": "80",
+        "price": "70",
         "servicetype": "Normal",
         "service": "Dry Cleaning",
         "subservice": "Gentlemen",
         "garment": "Shirt"
     },
     {
-        "price": "50",
+        "price": "60",
         "servicetype": "Normal",
         "service": "Premium Wash",
         "subservice": "Kids",
         "garment": "Trouser/Pant"
     },
     {
-        "price": "40",
+        "price": "50",
         "servicetype": "Normal",
         "service": "Steam Iron",
         "subservice": "Ladies",
