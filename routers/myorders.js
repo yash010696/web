@@ -14,6 +14,8 @@ var Servicetype = require('./../models/servicetype');
 var Subservice = require('./../models/subservice');
 var Garment = require('./../models/garment');
 var Price = require('./../models/price');
+var Franchise = require('./../models/franchise');
+var order_type = require('./../models/ordertype');
 
 var MyOrdersRouter = express.Router();
 
@@ -138,34 +140,42 @@ MyOrdersRouter
             var ReferralCode = randomstring.toUpperCase();
             customer.referral_Code = ReferralCode;
 
-            if (element.Area_Location == "Aundh") {
-                customer.franchise = '5b309c4f1bd04e00204ca20c';
-            }
-            if (element.Area_Location == "Tathawade") {
-                customer.franchise = '5b309cc91bd04e00204ca20e';
-            }
+            Franchise.findOne({ statee: true, franchise_Name: element.Store_Name }).then((franchise) => {
+                customer.franchise = franchise._id;
 
-            var home = element.home.split(";");
-            // var other=element.other.split(";");
-            console.log('///////////////', home);
-            var home = {
-                flat_no: home[0],
-                society: home[1],
-                landmark: home[2],
-                pincode: home[3]
-            }
-            // console.log('/////////////////',home);
-            // var other = {
-            //     flat_no: other[0], 
-            //     society: other[1],
-            //     landmark: other[2],
-            //     pincode: other[3]
-            // }
-            // console.log('/////////////////',other);
-            customer.address.push({ home });
+                order_type.findOne({ 'order_type': element.order_type }).then((type) => {
+                    customer.order_type = type._id;
 
-            // console.log('customer',customer);
-            customer.save().then((data) => { });
+                    // if (element.Store_Name == "Aundh") {
+                    //     customer.franchise = '5b309c4f1bd04e00204ca20c';
+                    // }
+                    // if (element.Store_Name == "Tathawade") {
+                    //     customer.franchise = '5b309cc91bd04e00204ca20e';
+                    // }
+
+                    var home = element.home.split(";");
+                    // var other=element.other.split(";");
+                    console.log('///////////////', home);
+                    var home = {
+                        flat_no: home[0],
+                        society: home[1],
+                        landmark: home[2],
+                        pincode: home[3]
+                    }
+                    // console.log('/////////////////',home);
+                    // var other = {
+                    //     flat_no: other[0], 
+                    //     society: other[1],
+                    //     landmark: other[2],
+                    //     pincode: other[3]
+                    // }
+                    // console.log('/////////////////',other);
+                    customer.address.push({ home });
+
+                    // console.log('customer',customer);
+                    customer.save().then((data) => { });
+                })
+            })
         });
         res.json("data added");
     })
@@ -210,37 +220,40 @@ MyOrdersRouter
     })
 
     .get('/pricejson', (req, res) => {
-        Price.find().then(data => {
-            var headers = 'price' + ',' + 'servicetype' + ',' + 'service' + ',' + 'subservice' + ',' + 'garment';
+        Price.find()
+            .populate('servicetype service subservice garment')
+            .then(data => {
+                var priceList = []; var price;
 
-            var writeStr = "";
-            data.forEach(element => {
-                // console.log('//////////////////',element);
-                Servicetype.findOne({ '_id': element.servicetype }).then((servicetype) => {
-                    Service.findOne({ '_id': element.service }).then((service) => {
-                        Subservice.findOne({ '_id': element.subservice }).then((subservice) => {
-                            Garment.findOne({ '_id': element.garment }).then((garment) => {
-                                writeStr += element.price + ',' + servicetype.type + ',' + service.name + ',' + subservice.name + ',' + garment.name + "\n";  //.join(",") + "\n";
+                // var headers = 'price' + ',' + 'servicetype' + ',' + 'service' + ',' + 'subservice' + ',' + 'garment';
+                // var writeStr = ""; 
+                // data.forEach((element , index ,array)=> {
+                //     Servicetype.findOne({ '_id': element.servicetype }).then((servicetype) => {
+                //         Service.findOne({ '_id': element.service }).then((service) => {
+                //             Subservice.findOne({ '_id': element.subservice }).then((subservice) => {
+                //                 // Garment.findOne({ '_id': element.garment }).then((garment) => {
+                //                     // writeStr += element.price + ',' + servicetype.type + ',' + service.name + ',' + subservice.name + ',' + garment.name + "\n";  //.join(",") + "\n";
+                //                     // var NewString = headers + '\n' + writeStr;
+                //                     // fs.writeFile(__dirname + "./../price.csv", NewString, function (err) { })
+                //                     if ( index == array.length - 1) {
+                //                          res.status(200).json(NewString);
+                //                     }   
+                //                 })
+                //             })
+                //         })
+                //     })
+                // });
 
-                                var NewString = headers + '\n' + writeStr;
-                                fs.writeFile(__dirname + "./../price.csv", NewString, function (err) {
-
-                                })
-                            })
-                        })
-                    })
-
+                data.forEach((element, index, array) => {
+                    priceList.push({
+                        price: element.price,
+                        servicetype: element.servicetype.type,
+                        service: element.service.name,
+                        subservice: element.subservice.name,
+                        garment: element.garment.name
+                    });
                 })
-
-            });
-            res.json("kkkkkkkkkkkkkkk");
-            // for (var i = 0; i < rows.length; i++) {
-            //     writeStr += rows[i].join(",") + "\n";
-            // }
-
-            //writes to a file, but you will presumably send the csv as a      
-            //response instead
-
-        })
+                res.status(200).json({ success: true, priceList });
+            })
     })
 module.exports = { MyOrdersRouter }

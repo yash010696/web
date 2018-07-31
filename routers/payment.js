@@ -259,6 +259,8 @@ paymentRouter
             } else {
                 res.status(200).json({ Success: false });
             }
+        }).catch(err =>{
+            console.log(err);
         })
     })
 

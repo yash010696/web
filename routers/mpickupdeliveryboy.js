@@ -30,7 +30,7 @@ mpickupdeliveryboyRouter
             if (!user[0]) {
                 res.status(200).json({ Success: false, Message: 'Authentication Failed. No User Found' });
             }
-            else {
+            else if (user[0].status == true && user[0].statee == true ) {
                 token = jwt.sign(user[0].toJSON(), config.secret, { expiresIn: 604800 });
                 otp1 = otpGenerate();
                 Pickupdeliveryboy.findOneAndUpdate({ '_id': user[0]._id }, {
@@ -43,6 +43,9 @@ mpickupdeliveryboyRouter
                 }, (err) => {
                     res.status(400).json({ Success: false, Message: 'Invalid Phone Number' });
                 })
+            }
+            else{
+                res.status(200).json({ Success: false, Message: 'User Not Valid!' });
             }
         }).catch((err) => {
             res.status(400).json({ Success: false, Message: 'Invalid Phone Number' });
