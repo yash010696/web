@@ -59,6 +59,8 @@ var referralRouter = require('./routers/referral');
 const specialservice = require('./routers/specialservice');
 var requestordersRouter=require('./routers/requestorders');
 var pickupdeliveryboyRouter = require('./routers/pickupdeliveryboy');
+var unpickupreasonRouter = require('./routers/unpickupreason');
+var undeliveryRouter =require('./routers/undeliveryreason');
 
 //WEB Services
 var {mobilecustomerRouter}=require('./routers/mobilecustomer');
@@ -132,6 +134,8 @@ app.use('/api', referralRouter);
 app.use('/api', specialservice);
 app.use('/api', requestordersRouter);
 app.use('/api', pickupdeliveryboyRouter);
+app.use('/api',unpickupreasonRouter);
+app.use('/api',undeliveryRouter)
 
 
 //WEB Services

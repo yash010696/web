@@ -8,6 +8,8 @@ var Servicetype = require('./servicetype');
 var Ordertype = require('./ordertype');
 var RequestOrder = require('./requestorder');
 var Pickupdeliveryboy = require('./pickupdeliveryboy');
+var Undeliveryreason=require('./undeliveryreason');
+var Coupon = require('./coupon');
 var orderSchema = new Schema({
   order_id: {
     type: String,
@@ -116,9 +118,9 @@ var orderSchema = new Schema({
     //   }
     // }]
   }],
-  message: {
-    type: String,
-    default: null
+  undelivery_reason: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Undeliveryreason'
   },
   undelivered_at: {
     type: Date,
@@ -133,8 +135,8 @@ var orderSchema = new Schema({
     ref: 'Pickupdeliveryboy'
   },
   payment_details: [{
-    payment_type:{
-      type:String
+    payment_type: {
+      type: String
     },
     mihpayid: {
       type: String,
@@ -165,12 +167,16 @@ var orderSchema = new Schema({
       trim: true
     },
   }],
-  payment_link:{
-    type:String
+  payment_link: {
+    type: String
   },
-  registration_source:{
-    type:String
-  }
+  registration_source: {
+    type: String
+  },
+  coupon:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Coupon'
+}
 }, {
     timestamps: true
   }, { collection: 'orders' });

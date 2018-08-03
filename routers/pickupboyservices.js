@@ -16,6 +16,10 @@ var order_type = require('./../models/ordertype');
 var checkAuth = require('../middlewear/check-auth');
 var DailyCollection = require('./../models/dailycollection');
 var Ordertransaction = require('../models/ordertransaction');
+var Unpickupreason = require('./../models/unpickupreason');
+var Undeliveryreason = require('./../models/undeliveryreason');
+var Coupon = require('./../models/coupon');
+
 
 
 var pickupboyserviceRouter = express.Router();
@@ -67,20 +71,22 @@ pickupboyserviceRouter
     // Request order which is unpicked
     .post('/unpickedorder', passport.authenticate('jwt', { session: false }), (req, res) => {
 
-        RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
-            $set: {
-                request_status: "unpicked",
-                message: req.body.message,
-                unpicked_at: new Date()
-            }
-        }).populate('customer')
-            .then((requestOrder) => {
-                var name = requestOrder.customer.first_Name;
-                var email = requestOrder.customer.email;
-                var mobile = requestOrder.customer.mobile;
+        Unpickupreason.findOne({ 'reason_name': req.body.unpick_reason }).then(reason => {
 
-                generateMail(email,
-                    `<!DOCTYPE html>
+            RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
+                $set: {
+                    unpick_reason: reason._id,
+                    request_status: "unpicked",                    
+                    unpicked_at: new Date()
+                }
+            }).populate('customer')
+                .then((requestOrder) => {
+                    var name = requestOrder.customer.first_Name;
+                    var email = requestOrder.customer.email;
+                    var mobile = requestOrder.customer.mobile;
+
+                    generateMail(email,
+                        `<!DOCTYPE html>
            <html>
            <head>
                <meta charset="utf-8" />
@@ -103,17 +109,18 @@ pickupboyserviceRouter
                 </table>
            </body>
            </html>`,
-                    `Missed the Pickup with 24klen Laundry Science`
-                );
-                generateSms(mobile,
-                    `Dear ${name}, We attempted to complete your request for ${req.body.requestId} , however it was unsuccessful.`
-                ).catch((err) => {
-                    res.status(400).json(err);
+                        `Missed the Pickup with 24klen Laundry Science`
+                    );
+                    generateSms(mobile,
+                        `Dear ${name}, We attempted to complete your request for ${req.body.requestId} , however it was unsuccessful.`
+                    ).catch((err) => {
+                        res.status(400).json(err);
+                    })
+                    res.status(200).json({ Success: true, Message: "Order unpicked" });
                 })
-                res.status(200).json({ Success: true, Message: "Order unpicked" });
-            }).catch((err) => {
-                res.status(400).json({ err });
-            })
+        }).catch((err) => {
+            res.status(400).json({ err });
+        })
     })
 
     // RequestOrder created into partial order
@@ -122,7 +129,6 @@ pickupboyserviceRouter
             .populate({ path: 'franchise', populate: { path: 'area' } })
             .populate('customer')
             .then((data) => {
-
                 if (!data) {
                     res.status(200).json({ Success: false, Message: 'Order Not Found!' });
                 }
@@ -134,6 +140,7 @@ pickupboyserviceRouter
                 var mobile = data.customer.mobile;
 
                 var store_code = data.franchise.store_code;
+            
                 order_type.findOne({ 'order_type': "on-line" }).then((ordertype) => {
                     Order.find({ 'franchise': data.franchise._id }).then((results) => {
                         var count = results.length;
@@ -157,6 +164,7 @@ pickupboyserviceRouter
                         order.ordertype = ordertype._id;
                         order.address.push({ home });
                         order.registration_source = "Mobile";
+                        order.coupon = data.coupon ? data.coupon :null;
                         // , other
                         // order.created_by = order.created_by;
                         // order.updated_by = order.updated_by;
@@ -174,7 +182,9 @@ pickupboyserviceRouter
                             }).then((order));
                             generateSms(mobile,
                                 `Dear ${name},Your Pickup ${id} with Qty ${data.total_qty} garments was successful. You will be receiving final bill soon.`
-                            )
+                            ).catch(err =>{
+                                console.log(err);
+                            })
                             res.status(200).json({ Success: true, Message: 'Order Placed SuccessFully' })
                         })
                     })
@@ -232,23 +242,26 @@ pickupboyserviceRouter
 
     // ready order which is Undelivered
     .post('/undeliveredorder', passport.authenticate('jwt', { session: false }), (req, res) => {
+        console.log( req.body.undelivery_reason);
 
-        Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
-            $set: {
-                order_status: "undelivered",
-                message: req.body.message,
-                undelivered_at: new Date()
-            }
-        }).populate('customer')
-            .then((order) => {
-                var name = order.customer.first_Name;
-                var email = order.customer.email;
-                var mobile = order.customer.mobile;
-                var amount = order.order_amount;
-                var total_qty = order.total_qty;
+        Undeliveryreason.findOne({ 'reason_name': req.body.undelivery_reason }).then(reason => {
+            console.log(reason);
+            Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
+                $set: {
+                    undelivery_reason: reason._id,
+                    order_status: "undelivered",                    
+                    undelivered_at: new Date()
+                }
+            }).populate('customer')
+                .then((order) => {
+                    var name = order.customer.first_Name;
+                    var email = order.customer.email;
+                    var mobile = order.customer.mobile;
+                    var amount = order.order_amount;
+                    var total_qty = order.total_qty;
 
-                generateMail(email,
-                    `<!DOCTYPE html>
+                    generateMail(email,
+                        `<!DOCTYPE html>
                     <html>
                     <head>
                         <meta charset="utf-8" />
@@ -270,17 +283,18 @@ pickupboyserviceRouter
                     </table>
                     </body>
                     </html>`,
-                    `Missed the Pickup/Delivery with 24klen Laundry Science`
-                );
-                generateSms(mobile,
-                    `Dear ${name}, We attempted to complete your request for ${order.order_id} , however it was unsuccessful.`
-                ).catch((err) => {
-                    res.status(400).json(err);
+                        `Missed the Pickup/Delivery with 24klen Laundry Science`
+                    );
+                    generateSms(mobile,
+                        `Dear ${name}, We attempted to complete your request for ${order.order_id} , however it was unsuccessful.`
+                    ).catch((err) => {
+                        res.status(400).json(err);
+                    })
+                    res.status(200).json({ Success: true, Message: "Order UnDelivered" });
                 })
-                res.status(200).json({ Success: true, Message: "Order UnDelivered" });
-            }).catch((err) => {
-                res.status(400).json({ err });
-            })
+        }).catch((err) => {
+            res.status(400).json({ err });
+        })
     })
 
     // ready order which is Delivered

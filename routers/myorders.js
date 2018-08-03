@@ -117,6 +117,7 @@ MyOrdersRouter
             customer.mobile = element.mobile;
             date = element.dob;
             // console.log(date);
+            
             newdate = date.split("_");
             date1 = new Date(newdate[2] + '/' + newdate[1] + '/' + newdate[0]);
             var newDate = new Date(date1.getTime() + Math.abs(date1.getTimezoneOffset() * 60000))

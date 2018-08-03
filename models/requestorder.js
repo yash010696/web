@@ -9,6 +9,7 @@ var Timeslot = require('./../models/timeslot');
 var Ordertype = require('./ordertype');
 var User = require('./../models/user');
 var Coupon = require('../models/coupon');
+var Unpickupreason = require('./unpickupreason');
 
 var RequestOrderSchema = new mongoose.Schema({
     requestId: {
@@ -125,9 +126,9 @@ var RequestOrderSchema = new mongoose.Schema({
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'Pickupdeliveryboy'
     // },
-    message: {
-        type: String,
-        default: null
+    unpick_reason: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Unpickupreason'
     },
     picked_at: {
         type: Date,

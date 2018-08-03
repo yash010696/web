@@ -15,7 +15,7 @@ module.exports = function mail(email, message, subject) {
     });
 
     let mailOptions = {
-      from: '"Admin" <donotreply@24klen.com>',
+      from: '"24Klen" <donotreply@24klen.com>',
       to: email,
       subject: subject,
       html: message

@@ -10,10 +10,10 @@ const checkAuth = require('../middlewear/check-auth');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
+    destination: function (req, file, cb) {
         cb(null, "./uploads/")
     },
-    filename: function(req, file, cb) {
+    filename: function (req, file, cb) {
         cb(null, file.originalname);
     }
 });
@@ -37,12 +37,12 @@ const uploads = multer({
 //Create router for  register the new service.
 serviceRouter
     .route('/service')
-    .post(checkAuth, uploads.single("serviceImage"), function(req, res) {
+    .post(checkAuth, uploads.single("serviceImage"), function (req, res) {
         if (!req.body) {
             res.json({ success: false, msg: 'Please Enter Required Data.' });
         } else {
             var counter;
-            Service.find().exec(function(err, results) {
+            Service.find().exec(function (err, results) {
                 var count = results.length;
                 counter = count + 1;
                 savedata(counter);
@@ -73,7 +73,7 @@ serviceRouter
                 state: true,
                 serviceImage: filePath
             });
-            service.save(function(err) {
+            service.save(function (err) {
                 if (err) {
                     res.status(400).send(err);
                     return;
@@ -83,21 +83,21 @@ serviceRouter
         }
     })
 
-//Create router for fetching All services.
-.get(checkAuth, function(req, res) {
-    Service.find({ state: true }, function(err, services) {
-        if (err) {
-            res.status(500).send(err);
-            return;
-        }
-        res.json(services);
+    //Create router for fetching All services.
+    .get(checkAuth, function (req, res) {
+        Service.find({ state: true }, function (err, services) {
+            if (err) {
+                res.status(500).send(err);
+                return;
+            }
+            res.json(services);
+        });
     });
-});
 
 serviceRouter
     .route('/pos/services')
-    .get(checkAuth, function(req, res) {
-        Service.find({ status: true }, function(err, service) {
+    .get(checkAuth, function (req, res) {
+        Service.find({ status: true }, function (err, service) {
             if (err) {
                 res.status(404).send(err);
                 return;
@@ -109,9 +109,9 @@ serviceRouter
 //Create router for fetching Single service.
 serviceRouter
     .route('/services/:serviceId')
-    .get(checkAuth, function(req, res) {
+    .get(checkAuth, function (req, res) {
         var serviceId = req.params.serviceId;
-        Service.findOne({ id: serviceId }, function(err, service) {
+        Service.findOne({ id: serviceId }, function (err, service) {
             if (err) {
                 res.status(500).send(err);
                 return;
@@ -120,9 +120,9 @@ serviceRouter
         });
     })
     //Create router for Updating service.
-    .put(checkAuth, uploads.single("serviceImage"), function(req, res) {
+    .put(checkAuth, uploads.single("serviceImage"), function (req, res) {
         const serviceId = req.body._id;
-        Service.findOne({ _id: serviceId }, function(err, service) {
+        Service.findOne({ _id: serviceId }, function (err, service) {
             if (err) {
                 res.status(500).send(err);
                 return;
@@ -154,9 +154,9 @@ serviceRouter
     })
 serviceRouter
     .route('/servicess/:serviceId')
-    .put(checkAuth, function(req, res) {
+    .put(checkAuth, function (req, res) {
         var serviceId = req.params.serviceId;
-        Service.findOne({ _id: serviceId }, function(err, service) {
+        Service.findOne({ _id: serviceId }, function (err, service) {
             if (err) {
                 res.status(500).send({ error: err });
                 return;
