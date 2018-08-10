@@ -3,7 +3,7 @@ var request = require('request');
 module.exports=function generateSms(phone,message){
     
         return new Promise((resolve, reject) => {
-           
+           console.log(phone, '///////',message);
             if (phone === null) {
                 return reject('Invalid Phone Number');
             } else if (phone.length === 10) {

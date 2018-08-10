@@ -61,6 +61,7 @@ var requestordersRouter=require('./routers/requestorders');
 var pickupdeliveryboyRouter = require('./routers/pickupdeliveryboy');
 var unpickupreasonRouter = require('./routers/unpickupreason');
 var undeliveryRouter =require('./routers/undeliveryreason');
+const holidayRoutes = require('./routers/holiday');
 
 //WEB Services
 var {mobilecustomerRouter}=require('./routers/mobilecustomer');
@@ -135,8 +136,7 @@ app.use('/api', specialservice);
 app.use('/api', requestordersRouter);
 app.use('/api', pickupdeliveryboyRouter);
 app.use('/api',unpickupreasonRouter);
-app.use('/api',undeliveryRouter)
-
+app.use('/api',undeliveryRouter);
 
 //WEB Services
 app.use('/api', mobilecustomerRouter);
@@ -150,6 +150,7 @@ app.use('/api', mfranchiseRouter);
 app.use('/api', mpickupdeliveryboyRouter);
 app.use('/api', paymentRouter);
 app.use('/api', paymentAdjustmentRoutes);
+app.use('/api', holidayRoutes);
 
 
 app.use(function(req, res, next) {

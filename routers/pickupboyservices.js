@@ -19,9 +19,7 @@ var Ordertransaction = require('../models/ordertransaction');
 var Unpickupreason = require('./../models/unpickupreason');
 var Undeliveryreason = require('./../models/undeliveryreason');
 var Coupon = require('./../models/coupon');
-
-
-
+var serviceType = require('./../models/servicetype');
 var pickupboyserviceRouter = express.Router();
 
 pickupboyserviceRouter
@@ -76,7 +74,7 @@ pickupboyserviceRouter
             RequestOrder.findOneAndUpdate({ 'requestId': req.body.requestId }, {
                 $set: {
                     unpick_reason: reason._id,
-                    request_status: "unpicked",                    
+                    request_status: "unpicked",
                     unpicked_at: new Date()
                 }
             }).populate('customer')
@@ -140,7 +138,7 @@ pickupboyserviceRouter
                 var mobile = data.customer.mobile;
 
                 var store_code = data.franchise.store_code;
-            
+
                 order_type.findOne({ 'order_type': "on-line" }).then((ordertype) => {
                     Order.find({ 'franchise': data.franchise._id }).then((results) => {
                         var count = results.length;
@@ -164,12 +162,12 @@ pickupboyserviceRouter
                         order.ordertype = ordertype._id;
                         order.address.push({ home });
                         order.registration_source = "Mobile";
-                        order.coupon = data.coupon ? data.coupon :null;
+                        order.coupon = data.coupon ? data.coupon : null;
                         // , other
                         // order.created_by = order.created_by;
                         // order.updated_by = order.updated_by;
-                        order.status = true;
                         order.state = true;
+                        order.status = true;
 
                         order.save().then((data) => {
 
@@ -182,7 +180,7 @@ pickupboyserviceRouter
                             }).then((order));
                             generateSms(mobile,
                                 `Dear ${name},Your Pickup ${id} with Qty ${data.total_qty} garments was successful. You will be receiving final bill soon.`
-                            ).catch(err =>{
+                            ).catch(err => {
                                 console.log(err);
                             })
                             res.status(200).json({ Success: true, Message: 'Order Placed SuccessFully' })
@@ -242,14 +240,14 @@ pickupboyserviceRouter
 
     // ready order which is Undelivered
     .post('/undeliveredorder', passport.authenticate('jwt', { session: false }), (req, res) => {
-        console.log( req.body.undelivery_reason);
+        console.log(req.body.undelivery_reason);
 
         Undeliveryreason.findOne({ 'reason_name': req.body.undelivery_reason }).then(reason => {
             console.log(reason);
             Order.findOneAndUpdate({ 'order_id': req.body.order_id }, {
                 $set: {
                     undelivery_reason: reason._id,
-                    order_status: "undelivered",                    
+                    order_status: "undelivered",
                     undelivered_at: new Date()
                 }
             }).populate('customer')
@@ -357,6 +355,69 @@ pickupboyserviceRouter
             })
     })
 
+    .post('/neworder', checkAuth, (req, res) => {
+
+        Customer.findOne({ '_id': req.body._id })
+            // .populate({ path: 'franchise', populate: { path: 'area' } })
+            .populate('franchise , area')
+            .then((data) => {
+                if (!data) {
+                    res.status(200).json({ Success: false, Message: 'Order Not Found!' });
+                }
+                var home = data.address[0].home[0];
+                // var other = data.address[0].other[0];
+                var name = data.first_Name;
+                var email = data.email;
+                var mobile = data.mobile;
+                var store_code = data.franchise.store_code;
+                order_type.findOne({ 'order_type': "on-line" }).then((ordertype) => {
+                    serviceType.findOne({ 'type': req.body.servicetype }).then((servicetype) => {
+                        console.log(servicetype._id)
+                        Order.find({ 'franchise': data.franchise._id }).then((results) => {
+                            var count = results.length;
+                            counter = count + 1;
+                            var str = "" + counter;
+                            var pad = "0000";
+                            var ans = pad.substring(0, pad.length - str.length) + str;
+                            var id = store_code + ans;
+
+                            var order = new Order();
+                            order.order_id = id;
+                            order.order_amount = 00;
+                            order.order_status = 'picked up';
+                            order.franchise = data.franchise._id;
+                            order.customer = data._id;
+                            order.servicetype = servicetype._id;
+                            order.total_qty = req.body.total_qty;
+                            order.pickupdelivery = null;
+                            order.paymentstatus = 'unpaid';
+                            order.ordertype = ordertype._id;
+                            order.address.push({ home });
+                            order.registration_source = "Mobile";
+                            // order.coupon = data.coupon ? data.coupon : null;
+                            // , other
+                            // order.created_by = order.created_by;
+                            // order.updated_by = order.updated_by;
+                            order.state = true;
+                            order.status = true;
+
+                            order.save().then((data) => {
+                                generateSms(mobile,
+                                    `Dear ${name},Your Pickup ${id} with Qty ${data.total_qty} garments was successful. You will be receiving final bill soon.`
+                                ).catch(err => {
+                                    console.log(err);
+                                })
+                                res.status(200).json({ Success: true, Message: 'Order Placed SuccessFully' })
+                            })
+                        })
+                    })
+                })
+            }).catch((err) => {
+                console.log(err)
+                res.status(400).json({ err });
+            })
+    })
+
     .post('/dailycollection', checkAuth, (req, res) => {
         var dailyCollection = new DailyCollection();
         dailyCollection.amount_submitted_cash = req.body.amount_submitted_cash;
@@ -371,5 +432,6 @@ pickupboyserviceRouter
             res.status(200).json({ Success: true, Message: "Submitted To Store" });
         })
     })
+
 
 module.exports = { pickupboyserviceRouter }

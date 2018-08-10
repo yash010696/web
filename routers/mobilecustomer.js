@@ -75,28 +75,56 @@ mobilecustomerRouter
                                         );
                                         generateMail(user.email,
                                             `<!DOCTYPE html>
-                                           <html>
-                                           <head>
-                                               <meta charset="utf-8" />
-                                               <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                                               <title>Page Title</title>
-                                               <meta name="viewport" content="width=device-width, initial-scale=1">
-                                               <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-                                               <script src="main.js"></script>
-                                           </head>
-                                           <body>
-                                           <table>
-                                           <tr><b>Dear ${user.first_Name},</b></tr>
-
-                                           <tr>Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}.<br></tr>
+                                            <html>
+                                            <head>
+                                            <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+                                            <meta content="text/html;charset=UTF-8" http-equiv="content-type" />
+                                            <title>24 Klen Mailer</title>
+                                            </head>
+                                            <body style="margin: 0;">                                            
+                                            <div style="width: 800px; margin:0 auto;">
+                                            <table id="Table_01" width="600" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse;" align="center">
+                                                <tr style="border-collapse: collapse;">
+                                                  <td style="border-collapse: collapse;">
+                                                  <h4 style= "font-size: 16px;">Dear ${user.first_Name},</h4>
+                                                  <h4>Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}.</h4>
+                                
                                                                                
-                                           <tr><b>Thanks,</b></tr>
+                                                  <h4>Thanks,</h4>
                                                                                        
-                                            <tr><b>Team 24Klen Laundry Science</b></tr>
-                                           </table>
+                                                  <h4>Team 24Klen Laundry Science</h4>
+                                                    <a href=" http://www.24klen.com/" target="blank">
+                                                        <img src="http://www.24klen.com/mailer/24Klen_Emailer_V3.jpg" alt="24 Klen Mailer" width="800" height="1733" style="display:block; border: 1px solid #000;">
+                                                    </a>
+                                                  </td>
+                                                </tr>
+                                              </table>
+                                            </div>
+                                            </body>
+                                            </html>`,
+                                        //     `<!DOCTYPE html>
+                                        //    <html>
+                                        //    <head>
+                                        //        <meta charset="utf-8" />
+                                        //        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                        //        <title>Page Title</title>
+                                        //        <meta name="viewport" content="width=device-width, initial-scale=1">
+                                        //        <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+                                        //        <script src="main.js"></script>
+                                        //    </head>
+                                        //    <body>
+                                        //    <table>
+                                        //    <tr><b>Dear ${user.first_Name},</b></tr>
+
+                                        //    <tr>Thank you for being part of 24Klen Laundry Science. Your username is ${user.mobile}.<br></tr>
+                                                                               
+                                        //    <tr><b>Thanks,</b></tr>
+                                                                                       
+                                        //     <tr><b>Team 24Klen Laundry Science</b></tr>
+                                        //    </table>
                                               
-                                           </body>
-                                           </html>`,
+                                        //    </body>
+                                        //    </html>`,
                                             'Successful Registration with 24klen Laundry Science'
                                         );
                                         res.status(200).json({ id, Success: true, Message: "Registration Successfull." });

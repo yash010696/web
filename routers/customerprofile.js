@@ -8,6 +8,7 @@ var config = require('./../config/config');
 var customerProfileRouter = express.Router();
 var Customer = require('./../models/customer');
 var Franchise = require('./../models/franchise');
+const checkAuth = require('./../middlewear/check-auth');
 
 customerProfileRouter
     .get('/mprofile', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -51,5 +52,21 @@ customerProfileRouter
         // })
     })
 
+    .get('/customerlist', checkAuth, (req, res) => {
+
+        Customer.find().then(data => {
+            var data1 = [];
+            data.forEach(element => {
+                console.log(element.first_Name)
+                data1.push({
+                    _id: element._id,
+                    first_Name: element.first_Name
+                })
+            });
+            res.json(data1);
+        }).catch(error => {
+            console.log(error);
+        })
+    })
 
 module.exports = { customerProfileRouter };

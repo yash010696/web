@@ -6,6 +6,7 @@ var ObjectId = mongoose.Types.ObjectId;
 var User = require('./user');
 var Franchise = require('./franchise');
 var Ordertype = require('./ordertype');
+var Area=require('./area');
 var customerSchema = new Schema({
     first_Name: {
         type: String,
@@ -128,6 +129,10 @@ var customerSchema = new Schema({
     },
     statee: {
         type: Boolean
+    },
+    area:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Area'
     }
 },{timestamps:true}, { collection: 'customers' });
 

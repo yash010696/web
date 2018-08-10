@@ -41,7 +41,7 @@ otpRouter
                 generateSms(phone,
                     `Your 24Klen Laundry App One Time Password is ${otp}.`
                 ).then((data) => {
-                    res.status(200).json({ Success: true, Message: 'OTP sent to mobile number.' });
+                    res.status(200).json({ Success: true, Message: 'OTP sent to mobile number.', areaid: user[0].area });
                 }, (err) => {
                     res.status(400).json({ Success: false, Message: 'Invalid Phone Number' });
                 })

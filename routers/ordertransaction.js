@@ -271,8 +271,6 @@ ordertransactionRouter
           });
           res.status(200).json({ Success: true, monthlydata });
         });
-
-
       })
   })
 

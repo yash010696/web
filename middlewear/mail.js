@@ -1,7 +1,6 @@
 var nodemailer = require('nodemailer');
 
 module.exports = function mail(email, message, subject) {
-
   return new Promise((resolve, reject) => {
     let transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
