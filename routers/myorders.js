@@ -257,4 +257,14 @@ MyOrdersRouter
                 res.status(200).json({ success: true, priceList });
             })
     })
+
+    // .get('/order12345',(req,res)=>{
+    //     Order.find().skip(5).limit(5).select('order_amount').then(data =>{
+    //         console.log(data.length)
+    //         data.forEach(element => {
+    //             console.log(element.order_id)
+    //         });
+    //         res.json(data)
+    //     })
+    // })
 module.exports = { MyOrdersRouter }

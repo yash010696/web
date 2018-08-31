@@ -10,7 +10,7 @@ const checkAuth = require('../middlewear/check-auth');
 const multer = require('multer');
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
+    destination: function (req, file, cb) {        
         cb(null, "./uploads/")
     },
     filename: function (req, file, cb) {

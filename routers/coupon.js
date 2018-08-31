@@ -239,16 +239,31 @@ couponRouter
 couponRouter
     .route('/bulksms')
     .post(checkAuth, (req, res) => {
-        Customer.find().then((customer) => {
+        console.log(req.body);
+        if (!req.body) {
+            res.status(500).send(err);
+            return;
+        }
+        // req.body.customer.forEach(element => {
+            // generateSms(element.mobile,
+                // req.body.message
+        //     ).catch(error =>{
+        //         res.send(error)
+        //     });
+        // });
 
-            customer.forEach(element => {
-                generateSms(element.mobile,
-                    `Bulk SMS from node.js`
-                );
-            })
-            res.json("send");
+        res.json("sendddddddddd")
+        // Customer.find().select('mobile').then((customer) => {
 
-        })
+        //     // customer.forEach(element => {
+        //     //     generateSms(element.mobile,
+        //     //         `Bulk SMS from node.js`
+        //     //     );
+        //     // })
+        //     res.json(customer);
+        // }).catch(error =>{
+        //     res.send(error);
+        // })
     })
 
 couponRouter

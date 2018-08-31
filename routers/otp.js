@@ -58,7 +58,7 @@ otpRouter
         var otp1 = req.body.otp;
         Customer.findOne({ 'otp': req.body.otp }).then((customer) => {
             if (!customer) {
-                res.status(200).json({ Success: false, Message: 'Invalid OTP. Kindly check and reenter the OTP.' });
+                res.status(200).json({ Success: false, Message: 'Invalid OTP. Kindly check and renter the OTP.' });
             } else {
                 Customer.findOneAndUpdate({ '_id': customer._id }, {
                     $set: { otp: null }

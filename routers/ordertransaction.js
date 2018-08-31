@@ -47,6 +47,9 @@ ordertransactionRouter
     let orderid = req.params.orderid;
 
     updateTransaction(req, orderid).then(result => {
+      var paidAmount=result.paid_amt;
+      console.log(paidAmount);
+      
       updatePaymentDetails(req).then(result => {
         Order.findOneAndUpdate({ 'order_id': orderid }, {
           $set: {
@@ -81,7 +84,7 @@ ordertransactionRouter
          <table>
              <tr><b>Dear ${name},</b></tr>
         
-             <tr>Your Order ${orderid} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.</tr>
+             <tr>Your Order ${orderid} of amount Rs ${paidAmount}, consisting of ${total_qty} garments is delivered.</tr>
          
              <tr><b>Thanks,</b></tr>
                                                                                      
@@ -92,7 +95,7 @@ ordertransactionRouter
                 `Successful Order Delivery ${orderid} with 24klen Laundry Science`
               );
               generateSms(mobile,
-                `Dear ${name} Your Order ${orderid} of amount Rs ${amount}, consisting of ${total_qty} garments is delivered.Thank you`
+                `Dear ${name} Your Order ${orderid} of amount Rs ${paidAmount}, consisting of ${total_qty} garments is delivered.Thank you`
               )
               res.status(200).json({ Success: true, Message: "Order Delivered" });
             }
@@ -116,7 +119,7 @@ const updateTransaction = (req, orderid) => {
           result.delivered_by = req.userData._id,
             result.updated_at = new Date();
           result.save();
-          resolve();
+          resolve(result);
         }
         else {
           result.order_id = orderid;
@@ -132,7 +135,7 @@ const updateTransaction = (req, orderid) => {
           result.delivered_by = req.userData._id,
             result.amt_received = req.body.paid_amount,
             result.save();
-          resolve();
+          resolve(result);
         }
       }
       else {
@@ -144,6 +147,7 @@ const updateTransaction = (req, orderid) => {
 
 const updatePaymentDetails = (req) => {
   return new Promise((resolve, reject) => {
+    console.log(req.body.customer_id)
     Paymentdetails.findOne({ customer: req.body.customer_id }, function (error, result) {
       if (req.body.payment_mode_delivery == 'Credit') {
         resolve();

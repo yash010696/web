@@ -260,13 +260,15 @@ mrequestordersRouter
     .get('/morderdetail/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
         Order.find({ 'order_id': req.params.id })
             .then((data) => {
+                // console.log(data);
+
                 var _id = data[0]._id;
                 Invoice.find({ 'order': _id })
                     .populate('order customer  ordertransaction tag')
                     .populate({ path: 'order', populate: { path: 'requestId' } })
                     .populate({ path: 'order', populate: { path: 'requestId', populate: { path: 'timeSlot' } } })
                     .then((invoices) => {
-                        // console.log(invoices);
+                        console.log(invoices);
                         // if (invoices[0].order.requestId) {
                         //     // console.log('///////////////////',invoices[0].order.requestId);
                         //     var pickupDate = invoices[0].order.requestId.pickupDate;
@@ -295,27 +297,35 @@ mrequestordersRouter
                         var previous_due;
                         var paymentstatus;
                         var payment_link;
+                        var sub_total;
                         var orderList = [];
-
+                        // console.log('lllllllllllllll')
                         invoices[0].tag.tagDetailsService.forEach(services => {
+                            // console.log('/--------/', services)
                             services.subservice.forEach(subsevice => {
+                             
                                 subsevice.garmentlist.forEach((garment, idx) => {
+                                   
                                     garment.garmentTagDetails.forEach((tag, index) => {
-                                        let tagsArray = JSON.parse(JSON.stringify((tag.tag_Format).split('|')));
-                                        // console.log('/////////',tagsArray);
-                                        service = tagsArray[1];
-                                        subservice = tag.subservice;
-                                        dress = tagsArray[3];
-                                        price = tag.price;
-                                        qty = tagsArray[4].split(":");
-                                    });
-                                    // console.log(service,'/',subservice,'/',dress,'/',price,'/');
-                                    orderList.push({
-                                        'service': service,
-                                        'subservice': subservice,
-                                        'dress': dress,
-                                        'price': price,
-                                        'qty': qty[1],
+                                        // console.log(tag.tagArray)
+                                        tag.tagArray.forEach(tagArray => {
+                                            
+                                            let tagsArray = JSON.parse(JSON.stringify((tagArray.tag_Text).split('|')));
+                                            console.log('/////////', tagsArray)
+                                            service = tagsArray[2];
+                                            subservice = tag.subservice;
+                                            dress = tagsArray[5];
+                                            price = tagArray.price;
+                                            qty = tagsArray[6];
+                                        });
+                                        // console.log(service,'/',subservice,'/',dress,'/',price,'/');
+                                        orderList.push({
+                                            'service': service,
+                                            'subservice': subservice,
+                                            'dress': dress,
+                                            'price': price,
+                                            'qty': qty,
+                                        });
                                     });
                                 });
                             });
@@ -345,6 +355,7 @@ mrequestordersRouter
                             previous_due: invoices[0].ordertransaction.previous_due,
                             paymentstatus: invoices[0].order.paymentstatus,
                             payment_link: invoices[0].order.payment_link,
+                            sub_total:invoices[0].ordertransaction.total_beforedis,
                             orderList
                         }
                         res.status(200).json({ Success: true, data });

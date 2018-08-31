@@ -99,7 +99,7 @@ pickupboyserviceRouter
            
                <tr><b>Dear ${name},</b></tr>
 
-               <tr>We attempted to complete your request for ${requestOrder.requestId} , however it was unsuccessful due to ${req.body.message}.</tr>
+               <tr>We attempted to complete your request for ${requestOrder.requestId} , however it was unsuccessful due to ${req.body.unpick_reason}.</tr>
                                                    
                <tr><b>Thanks,</b></tr>
                                                                                        
@@ -273,7 +273,7 @@ pickupboyserviceRouter
                     <table>
                         <tr><b>Dear ${name},</b></tr>
 
-                        <tr>We attempted to complete your request for ${order.order_id} , however it was unsuccessful due to ${req.body.message}.</tr>
+                        <tr>We attempted to complete your request for ${order.order_id} , however it was unsuccessful due to ${req.body.undelivery_reason}.</tr>
                                                             
                         <tr><b>Thanks,</b></tr>
                                                                                                 
@@ -362,7 +362,7 @@ pickupboyserviceRouter
             .populate('franchise , area')
             .then((data) => {
                 if (!data) {
-                    res.status(200).json({ Success: false, Message: 'Order Not Found!' });
+                    res.status(200).json({ Success: false, Message: 'Order Not Placed!' });
                 }
                 var home = data.address[0].home[0];
                 // var other = data.address[0].other[0];
@@ -372,7 +372,6 @@ pickupboyserviceRouter
                 var store_code = data.franchise.store_code;
                 order_type.findOne({ 'order_type': "on-line" }).then((ordertype) => {
                     serviceType.findOne({ 'type': req.body.servicetype }).then((servicetype) => {
-                        console.log(servicetype._id)
                         Order.find({ 'franchise': data.franchise._id }).then((results) => {
                             var count = results.length;
                             counter = count + 1;

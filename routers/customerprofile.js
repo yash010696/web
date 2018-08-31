@@ -34,10 +34,8 @@ customerProfileRouter
             var newDate = new Date(date.getTime() + Math.abs(date.getTimezoneOffset() * 60000));
             req.body.dob = newDate;
         }
-
         // Franchise.find({ statee: true, area: { $in: [req.body.area] } }).then((franchise) => {
         // req.body.franchise = franchise[0]._id;
-
         Customer.findOneAndUpdate({ '_id': id }, {
             $set: req.body
         }, { new: true }).then((user) => {
@@ -53,19 +51,18 @@ customerProfileRouter
     })
 
     .get('/customerlist', checkAuth, (req, res) => {
-
-        Customer.find().then(data => {
-            var data1 = [];
-            data.forEach(element => {
-                console.log(element.first_Name)
-                data1.push({
-                    _id: element._id,
-                    first_Name: element.first_Name
-                })
-            });
-            res.json(data1);
+        Customer.find().select('first_Name mobile').then(data => {
+            // var data1 = [];
+            // data.forEach(element => {
+            //     data1.push({
+            //         _id: element._id,
+            //         first_Name: element.first_Name
+            //     })
+            // });
+            res.status(200).json({ Success: true, customerlist: data });
         }).catch(error => {
             console.log(error);
+            res.status(500).json({msg : err});
         })
     })
 
